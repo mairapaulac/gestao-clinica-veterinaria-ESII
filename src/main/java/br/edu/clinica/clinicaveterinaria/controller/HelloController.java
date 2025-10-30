@@ -1,4 +1,4 @@
-package br.edu.clinica.clinicaveterinaria;
+package br.edu.clinica.clinicaveterinaria.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

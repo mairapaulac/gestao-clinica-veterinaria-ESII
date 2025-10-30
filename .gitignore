@@ -40,3 +40,5 @@ build/
 
 ### Configuration Properties ###
 src/main/resources/config.properties
+
+frontend_code.md

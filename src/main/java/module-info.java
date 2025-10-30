@@ -13,5 +13,7 @@ module br.edu.clinica.clinicaveterinaria {
     requires java.sql;
 
     opens br.edu.clinica.clinicaveterinaria to javafx.fxml;
+    opens br.edu.clinica.clinicaveterinaria.controller to javafx.fxml;
     exports br.edu.clinica.clinicaveterinaria;
+    exports br.edu.clinica.clinicaveterinaria.controller;
 }
