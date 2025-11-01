@@ -57,7 +57,5 @@ public class Paciente {
     public void setProprietario(Proprietario proprietario) {
         this.proprietario = proprietario;
     }
-
-
 }
 
