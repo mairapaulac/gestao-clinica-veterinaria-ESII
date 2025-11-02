@@ -1,4 +1,5 @@
 module br.edu.clinica.clinicaveterinaria {
+
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
@@ -11,9 +12,12 @@ module br.edu.clinica.clinicaveterinaria {
     //requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.sql;
+    requires javafx.graphics;
 
     opens br.edu.clinica.clinicaveterinaria to javafx.fxml;
     opens br.edu.clinica.clinicaveterinaria.controller to javafx.fxml;
+    opens br.edu.clinica.clinicaveterinaria.view to javafx.fxml;
     exports br.edu.clinica.clinicaveterinaria;
     exports br.edu.clinica.clinicaveterinaria.controller;
+    exports br.edu.clinica.clinicaveterinaria.view;
 }

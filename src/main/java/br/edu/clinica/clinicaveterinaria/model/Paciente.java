@@ -10,13 +10,11 @@ public class Paciente {
     private LocalDate dataNascimento;
     private Proprietario proprietario;
 
-    public Paciente(String nome, String raca, String especie, LocalDate dataNascimento, Proprietario proprietario) {
-        this.nome = nome;
-        this.raca = raca;
-        this.especie = especie;
-        this.dataNascimento = dataNascimento;
-        this.proprietario = proprietario;
-    }
+    public Paciente() {}
+
+    public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
 
     public String getNome() {
         return nome;
@@ -34,7 +32,7 @@ public class Paciente {
         return dataNascimento;
     }
 
-    public Proprietario getProprietario(Proprietario proprietario) {
+    public Proprietario getProprietario() {
         return proprietario;
     }
 

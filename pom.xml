@@ -140,7 +140,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                br.edu.clinica.clinicaveterinaria/br.edu.clinica.clinicaveterinaria.HelloApplication
+                                br.edu.clinica.clinicaveterinaria/br.edu.clinica.clinicaveterinaria.view.HelloApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

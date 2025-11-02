@@ -1,0 +1,28 @@
+.root {
+    -fx-font-family: 'Poppins', 'Montserrat', sans-serif;
+    -fx-background-color: #ffffff;
+}
+
+.options-container {
+    -fx-background-color: #E2F7FF;
+    -fx-pref-width: 240px;
+    -fx-spacing: 25px;
+}
+
+.logo-img {
+    -fx-alignment: center-left
+}
+
+.button {
+    -fx-background-color: none;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+    -fx-cursor: pointer;
+}
+
+.button-sair {
+    -fx-background-color: #007ACC;
+    -fx-cursor: pointer;
+    -fx-pref-width: 75px;
+    -fx-background-radius: 25px;
+}

@@ -19,7 +19,7 @@ public class Tratamento {
         return descricao;
     }
 
-    public Consulta getConsulta(Consulta consulta) {
+    public Consulta getConsulta() {
         return consulta;
     }
 

@@ -1,4 +1,4 @@
-package br.edu.clinica.clinicaveterinaria;
+package br.edu.clinica.clinicaveterinaria.view;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

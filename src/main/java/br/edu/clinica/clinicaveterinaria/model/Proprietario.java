@@ -7,16 +7,11 @@ public class Proprietario {
     private String email;
     private String endereco;
 
-    public Proprietario(String nome, String telefone, String email, String endereco) {
-        this.nome = nome;
-        this.telefone = telefone;
-        this.email = email;
-        this.endereco = endereco;
-    }
+    public Proprietario() {};
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
 
     public String getNome() {
         return nome;

@@ -35,11 +35,11 @@ public class Pagamento {
         return valorTotal;
     }
 
-    public Funcionario getFuncionario(Funcionario funcionario) {
+    public Funcionario getFuncionario() {
         return funcionario;
     }
 
-    public Consulta getConsulta(Consulta consulta) {
+    public Consulta getConsulta() {
         return consulta;
     }
 

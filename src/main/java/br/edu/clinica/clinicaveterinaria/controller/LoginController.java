@@ -1,6 +1,6 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
-import br.edu.clinica.clinicaveterinaria.SceneManager;
+import br.edu.clinica.clinicaveterinaria.view.SceneManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -51,7 +51,7 @@ public class LoginController implements Initializable {
         if (email.equals("testeseila") && password.equals("123")) {
             System.out.println("Login successful!");
             try {
-                SceneManager.switchScene("/br/edu/clinica/clinicaveterinaria/hello-view.fxml", "PetManager - Main", 1280, 720);
+                SceneManager.switchScene("/br/edu/clinica/clinicaveterinaria/home-screen-view.fxml", "PetManager - Main", 1280, 720);
             } catch (IOException e) {
                 e.printStackTrace();
             }
