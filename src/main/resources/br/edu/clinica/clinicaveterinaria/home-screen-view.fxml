@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="br.edu.clinica.clinicaveterinaria.controller.HomeController"
+            stylesheets="@css/home.css">
+
+        <left>
+            <VBox styleClass="options-container" alignment="CENTER" >
+
+                <ImageView styleClass="logo-img" fx:id="logoImageView" fitWidth="150" fitHeight="150"></ImageView>
+
+                <Button text="Início" styleClass="button" />
+
+                <Button text="Pacientes" styleClass="button" />
+
+                <Button text="Agendamentos" styleClass="button" />
+
+                <Button text="Controle de Estoque" styleClass="button" />
+
+                <Button text="Gestão de Funcionarios" styleClass="button" />
+
+                <Button text="Relatórios" styleClass="button" />
+
+                <Button text="Faturamento e Pagamento" styleClass="button" />
+
+                <Button text="Sair" styleClass="button-sair" />
+            </VBox>
+        </left>
+
+</BorderPane>
