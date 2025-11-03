@@ -1,19 +1,28 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
+import br.edu.clinica.clinicaveterinaria.view.SceneManager;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.TilePane;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class HomeController implements Initializable {
 
+    // Sidebar buttons
     @FXML private Button btnInicio;
-    @FXML private ImageView logoImageView;
     @FXML private Button btnPacientes;
     @FXML private Button btnAgendamentos;
     @FXML private Button btnEstoque;
@@ -22,6 +31,24 @@ public class HomeController implements Initializable {
     @FXML private Button btnFinanceiro;
     @FXML private Button btnSair;
 
+    // Images
+    @FXML private ImageView logoImageView;
+    @FXML private ImageView doctorImageView;
+
+    // Content area
+    @FXML private VBox mainContent;
+    @FXML private VBox contentArea;
+    @FXML private TilePane cardsGrid;
+
+    // Cards
+    @FXML private VBox cardPacientes;
+    @FXML private VBox cardAgendamentos;
+    @FXML private VBox cardEstoque;
+    @FXML private VBox cardFuncionarios;
+    @FXML private VBox cardRelatorios;
+    @FXML private VBox cardFinanceiro;
+
+    private Button activeButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -29,23 +56,88 @@ public class HomeController implements Initializable {
             if (is != null) {
                 Image logoImage = new Image(is);
                 logoImageView.setImage(logoImage);
-                logoImageView.setPreserveRatio(true);
+                doctorImageView.setImage(logoImage); // Placeholder
             } else {
-                System.err.println("Logo not found");
+                System.err.println("Logo not found or path is incorrect.");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        setActive(btnInicio);
     }
 
     @FXML
-    private void handleMenuClick() {
-        // lógica de navegação (ex: trocar telas)
+    private void handleCardClick(MouseEvent event) {
+        Object source = event.getSource();
+        if (source == cardPacientes) {
+            btnPacientes.fire();
+        } else if (source == cardAgendamentos) {
+            btnAgendamentos.fire();
+        } else if (source == cardEstoque) {
+            btnEstoque.fire();
+        } else if (source == cardFuncionarios) {
+            btnFuncionarios.fire();
+        } else if (source == cardRelatorios) {
+            btnRelatorios.fire();
+        } else if (source == cardFinanceiro) {
+            btnFinanceiro.fire();
+        }
+    }
+
+    @FXML
+    private void handleMenuClick(ActionEvent event) {
+        Button clickedButton = (Button) event.getSource();
+        if (clickedButton == activeButton) return;
+
+        setActive(clickedButton);
+
+        if (clickedButton == btnInicio) {
+            contentArea.getChildren().setAll(cardsGrid);
+        } else {
+            String fxmlFile = "";
+            if (clickedButton == btnPacientes) {
+                fxmlFile = "pacientes-view.fxml";
+            } else if (clickedButton == btnAgendamentos) {
+                fxmlFile = "agendamentos-view.fxml";
+            } else if (clickedButton == btnEstoque) {
+                fxmlFile = "estoque-view.fxml";
+            } else if (clickedButton == btnFuncionarios) {
+                fxmlFile = "funcionarios-view.fxml";
+            } else if (clickedButton == btnRelatorios) {
+                fxmlFile = "relatorios-view.fxml";
+            } else if (clickedButton == btnFinanceiro) {
+                fxmlFile = "faturamento-view.fxml";
+            }
+            loadPage(fxmlFile);
+        }
+    }
+
+    private void loadPage(String fxmlFile) {
+        if (fxmlFile == null || fxmlFile.isEmpty()) return;
+        try {
+            Parent page = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/br/edu/clinica/clinicaveterinaria/" + fxmlFile)));
+            contentArea.getChildren().setAll(page);
+        } catch (IOException e) {
+            System.err.println("Failed to load FXML file: " + fxmlFile);
+            e.printStackTrace();
+        }
+    }
+
+    private void setActive(Button button) {
+        if (activeButton != null) {
+            activeButton.getStyleClass().remove("active");
+        }
+        activeButton = button;
+        activeButton.getStyleClass().add("active");
     }
 
     @FXML
     private void sair() {
-        System.exit(0);
+        try {
+            SceneManager.switchScene("/br/edu/clinica/clinicaveterinaria/login-view.fxml", "PetManager - Login", 1280, 720);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 }

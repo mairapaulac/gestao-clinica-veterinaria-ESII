@@ -1,35 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.geometry.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="br.edu.clinica.clinicaveterinaria.controller.HomeController"
             stylesheets="@css/home.css">
 
-        <left>
-            <VBox styleClass="options-container" alignment="CENTER" >
-
-                <ImageView styleClass="logo-img" fx:id="logoImageView" fitWidth="150" fitHeight="150"></ImageView>
-
-                <Button text="Início" styleClass="button" />
-
-                <Button text="Pacientes" styleClass="button" />
-
-                <Button text="Agendamentos" styleClass="button" />
-
-                <Button text="Controle de Estoque" styleClass="button" />
-
-                <Button text="Gestão de Funcionarios" styleClass="button" />
-
-                <Button text="Relatórios" styleClass="button" />
-
-                <Button text="Faturamento e Pagamento" styleClass="button" />
-
-                <Button text="Sair" styleClass="button-sair" />
+    <!-- SIDEBAR -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="200">
+            <VBox alignment="CENTER" styleClass="sidebar-logo">
+                <ImageView fx:id="logoImageView" fitWidth="80" fitHeight="80" pickOnBounds="true" preserveRatio="true" />
             </VBox>
-        </left>
 
+            <VBox styleClass="sidebar-menu" VBox.vgrow="ALWAYS">
+                <Button fx:id="btnInicio" text="Início" styleClass="menu-btn" onAction="#handleMenuClick"/>
+                <Button fx:id="btnPacientes" text="Pacientes" styleClass="menu-btn" onAction="#handleMenuClick"/>
+                <Button fx:id="btnAgendamentos" text="Agendamentos" styleClass="menu-btn" onAction="#handleMenuClick"/>
+                <Button fx:id="btnEstoque" text="Controle de Estoque" styleClass="menu-btn" onAction="#handleMenuClick"/>
+                <Button fx:id="btnFuncionarios" text="Gestão de Funcionários" styleClass="menu-btn" onAction="#handleMenuClick"/>
+                <Button fx:id="btnRelatorios" text="Relatórios" styleClass="menu-btn" onAction="#handleMenuClick"/>
+                <Button fx:id="btnFinanceiro" text="Faturamento e Pagamento" styleClass="menu-btn" onAction="#handleMenuClick"/>
+            </VBox>
+
+            <VBox styleClass="sidebar-logout">
+                <Button fx:id="btnSair" text="Sair" styleClass="logout-btn" onAction="#sair"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <VBox styleClass="main-content" spacing="30" fx:id="mainContent">
+            <!-- HEADER -->
+            <HBox styleClass="header">
+                <Label text="Clínica Veterinária" styleClass="header-title" />
+                <HBox styleClass="doctor-card">
+                    <ImageView fx:id="doctorImageView" fitWidth="60" fitHeight="60" preserveRatio="true"/>
+                    <VBox styleClass="doctor-info">
+                        <Label text="Dra. Maria Da Silva" styleClass="doctor-name"/>
+                        <Label text="Veterinária" styleClass="doctor-role"/>
+                    </VBox>
+                </HBox>
+            </HBox>
+
+            <!-- Content Container -->
+            <VBox fx:id="contentArea" VBox.vgrow="ALWAYS">
+                <!-- CARDS -->
+                <TilePane fx:id="cardsGrid" styleClass="cards-grid" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="cardPacientes" styleClass="card" onMouseClicked="#handleCardClick">
+                        <Label text="Pacientes" styleClass="card-title"/>
+                        <Label text="Cadastrar e gerenciar os pacientes" styleClass="card-text"/>
+                    </VBox>
+
+                    <VBox fx:id="cardAgendamentos" styleClass="card" onMouseClicked="#handleCardClick">
+                        <Label text="Agendamentos" styleClass="card-title"/>
+                        <Label text="Agendar consultas e gerenciar agendamentos" styleClass="card-text"/>
+                    </VBox>
+
+                    <VBox fx:id="cardEstoque" styleClass="card" onMouseClicked="#handleCardClick">
+                        <Label text="Controle de Estoque" styleClass="card-title"/>
+                        <Label text="Gerenciar medicamentos" styleClass="card-text"/>
+                    </VBox>
+
+                    <VBox fx:id="cardFuncionarios" styleClass="card" onMouseClicked="#handleCardClick">
+                        <Label text="Gestão de Funcionários" styleClass="card-title"/>
+                        <Label text="Gerenciar funcionários" styleClass="card-text"/>
+                    </VBox>
+
+                    <VBox fx:id="cardRelatorios" styleClass="card" onMouseClicked="#handleCardClick">
+                        <Label text="Relatórios" styleClass="card-title"/>
+                        <Label text="Gerar relatórios" styleClass="card-text"/>
+                    </VBox>
+
+                    <VBox fx:id="cardFinanceiro" styleClass="card" onMouseClicked="#handleCardClick">
+                        <Label text="Faturamento e Pagamento" styleClass="card-title"/>
+                        <Label text="Gerenciar pagamentos" styleClass="card-text"/>
+                    </VBox>
+                </TilePane>
+            </VBox>
+        </VBox>
+    </center>
 </BorderPane>

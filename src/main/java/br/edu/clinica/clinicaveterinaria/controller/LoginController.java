@@ -25,9 +25,6 @@ public class LoginController implements Initializable {
     @FXML
     private PasswordField passwordField;
 
-    @FXML
-    private StackPane logoContainer;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try (InputStream is = getClass().getResourceAsStream("/br/edu/clinica/clinicaveterinaria/images/logo.png")) {
@@ -48,7 +45,7 @@ public class LoginController implements Initializable {
         String email = emailField.getText();
         String password = passwordField.getText();
 
-        if (email.equals("testeseila") && password.equals("123")) {
+        if (email.equals("") && password.equals("")) {
             System.out.println("Login successful!");
             try {
                 SceneManager.switchScene("/br/edu/clinica/clinicaveterinaria/home-screen-view.fxml", "PetManager - Main", 1280, 720);

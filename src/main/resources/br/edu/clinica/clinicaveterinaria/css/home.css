@@ -1,28 +1,171 @@
 .root {
-    -fx-font-family: 'Poppins', 'Montserrat', sans-serif;
-    -fx-background-color: #ffffff;
+    -fx-font-family: 'Poppins', sans-serif;
+    -fx-background-color: #f5f5f5;
 }
 
-.options-container {
-    -fx-background-color: #E2F7FF;
-    -fx-pref-width: 240px;
-    -fx-spacing: 25px;
+/* SIDEBAR */
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, #E3F4FF, #D4E8F7);
+    -fx-padding: 20 0;
+    -fx-border-color: transparent #B8D8EE transparent transparent;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 2, 0);
 }
 
-.logo-img {
-    -fx-alignment: center-left
+.sidebar-logo {
+    -fx-padding: 20;
+    -fx-alignment: center;
 }
 
-.button {
-    -fx-background-color: none;
+.sidebar-logo ImageView {
+    -fx-background-color: white;
+    -fx-background-radius: 50%;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2);
+}
+
+.sidebar-menu {
+    -fx-spacing: 0;
+}
+
+.menu-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #333;
     -fx-font-size: 14px;
-    -fx-font-weight: normal;
-    -fx-cursor: pointer;
+    -fx-font-weight: 500;
+    -fx-padding: 15 20;
+    -fx-border-width: 0 0 0 4;
+    -fx-border-color: transparent;
+    -fx-alignment: baseline-left;
+    -fx-cursor: hand;
+    -fx-max-width: Infinity;
 }
 
-.button-sair {
-    -fx-background-color: #007ACC;
-    -fx-cursor: pointer;
-    -fx-pref-width: 75px;
-    -fx-background-radius: 25px;
+.menu-btn:hover {
+    -fx-background-color: rgba(11,132,243,0.15);
+    -fx-text-fill: #0B84F3;
+    -fx-border-color: #0B84F3;
+    -fx-padding: 15 24;
+}
+
+.menu-btn.active {
+    -fx-background-color: #0B84F3;
+    -fx-text-fill: white;
+    -fx-border-color: #0B84F3;
+}
+
+.sidebar-logout {
+    -fx-padding: 20;
+    -fx-alignment: center;
+}
+
+.logout-btn {
+    -fx-background-color: #0B84F3;
+    -fx-text-fill: white;
+    -fx-background-radius: 25;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-padding: 12;
+    -fx-transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    -fx-background-color: #0970CC;
+    -fx-translate-y: -2;
+    -fx-effect: dropshadow(three-pass-box, rgba(11,132,243,0.3), 12, 0, 0, 4);
+}
+
+/* MAIN CONTENT */
+.main-content {
+    -fx-background-color: #ffffff;
+    -fx-padding: 40;
+}
+
+/* HEADER */
+.header {
+    -fx-alignment: center;
+    -fx-spacing: 20;
+    -fx-border-color: #E3F4FF;
+    -fx-border-width: 0 0 2 0;
+    -fx-padding: 0 0 20 0;
+    -fx-halignment: CENTER_LEFT;
+    -fx-hgrow: ALWAYS;
+}
+
+.header-title {
+    -fx-font-size: 36px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #333;
+}
+
+.doctor-card {
+    -fx-background-color: white;
+    -fx-padding: 12 20;
+    -fx-background-radius: 50;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2);
+    -fx-spacing: 15;
+    -fx-alignment: center;
+}
+
+.doctor-card ImageView {
+    -fx-background-color: linear-gradient(to bottom right, #E3F4FF, #B8D8EE);
+    -fx-background-radius: 50%;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 6, 0, 0, 2);
+}
+
+.doctor-info {
+    -fx-alignment: center-right;
+}
+
+.doctor-name {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #333;
+}
+
+.doctor-role {
+    -fx-font-size: 12px;
+    -fx-text-fill: #666;
+}
+
+/* CARDS GRID */
+.cards-grid {
+    -fx-hgap: 30;
+    -fx-vgap: 30;
+    -fx-alignment: center;
+}
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-padding: 30;
+    -fx-border-color: #F0F0F0;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 12, 0, 0, 2);
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.card:hover {
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 24, 0, 0, 8);
+    -fx-border-color: #E3F4FF;
+}
+
+.card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0B84F3;
+    -fx-padding: 0 0 12 0;
+}
+
+.card-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 4;
 }
