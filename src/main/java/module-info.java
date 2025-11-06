@@ -11,7 +11,7 @@ module br.edu.clinica.clinicaveterinaria {
     requires org.kordamp.bootstrapfx.core;
     //requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
-    requires java.sql;
+    requires transitive java.sql;
     requires javafx.graphics;
 
     opens br.edu.clinica.clinicaveterinaria.controller to javafx.fxml;
