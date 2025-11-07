@@ -14,7 +14,7 @@ public class PacienteDAO {
 
     public void inserirPaciente(Paciente paciente) {
 
-        String sql = "INSERT INTO usuario (nome, especie, raca, dataNascimento, idProprietario) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuario (nomepaciente, especie, raca, data_nascimento, fkproprietario) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = ConnectionFactory.getConnection()) {
 
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -38,10 +38,10 @@ public class PacienteDAO {
     public List<Paciente> listarTodos() {
         List<Paciente> listaPaciente = new ArrayList<>();
 
-        String sql = "SELECT p.id, p.nome, p.especie, p.raca, p.dataNascimento," +
-                     "pr.id AS prop_id, pr.nome AS prop_nome, pr.telefone AS prop_tel, pr.email AS prop_email" +
+        String sql = "SELECT p.pkidpaciente, p.nomepaciente, p.especie, p.raca, p.data_nascimento," +
+                     "pr.pkid_proprietario AS prop_id, pr.nomeproprietario AS prop_nome, pr.telefone AS prop_tel, pr.email AS prop_email" +
                      "FROM paciente p" +
-                     "JOIN proprietario pr ON p.idproprietario = pr.id";
+                     "JOIN proprietario pr ON p.fkproprietario = pr.pkid_proprietario";
 
         try (Connection conn = ConnectionFactory.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -57,8 +57,8 @@ public class PacienteDAO {
 
 
                 Paciente paciente = new Paciente();
-                paciente.setId(rs.getInt("id"));
-                paciente.setDataNascimento(rs.getDate("dataNascimento").toLocalDate());
+                paciente.setId(rs.getInt("pkidpaciente"));
+                paciente.setDataNascimento(rs.getDate("data_nascimento").toLocalDate());
                 paciente.setProprietario(proprietario);
                 paciente.setRaca(rs.getString("raca"));
                 paciente.setEspecie(rs.getString("especie"));
@@ -75,7 +75,7 @@ public class PacienteDAO {
 
     public void update(Paciente paciente) {
 
-        String sql = "UPDATE paciente SET nome = ?, especie = ?, raca = ?, data_nascimento = ?, idProprietario = ? WHERE id = ? ";
+        String sql = "UPDATE paciente SET nome = ?, especie = ?, raca = ?, data_nascimento = ?, fkproprietario = ? WHERE pkidpaciente = ? ";
 
         try(Connection conn = ConnectionFactory.getConnection()) {
 
@@ -96,7 +96,7 @@ public class PacienteDAO {
     }
 
     public void delete(int id) {
-        String sql = "DELETE FROM paciente WHERE id = ?";
+        String sql = "DELETE FROM paciente WHERE pkidpaciente = ?";
 
         try(Connection conn = ConnectionFactory.getConnection()) {
 
