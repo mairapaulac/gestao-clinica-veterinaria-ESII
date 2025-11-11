@@ -1,11 +1,13 @@
 package br.edu.clinica.clinicaveterinaria.model;
 
 public class Veterinario {
+
     private int id;
     private String nome;
     private String CRMV;
     private String telefone;
     private String especialidade;
+
 
     public Veterinario(String nome, String CRMV, String telefone, String especialidade) {        
         this.nome = nome;
@@ -23,7 +25,6 @@ public class Veterinario {
     public int getId() {
         return id;
     }
-
 
     public String getNome() {
         return nome;

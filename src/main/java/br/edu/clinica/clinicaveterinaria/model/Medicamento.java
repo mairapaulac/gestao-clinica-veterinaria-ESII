@@ -7,6 +7,11 @@ public class Medicamento {
     public Medicamento(String nomeMedicamento) {
         this.nomeMedicamento = nomeMedicamento;
     }
+
+    public Medicamento(int id, String nomeMedicamento) {
+        this(nomeMedicamento);
+        this.id = id;
+    }
     
     public String getNomeMedicamento() {
         return nomeMedicamento;

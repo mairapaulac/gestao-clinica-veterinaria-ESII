@@ -7,11 +7,18 @@ public class Funcionario {
     private String login;
     private String senha;
 
+    public Funcionario() {}
+
     public Funcionario(String nome, String cargo, String login, String senha) {
         this.nome = nome;
         this.cargo = cargo;
         this.login = login;
         this.senha = senha;
+    }
+
+    public Funcionario(int id, String nome, String cargo, String login, String senha) {
+        this(nome, cargo, login, senha);
+        this.id = id;
     }
 
     public int getId() {

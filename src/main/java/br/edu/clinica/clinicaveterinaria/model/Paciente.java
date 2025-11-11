@@ -12,6 +12,20 @@ public class Paciente {
 
     public Paciente() {}
 
+    public Paciente(String nome, String raca, String especie, LocalDate dataNascimento, Proprietario proprietario) {
+        this.nome = nome;
+        this.raca = raca;
+        this.especie = especie;
+        this.dataNascimento = dataNascimento;
+        this.proprietario = proprietario;
+    }
+
+    //Construtor adicionado caso precise ler algo do banco
+    public Paciente(int id, String nome, String raca, String especie, LocalDate dataNascimento, Proprietario proprietario) {
+        this(nome, raca, especie, dataNascimento, proprietario);
+        this.id = id;
+    }
+
     public int getId() { return id; }
 
     public void setId(int id) { this.id = id; }

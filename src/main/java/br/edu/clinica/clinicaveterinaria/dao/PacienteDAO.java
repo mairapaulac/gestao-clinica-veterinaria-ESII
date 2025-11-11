@@ -12,9 +12,11 @@ import java.util.List;
 
 public class PacienteDAO {
 
+    private static final String NOME_TABELA = "paciente";
+
     public void inserirPaciente(Paciente paciente) {
 
-        String sql = "INSERT INTO usuario (nomepaciente, especie, raca, data_nascimento, fkproprietario) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO + NOME_TABELA + (nomepaciente, especie, raca, data_nascimento, fkproprietario) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = ConnectionFactory.getConnection()) {
 
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -40,7 +42,7 @@ public class PacienteDAO {
 
         String sql = "SELECT p.pkidpaciente, p.nomepaciente, p.especie, p.raca, p.data_nascimento," +
                      "pr.pkid_proprietario AS prop_id, pr.nomeproprietario AS prop_nome, pr.telefone AS prop_tel, pr.email AS prop_email" +
-                     "FROM paciente p" +
+                     "FROM + NOME_TABELA + p" +
                      "JOIN proprietario pr ON p.fkproprietario = pr.pkid_proprietario";
 
         try (Connection conn = ConnectionFactory.getConnection()) {
@@ -75,7 +77,7 @@ public class PacienteDAO {
 
     public void update(Paciente paciente) {
 
-        String sql = "UPDATE paciente SET nome = ?, especie = ?, raca = ?, data_nascimento = ?, fkproprietario = ? WHERE pkidpaciente = ? ";
+        String sql = "UPDATE + NOME_TABELA + SET nome = ?, especie = ?, raca = ?, data_nascimento = ?, fkproprietario = ? WHERE pkidpaciente = ? ";
 
         try(Connection conn = ConnectionFactory.getConnection()) {
 
@@ -96,7 +98,7 @@ public class PacienteDAO {
     }
 
     public void delete(int id) {
-        String sql = "DELETE FROM paciente WHERE pkidpaciente = ?";
+        String sql = "DELETE FROM + NOME_TABELA + WHERE pkidpaciente = ?";
 
         try(Connection conn = ConnectionFactory.getConnection()) {
 

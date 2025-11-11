@@ -12,7 +12,7 @@ public class VeterinarioDAO {
 
     //CREATE
     public void adicionarVeterinario(Veterinario veterinario) throws SQLException {
-        String sql = "INSERT INTO " + NOME_TABELA + " (nome, crmv, telefoneveterinario, especialidade) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO " + NOME_TABELA + " (nome, crmv, telefone, especialidade) VALUES (?, ?, ?, ?)";
         try (Connection conn = ConnectionFactory.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, veterinario.getNome());
@@ -27,18 +27,18 @@ public class VeterinarioDAO {
     //READ
     public List<Veterinario> listarTodos() throws SQLException {
         List<Veterinario> listaVeterinarios = new ArrayList<>();
-        String sql = "SELECT pkidveterinario, nome, crmv, telefoneveterinario, especialidade FROM " + NOME_TABELA;
+        String sql = "SELECT id, nome, crmv, telefone, especialidade FROM " + NOME_TABELA;
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()) {
+                while (rs.next()) {
                 Veterinario vet = new Veterinario(
-                    rs.getInt("pkidveterinario"),
+                    rs.getInt("id"),
                     rs.getString("nome"),
                     rs.getString("crmv"),
-                    rs.getString("telefoneveterinario"),
+                    rs.getString("telefone"),
                     rs.getString("especialidade")
                 );
                 listaVeterinarios.add(vet);
@@ -48,7 +48,7 @@ public class VeterinarioDAO {
     }
     //UPDATE
     public void atualizarVeterinario(Veterinario veterinario) throws SQLException {
-        String sql = "UPDATE " + NOME_TABELA + " SET nome = ?, crmv = ?, telefoneveterinario = ?, especialidade = ? WHERE pkidveterinario = ?";
+        String sql = "UPDATE " + NOME_TABELA + " SET nome = ?, crmv = ?, telefone = ?, especialidade = ? WHERE id = ?";
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -68,7 +68,7 @@ public class VeterinarioDAO {
     }
     //DELETE
     public void deletarVeterinario(int id) throws SQLException {
-        String sql = "DELETE FROM " + NOME_TABELA + " WHERE pkidveterinario = ?";
+        String sql = "DELETE FROM " + NOME_TABELA + " WHERE id = ?";
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
