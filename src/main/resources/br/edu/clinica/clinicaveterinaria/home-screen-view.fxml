@@ -40,7 +40,7 @@
         <VBox styleClass="main-content" spacing="30" fx:id="mainContent">
             <!-- HEADER -->
             <HBox styleClass="header">
-                <Label text="Clínica Veterinária" styleClass="header-title" />
+                <Label fx:id="headerTitle" text="Clínica Veterinária" styleClass="header-title" />
                 <HBox styleClass="doctor-card">
                     <ImageView fx:id="doctorImageView" fitWidth="60" fitHeight="60" preserveRatio="true"/>
                     <VBox styleClass="doctor-info">

@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -39,6 +40,9 @@ public class HomeController implements Initializable {
     @FXML private VBox mainContent;
     @FXML private VBox contentArea;
     @FXML private TilePane cardsGrid;
+
+    // Header
+    @FXML private Label headerTitle;
 
     // Cards
     @FXML private VBox cardPacientes;
@@ -94,22 +98,31 @@ public class HomeController implements Initializable {
 
         if (clickedButton == btnInicio) {
             contentArea.getChildren().setAll(cardsGrid);
+            setHeaderTitle("Clínica Veterinária");
         } else {
             String fxmlFile = "";
+            String title = "";
             if (clickedButton == btnPacientes) {
                 fxmlFile = "pacientes-view.fxml";
+                title = "Pacientes";
             } else if (clickedButton == btnAgendamentos) {
                 fxmlFile = "agendamentos-view.fxml";
+                title = "Agendamentos";
             } else if (clickedButton == btnEstoque) {
                 fxmlFile = "estoque-view.fxml";
+                title = "Controle de Estoque";
             } else if (clickedButton == btnFuncionarios) {
                 fxmlFile = "funcionarios-view.fxml";
+                title = "Gestão de Funcionários";
             } else if (clickedButton == btnRelatorios) {
                 fxmlFile = "relatorios-view.fxml";
+                title = "Relatórios";
             } else if (clickedButton == btnFinanceiro) {
                 fxmlFile = "faturamento-view.fxml";
+                title = "Faturamento e Pagamento";
             }
             loadPage(fxmlFile);
+            setHeaderTitle(title);
         }
     }
 
@@ -130,6 +143,10 @@ public class HomeController implements Initializable {
         }
         activeButton = button;
         activeButton.getStyleClass().add("active");
+    }
+
+    private void setHeaderTitle(String title) {
+        headerTitle.setText(title);
     }
 
     @FXML
