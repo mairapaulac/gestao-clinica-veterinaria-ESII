@@ -109,7 +109,7 @@ public class HomeController implements Initializable {
                 fxmlFile = "agendamentos-view.fxml";
                 title = "Agendamentos";
             } else if (clickedButton == btnEstoque) {
-                fxmlFile = "estoque-view.fxml";
+                fxmlFile = "medicamentos-view.fxml";
                 title = "Controle de Estoque";
             } else if (clickedButton == btnFuncionarios) {
                 fxmlFile = "funcionarios-view.fxml";

@@ -8,25 +8,24 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="br.edu.clinica.clinicaveterinaria.controller.PacientesController"
+      fx:controller="br.edu.clinica.clinicaveterinaria.controller.MedicamentosController"
       stylesheets="@css/pacientes.css"
       style="-fx-background-color: #f5f7fa; -fx-padding: 20;"
       spacing="20">
 
     <HBox alignment="CENTER_LEFT" spacing="10">
-        <Button fx:id="btnCadastrar" text="+ Cadastrar Paciente" styleClass="btn-cadastrar"/>
+        <Button fx:id="btnAdicionar" text="+ Adicionar Medicamento" styleClass="btn-cadastrar"/>
         <HBox HBox.hgrow="ALWAYS" alignment="CENTER_RIGHT">
             <TextField fx:id="txtBuscar" promptText="Buscar" styleClass="search-field"/>
         </HBox>
     </HBox>
 
-    <TableView fx:id="tabelaPacientes" VBox.vgrow="ALWAYS">
+    <TableView fx:id="tabelaMedicamentos" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colNome" text="Nome do Paciente"/>
-            <TableColumn fx:id="colEspecie" text="Espécie"/>
-            <TableColumn fx:id="colRaca" text="Raça"/>
-            <TableColumn fx:id="colNascimento" text="Data de Nascimento"/>
-            <TableColumn fx:id="colTutor" text="Tutor"/>
+            <TableColumn fx:id="colNome" text="Nome do Medicamento"/>
+            <TableColumn fx:id="colFabricante" text="Fabricante"/>
+            <TableColumn fx:id="colQuantidade" text="Quantidade"/>
+            <TableColumn fx:id="colValidade" text="Data de Validade"/>
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

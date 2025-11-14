@@ -5,10 +5,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -124,7 +129,7 @@ public class PacientesController implements Initializable {
 
     @FXML
     private void handleCadastrarPaciente() {
-        System.out.println("Ação: Cadastrar novo paciente.");
+        showPacienteDialog(null);
     }
 
     private void handleVerDetalhes(Paciente paciente) {
@@ -135,7 +140,38 @@ public class PacientesController implements Initializable {
 
     private void handleEditar(Paciente paciente) {
         if (paciente != null) {
-            System.out.println("Ação: Editar o paciente " + paciente.nome());
+            showPacienteDialog(paciente);
+        }
+    }
+
+    private void showPacienteDialog(Paciente paciente) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/cadastrar-paciente-view.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            CadastrarPacienteController controller = loader.getController();
+            controller.setPacienteData(paciente, listaPacientes);
+
+            Stage stage = new Stage();
+            stage.setTitle(paciente == null ? "Cadastrar Novo Paciente" : "Editar Paciente");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+            stage.showAndWait();
+
+            Paciente newPaciente = controller.getNewPaciente();
+            if (newPaciente != null) {
+                if (paciente == null) {
+                    listaPacientes.add(newPaciente);
+                } else {
+                    int index = listaPacientes.indexOf(paciente);
+                    if (index != -1) {
+                        listaPacientes.set(index, newPaciente);
+                    }
+                }
+                tabelaPacientes.refresh();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -147,8 +183,18 @@ public class PacientesController implements Initializable {
 
     private void handleExcluir(Paciente paciente) {
         if (paciente != null) {
-            System.out.println("Ação: Excluir o paciente " + paciente.nome());
-            listaPacientes.remove(paciente);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmação de Exclusão");
+            alert.setHeaderText("Tem certeza que deseja excluir o paciente: " + paciente.nome() + "?");
+            alert.setContentText("Esta ação não pode ser desfeita.");
+
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    listaPacientes.remove(paciente);
+                    tabelaPacientes.refresh();
+                    System.out.println("Ação: Excluir o paciente " + paciente.nome());
+                }
+            });
         }
     }
 
