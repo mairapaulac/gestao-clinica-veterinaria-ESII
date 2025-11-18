@@ -1,0 +1,133 @@
+/* Estilo geral do VBox raiz é definido inline no FXML para corresponder a pacientes-view.fxml */
+
+/* Botão de Novo Agendamento - Estilo baseado no .btn-cadastrar de pacientes.css */
+.btn-novo-agendamento {
+    -fx-background-color: #0066cc;
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 12px 20px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.btn-novo-agendamento:hover {
+    -fx-background-color: #0052a3;
+}
+
+/* Botão Hoje - Estilo secundário */
+.btn-hoje {
+    -fx-background-color: white;
+    -fx-text-fill: #0066cc;
+    -fx-border-color: #0066cc;
+    -fx-border-width: 1.5px;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 10.5px 20px; /* Ajuste de padding para alinhar com o outro botão */
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.btn-hoje:hover {
+    -fx-background-color: #e6f2ff;
+}
+
+
+/* Container do Calendário - Estilo baseado na .table-view de pacientes.css */
+.calendar-container {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 10, 0, 0, 2);
+    -fx-padding: 20px;
+}
+
+/* Cabeçalho de navegação do mês */
+.calendar-header {
+    -fx-padding: 0 0 15px 0;
+    -fx-alignment: center;
+}
+
+.mes-ano {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-padding: 0 20px;
+}
+
+.btn-nav {
+    -fx-background-color: transparent;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 50%;
+    -fx-font-size: 14px;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-cursor: hand;
+}
+
+.btn-nav:hover {
+    -fx-background-color: #f0f2f5;
+}
+
+/* Cabeçalho com os dias da semana */
+.calendar-grid-header {
+    -fx-padding: 10px;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.dia-semana {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+}
+
+/* Grade principal do calendário */
+.calendar-grid {
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px 0 0 1px;
+}
+
+/* Célula de cada dia */
+.calendar-cell {
+    -fx-padding: 5px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 1px 1px 0;
+    -fx-background-color: white;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+}
+
+.calendar-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.dia-numero {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+}
+
+/* Célula de dia que pertence a outro mês */
+.outro-mes {
+    -fx-background-color: #fdfdfd;
+}
+
+.outro-mes .dia-numero {
+    -fx-text-fill: #b0b0b0;
+}
+
+/* Célula do dia selecionado */
+.cell-selecionada {
+    -fx-background-color: #e6f2ff;
+}
+
+.cell-selecionada .dia-numero {
+    -fx-font-weight: bold;
+    -fx-text-fill: #004085;
+}
+
+/* Círculo indicador para dias com agendamento */
+.indicador-agendamento {
+    -fx-fill: #0066cc;
+}

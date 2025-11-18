@@ -11,24 +11,28 @@ import java.util.Objects;
 public class SceneManager {
 
     private static Stage primaryStage;
+    private static Scene primaryScene;
 
     public static void setPrimaryStage(Stage stage) {
         primaryStage = stage;
     }
 
-    public static void switchScene(String fxmlFileName, String title, int width, int height) throws IOException {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(SceneManager.class.getResource(fxmlFileName)));
-        Scene scene = new Scene(root, width, height);
-        primaryStage.setTitle(title);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    public static void setPrimaryScene(Scene scene) {
+        primaryScene = scene;
     }
 
     public static void switchScene(String fxmlFileName, String title) throws IOException {
+        // Load the new FXML root
         Parent root = FXMLLoader.load(Objects.requireNonNull(SceneManager.class.getResource(fxmlFileName)));
-        Scene scene = new Scene(root);
+
+        // Preserve fullscreen state
+        boolean isFullScreen = primaryStage.isFullScreen();
+
+        // Set the new root on the existing scene
+        primaryScene.setRoot(root);
         primaryStage.setTitle(title);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+
+        // Re-apply fullscreen state
+        primaryStage.setFullScreen(isFullScreen);
     }
 }
