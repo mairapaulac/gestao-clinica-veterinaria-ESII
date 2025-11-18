@@ -48,7 +48,7 @@ public class LoginController implements Initializable {
         if (email.equals("") && password.equals("")) {
             System.out.println("Login successful!");
             try {
-                SceneManager.switchScene("/br/edu/clinica/clinicaveterinaria/home-screen-view.fxml", "PetManager - Main", 1280, 720);
+                SceneManager.switchScene("/br/edu/clinica/clinicaveterinaria/home-screen-view.fxml", "PetManager - Main");
             } catch (IOException e) {
                 e.printStackTrace();
             }

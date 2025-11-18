@@ -1,17 +1,26 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
+import br.edu.clinica.clinicaveterinaria.model.Paciente;
+import br.edu.clinica.clinicaveterinaria.model.Proprietario;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class PacientesController implements Initializable {
@@ -38,37 +47,47 @@ public class PacientesController implements Initializable {
     }
 
     private void configurarColunas() {
-        colNome.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().nome()));
-        colEspecie.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().especie()));
-        colRaca.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().raca()));
-        colTutor.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().tutor()));
+        colNome.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNome()));
+        colEspecie.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEspecie()));
+        colRaca.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRaca()));
+        colTutor.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getProprietario().getNome()));
         colNascimento.setCellValueFactory(cellData -> {
             SimpleStringProperty property = new SimpleStringProperty();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            property.setValue(formatter.format(cellData.getValue().dataNascimento()));
+            property.setValue(formatter.format(cellData.getValue().getDataNascimento()));
             return property;
         });
     }
 
     private void carregarDadosExemplo() {
-        listaPacientes.add(new Paciente("Rex", "Cachorro", "Labrador", LocalDate.of(2020, 5, 10), "Carlos Silva"));
-        listaPacientes.add(new Paciente("Mimi", "Gato", "Siamês", LocalDate.of(2018, 8, 22), "Ana Souza"));
-        listaPacientes.add(new Paciente("Bolinha", "Cachorro", "Poodle", LocalDate.of(2022, 1, 30), "João Pereira"));
-        listaPacientes.add(new Paciente("Nemo", "Peixe", "Palhaço", LocalDate.of(2023, 3, 15), "Maria Oliveira"));
-        listaPacientes.add(new Paciente("Pé de Pano", "Cavalo", "Manga-larga", LocalDate.of(2015, 11, 5), "Pedro Santos"));
-        listaPacientes.add(new Paciente("Amora", "Cachorro", "Golden Retriever", LocalDate.of(2019, 7, 1), "Fernanda Costa"));
-        listaPacientes.add(new Paciente("Fumaça", "Gato", "Persa", LocalDate.of(2021, 2, 14), "Rafael Lima"));
-        listaPacientes.add(new Paciente("Thor", "Cachorro", "Pastor Alemão", LocalDate.of(2017, 9, 20), "Patrícia Almeida"));
-        listaPacientes.add(new Paciente("Luna", "Gato", "Maine Coon", LocalDate.of(2022, 4, 5), "Gustavo Rocha"));
-        listaPacientes.add(new Paciente("Pipoca", "Cachorro", "Chihuahua", LocalDate.of(2020, 11, 11), "Mariana Santos"));
-        listaPacientes.add(new Paciente("Mel", "Cachorro", "Beagle", LocalDate.of(2018, 3, 25), "Daniel Oliveira"));
-        listaPacientes.add(new Paciente("Garfield", "Gato", "Exótico", LocalDate.of(2016, 6, 8), "Carla Pereira"));
-        listaPacientes.add(new Paciente("Buddy", "Cachorro", "Bulldog Francês", LocalDate.of(2021, 1, 1), "Ricardo Souza"));
-        listaPacientes.add(new Paciente("Estrela", "Gato", "Sphynx", LocalDate.of(2023, 10, 3), "Juliana Costa"));
-        listaPacientes.add(new Paciente("Max", "Cachorro", "Rottweiler", LocalDate.of(2019, 12, 18), "Felipe Martins"));
+        Proprietario p1 = new Proprietario(); p1.setId(1); p1.setNome("Carlos Silva");
+        Proprietario p2 = new Proprietario(); p2.setId(2); p2.setNome("Ana Souza");
+        Proprietario p3 = new Proprietario(); p3.setId(3); p3.setNome("João Pereira");
+        Proprietario p4 = new Proprietario(); p4.setId(4); p4.setNome("Maria Oliveira");
+        Proprietario p5 = new Proprietario(); p5.setId(5); p5.setNome("Pedro Santos");
+
+        List<Paciente> pacientes = new ArrayList<>();
+        pacientes.add(createPaciente(1, "Rex", "Cachorro", "Labrador", LocalDate.of(2020, 5, 10), p1));
+        pacientes.add(createPaciente(2, "Mimi", "Gato", "Siamês", LocalDate.of(2018, 8, 22), p2));
+        pacientes.add(createPaciente(3, "Bolinha", "Cachorro", "Poodle", LocalDate.of(2022, 1, 30), p3));
+        pacientes.add(createPaciente(4, "Nemo", "Peixe", "Palhaço", LocalDate.of(2023, 3, 15), p4));
+        pacientes.add(createPaciente(5, "Pé de Pano", "Cavalo", "Manga-larga", LocalDate.of(2015, 11, 5), p5));
+
+        listaPacientes.addAll(pacientes);
 
         filteredData = new FilteredList<>(listaPacientes, p -> true);
         tabelaPacientes.setItems(filteredData);
+    }
+
+    private Paciente createPaciente(int id, String nome, String especie, String raca, LocalDate dataNascimento, Proprietario proprietario) {
+        Paciente p = new Paciente();
+        p.setId(id);
+        p.setNome(nome);
+        p.setEspecie(especie);
+        p.setRaca(raca);
+        p.setDataNascimento(dataNascimento);
+        p.setProprietario(proprietario);
+        return p;
     }
 
     private void configurarBusca() {
@@ -80,13 +99,13 @@ public class PacientesController implements Initializable {
 
                 String lowerCaseFilter = newValue.toLowerCase();
 
-                if (paciente.nome().toLowerCase().contains(lowerCaseFilter)) {
+                if (paciente.getNome().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (paciente.especie().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (paciente.getEspecie().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (paciente.raca().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (paciente.getRaca().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (paciente.tutor().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (paciente.getProprietario().getNome().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
                 }
                 return false;
@@ -124,33 +143,72 @@ public class PacientesController implements Initializable {
 
     @FXML
     private void handleCadastrarPaciente() {
-        System.out.println("Ação: Cadastrar novo paciente.");
+        showPacienteDialog(null);
     }
 
     private void handleVerDetalhes(Paciente paciente) {
         if (paciente != null) {
-            System.out.println("Ação: Ver detalhes do paciente " + paciente.nome());
+            System.out.println("Ação: Ver detalhes do paciente " + paciente.getNome());
         }
     }
 
     private void handleEditar(Paciente paciente) {
         if (paciente != null) {
-            System.out.println("Ação: Editar o paciente " + paciente.nome());
+            showPacienteDialog(paciente);
+        }
+    }
+
+    private void showPacienteDialog(Paciente paciente) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/cadastrar-paciente-view.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            CadastrarPacienteController controller = loader.getController();
+            controller.setPacienteData(paciente, listaPacientes);
+
+            Stage stage = new Stage();
+            stage.setTitle(paciente == null ? "Cadastrar Novo Paciente" : "Editar Paciente");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+            stage.showAndWait();
+
+            Paciente newPaciente = controller.getNewPaciente();
+            if (newPaciente != null) {
+                if (paciente == null) {
+                    listaPacientes.add(newPaciente);
+                } else {
+                    int index = listaPacientes.indexOf(paciente);
+                    if (index != -1) {
+                        listaPacientes.set(index, newPaciente);
+                    }
+                }
+                tabelaPacientes.refresh();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     private void handleHistorico(Paciente paciente) {
         if (paciente != null) {
-            System.out.println("Ação: Ver histórico do paciente " + paciente.nome());
+            System.out.println("Ação: Ver histórico do paciente " + paciente.getNome());
         }
     }
 
     private void handleExcluir(Paciente paciente) {
         if (paciente != null) {
-            System.out.println("Ação: Excluir o paciente " + paciente.nome());
-            listaPacientes.remove(paciente);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmação de Exclusão");
+            alert.setHeaderText("Tem certeza que deseja excluir o paciente: " + paciente.getNome() + "?");
+            alert.setContentText("Esta ação não pode ser desfeita.");
+
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    listaPacientes.remove(paciente);
+                    tabelaPacientes.refresh();
+                    System.out.println("Ação: Excluir o paciente " + paciente.getNome());
+                }
+            });
         }
     }
-
-    public record Paciente(String nome, String especie, String raca, LocalDate dataNascimento, String tutor) {}
 }

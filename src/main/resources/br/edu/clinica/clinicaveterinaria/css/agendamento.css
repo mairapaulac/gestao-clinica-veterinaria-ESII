@@ -1,0 +1,73 @@
+.titulo-pagina {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-padding: 0 0 15px 0;
+}
+
+.form-grid {
+    -fx-padding: 30px;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 10, 0, 0, 2);
+}
+
+.form-grid .label {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+}
+
+/* Estilo para os campos de texto, datepicker e combobox */
+.text-field,
+.date-picker,
+.combo-box {
+    -fx-font-size: 15px;
+    -fx-pref-height: 42px;
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+}
+
+.date-picker .text-field {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.list-view .list-cell {
+    -fx-padding: 8px 12px;
+}
+
+
+/* Botões de Ação */
+.btn-confirmar {
+    -fx-background-color: #0066cc;
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 12px 25px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.btn-confirmar:hover {
+    -fx-background-color: #0052a3;
+}
+
+.btn-cancelar {
+    -fx-background-color: #f0f2f5;
+    -fx-text-fill: #555;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 11px 25px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.btn-cancelar:hover {
+    -fx-background-color: #e0e2e5;
+}

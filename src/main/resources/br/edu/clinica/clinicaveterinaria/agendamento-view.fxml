@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_LEFT" spacing="20.0" stylesheets="@css/agendamento.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.clinica.clinicaveterinaria.controller.AgendamentoController">
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+    </padding>
+    <children>
+        <Label styleClass="titulo-pagina" text="Agendamento de Consulta" alignment="CENTER" maxWidth="Infinity">
+            <font>
+                <Font name="System Bold" size="26.0" />
+            </font>
+        </Label>
+        <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+            <children>
+                <GridPane hgap="10.0" styleClass="form-grid" vgap="20.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="10.0" prefWidth="120.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="400.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Paciente:" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets top="7.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <ComboBox fx:id="comboBuscarPaciente" editable="true" prefWidth="Infinity" promptText="Digite ou selecione o paciente" GridPane.columnIndex="1" />
+
+                        <Label text="Data:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+                        <DatePicker fx:id="datePicker" prefWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Veterinário(a):" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+                        <ComboBox fx:id="comboVeterinarios" prefWidth="Infinity" promptText="Selecione" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Horário:" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+                        <ComboBox fx:id="comboHorarios" prefWidth="Infinity" promptText="Selecione" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                    </children>
+                </GridPane>
+            </children>
+        </VBox>
+        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+            <children>
+                <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#cancelarAgendamento" styleClass="btn-cancelar" text="Cancelar" />
+                <Button fx:id="btnConfirmar" mnemonicParsing="false" onAction="#confirmarAgendamento" styleClass="btn-confirmar" text="Confirmar Agendamento" />
+            </children>
+            <VBox.margin>
+                <Insets top="20.0" />
+            </VBox.margin>
+        </HBox>
+    </children>
+</VBox>
