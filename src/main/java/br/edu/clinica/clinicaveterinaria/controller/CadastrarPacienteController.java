@@ -1,6 +1,7 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
-import br.edu.clinica.clinicaveterinaria.controller.PacientesController.Paciente;
+import br.edu.clinica.clinicaveterinaria.model.Paciente;
+import br.edu.clinica.clinicaveterinaria.model.Proprietario;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -11,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class CadastrarPacienteController {
 
@@ -24,7 +26,7 @@ public class CadastrarPacienteController {
     @FXML private Label lblTitle;
 
     private Paciente pacienteToEdit;
-    private ObservableList<Paciente> existingPacientes;
+    private List<Paciente> existingPacientes;
     private Paciente newPaciente = null;
 
     @FXML
@@ -33,16 +35,16 @@ public class CadastrarPacienteController {
         btnCancelar.setOnAction(event -> cancelar());
     }
 
-    public void setPacienteData(Paciente paciente, ObservableList<Paciente> pacientes) {
+    public void setPacienteData(Paciente paciente, List<Paciente> pacientes) {
         this.existingPacientes = pacientes;
         this.pacienteToEdit = paciente;
 
         if (paciente != null) {
-            txtNome.setText(paciente.nome());
-            txtEspecie.setText(paciente.especie());
-            txtRaca.setText(paciente.raca());
-            dpNascimento.setValue(paciente.dataNascimento());
-            txtTutor.setText(paciente.tutor());
+            txtNome.setText(paciente.getNome());
+            txtEspecie.setText(paciente.getEspecie());
+            txtRaca.setText(paciente.getRaca());
+            dpNascimento.setValue(paciente.getDataNascimento());
+            txtTutor.setText(paciente.getProprietario().getNome());
             btnSalvar.setText("Salvar");
             lblTitle.setText("Editando Paciente");
         } else {
@@ -62,10 +64,12 @@ public class CadastrarPacienteController {
             return;
         }
 
-        for (Paciente p : existingPacientes) {
-            if (p.nome().equalsIgnoreCase(nome) && (pacienteToEdit == null || !p.equals(pacienteToEdit))) {
-                showAlert("Erro", "Um paciente com este nome já existe.");
-                return;
+        if (existingPacientes != null) {
+            for (Paciente p : existingPacientes) {
+                if (p.getNome().equalsIgnoreCase(nome) && (pacienteToEdit == null || !p.equals(pacienteToEdit))) {
+                    showAlert("Erro", "Um paciente com este nome já existe.");
+                    return;
+                }
             }
         }
 
@@ -97,7 +101,16 @@ public class CadastrarPacienteController {
         }
         String tutor = txtTutor.getText();
 
-        newPaciente = new Paciente(nome, especie, raca, dataNascimento, tutor);
+        Proprietario proprietario = new Proprietario();
+        proprietario.setNome(tutor);
+
+        newPaciente = new Paciente();
+        newPaciente.setNome(nome);
+        newPaciente.setEspecie(especie);
+        newPaciente.setRaca(raca);
+        newPaciente.setDataNascimento(dataNascimento);
+        newPaciente.setProprietario(proprietario);
+        
         fecharJanela();
     }
 

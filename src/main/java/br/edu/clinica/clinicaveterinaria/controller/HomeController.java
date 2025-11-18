@@ -152,7 +152,7 @@ public class HomeController implements Initializable {
     @FXML
     private void sair() {
         try {
-            SceneManager.switchScene("/br/edu/clinica/clinicaveterinaria/login-view.fxml", "PetManager - Login", 1280, 720);
+            SceneManager.switchScene("/br/edu/clinica/clinicaveterinaria/login-view.fxml", "PetManager - Login");
         } catch (IOException e) {
             e.printStackTrace();
         }
