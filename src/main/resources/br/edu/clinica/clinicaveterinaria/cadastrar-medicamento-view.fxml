@@ -32,11 +32,20 @@
         <Label text="Fabricante" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
         <TextField fx:id="txtFabricante" promptText="Ex: Medley" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-        <Label text="Quantidade" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtQuantidade" promptText="Ex: 50" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="Princípio Ativo" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtPrincipioAtivo" promptText="Ex: Dipirona Monoidratada" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-        <Label text="Data de Validade" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="dpValidade" promptText="dd/mm/aaaa" GridPane.rowIndex="3" GridPane.columnIndex="1" prefWidth="250"/>
+        <Label text="Número do Lote" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtNumeroLote" promptText="Ex: AB1234" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Quantidade" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtQuantidade" promptText="Ex: 50" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <Label text="Data de Validade" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="dpValidade" promptText="dd/mm/aaaa" GridPane.rowIndex="5" GridPane.columnIndex="1" prefWidth="250"/>
+
+        <Label text="Data de Entrada" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="dpEntrada" promptText="dd/mm/aaaa" GridPane.rowIndex="6" GridPane.columnIndex="1" prefWidth="250"/>
     </GridPane>
 
     <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 10 0 0 0;">

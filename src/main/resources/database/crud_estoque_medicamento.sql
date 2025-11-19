@@ -131,7 +131,7 @@ RETURN QUERY
             id_estoque_medicamento,
             SUM(quantidade_utilizada)
         FROM
-            tratamento_uso_medicamento
+            tratamento_medicamento
         GROUP BY
             id_estoque_medicamento
     )

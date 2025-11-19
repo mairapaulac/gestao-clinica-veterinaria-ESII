@@ -1,5 +1,6 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
+import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import br.edu.clinica.clinicaveterinaria.view.SceneManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,7 +9,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +36,7 @@ public class LoginController implements Initializable {
                 System.err.println("Logo not found");
             }
         } catch (IOException e) {
+            MainApplication.showErrorAlert("Erro de Carregamento", "Não foi possível carregar a imagem do logo.");
             e.printStackTrace();
         }
     }
@@ -50,6 +51,7 @@ public class LoginController implements Initializable {
             try {
                 SceneManager.switchScene("/br/edu/clinica/clinicaveterinaria/home-screen-view.fxml", "PetManager - Main");
             } catch (IOException e) {
+                MainApplication.showErrorAlert("Erro de Carregamento", "Não foi possível carregar a tela principal.");
                 e.printStackTrace();
             }
         } else {

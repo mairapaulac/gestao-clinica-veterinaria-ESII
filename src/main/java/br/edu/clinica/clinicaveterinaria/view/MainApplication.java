@@ -1,12 +1,15 @@
 package br.edu.clinica.clinicaveterinaria.view;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Objects;
 
 public class MainApplication extends Application {
@@ -25,6 +28,27 @@ public class MainApplication extends Application {
     }
 
     public static void main(String[] args) {
-        launch();
+        Thread.setDefaultUncaughtExceptionHandler(MainApplication::handleException);
+        launch(args);
+    }
+
+    private static void handleException(Thread t, Throwable e) {
+        e.printStackTrace(); // Log to console for developer
+
+        Platform.runLater(() -> {
+            if (e instanceof SQLException) {
+                showErrorAlert("Erro de Banco de Dados", "Ocorreu um erro ao acessar o banco de dados. Verifique a conexão e tente novamente.");
+            } else {
+                showErrorAlert("Erro Inesperado", "Ocorreu um erro inesperado. O aplicativo pode precisar ser reiniciado.");
+            }
+        });
+    }
+
+    public static void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

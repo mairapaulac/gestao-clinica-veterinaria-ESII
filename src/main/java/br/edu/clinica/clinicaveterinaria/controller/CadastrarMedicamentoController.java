@@ -1,6 +1,6 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
-import br.edu.clinica.clinicaveterinaria.controller.MedicamentosController.Medicamento;
+import br.edu.clinica.clinicaveterinaria.model.Medicamento;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -17,8 +17,11 @@ public class CadastrarMedicamentoController {
     @FXML private Label lblTitle;
     @FXML private TextField txtNome;
     @FXML private TextField txtFabricante;
+    @FXML private TextField txtPrincipioAtivo;
+    @FXML private TextField txtNumeroLote;
     @FXML private TextField txtQuantidade;
     @FXML private DatePicker dpValidade;
+    @FXML private DatePicker dpEntrada;
     @FXML private Button btnSalvar;
     @FXML private Button btnCancelar;
 
@@ -39,13 +42,17 @@ public class CadastrarMedicamentoController {
         if (medicamento != null) {
             lblTitle.setText("Editar Medicamento");
             btnSalvar.setText("Salvar");
-            txtNome.setText(medicamento.nome());
-            txtFabricante.setText(medicamento.fabricante());
-            txtQuantidade.setText(String.valueOf(medicamento.quantidade()));
-            dpValidade.setValue(medicamento.dataValidade());
+            txtNome.setText(medicamento.getNome());
+            txtFabricante.setText(medicamento.getFabricante());
+            txtPrincipioAtivo.setText(medicamento.getPrincipioAtivo());
+            txtNumeroLote.setText(medicamento.getNumeroLote());
+            txtQuantidade.setText(String.valueOf(medicamento.getQuantidade()));
+            dpValidade.setValue(medicamento.getDataValidade());
+            dpEntrada.setValue(medicamento.getDataEntrada());
         } else {
             lblTitle.setText("Cadastrar Novo Medicamento");
             btnSalvar.setText("Cadastrar");
+            dpEntrada.setValue(LocalDate.now()); // Padrão para data de entrada
         }
     }
 
@@ -55,17 +62,25 @@ public class CadastrarMedicamentoController {
 
     private void salvarMedicamento() {
         String nome = txtNome.getText().trim();
-        if (nome.isEmpty()) {
-            showAlert("Erro de Validação", "O nome do medicamento não pode estar em branco.");
+        String fabricante = txtFabricante.getText().trim();
+        String principioAtivo = txtPrincipioAtivo.getText().trim();
+        String numeroLote = txtNumeroLote.getText().trim();
+
+        if (nome.isEmpty() || fabricante.isEmpty() || numeroLote.isEmpty()) {
+            showAlert("Erro de Validação", "Nome, Fabricante e Número do Lote não podem estar em branco.");
             return;
         }
 
-        for (Medicamento m : existingMedicamentos) {
-            if (m.nome().equalsIgnoreCase(nome) && (medicamentoToEdit == null || !m.equals(medicamentoToEdit))) {
-                showAlert("Erro", "Um medicamento com este nome já existe.");
-                return;
+        // Validação de duplicidade de nome (apenas para novos medicamentos)
+        if (medicamentoToEdit == null) {
+            for (Medicamento m : existingMedicamentos) {
+                if (m.getNome().equalsIgnoreCase(nome)) {
+                    showAlert("Erro", "Um medicamento com este nome já existe.");
+                    return;
+                }
             }
         }
+
 
         int quantidade;
         try {
@@ -79,21 +94,15 @@ public class CadastrarMedicamentoController {
             return;
         }
 
-        LocalDate dataValidade;
-        try {
-            dataValidade = dpValidade.getConverter().fromString(dpValidade.getEditor().getText());
-        } catch (Exception e) {
-            showAlert("Erro de Validação", "O formato da data de validade é inválido. Use dd/mm/aaaa.");
-            return;
-        }
-        
-        if (dataValidade == null) {
-            showAlert("Erro de Validação", "A data de validade não pode estar em branco.");
+        LocalDate dataValidade = dpValidade.getValue();
+        LocalDate dataEntrada = dpEntrada.getValue();
+
+        if (dataValidade == null || dataEntrada == null) {
+            showAlert("Erro de Validação", "As datas de validade e entrada não podem estar em branco.");
             return;
         }
 
-        String fabricante = txtFabricante.getText();
-        newMedicamento = new Medicamento(nome, fabricante, quantidade, dataValidade);
+        newMedicamento = new Medicamento(nome, fabricante, principioAtivo, numeroLote, quantidade, dataValidade, dataEntrada);
         fecharJanela();
     }
 

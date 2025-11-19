@@ -1,7 +1,8 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import br.edu.clinica.clinicaveterinaria.dao.MedicamentoDAO;
+import br.edu.clinica.clinicaveterinaria.model.Medicamento;
+import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -10,14 +11,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MedicamentosController implements Initializable {
@@ -27,43 +31,52 @@ public class MedicamentosController implements Initializable {
     @FXML private TableView<Medicamento> tabelaMedicamentos;
     @FXML private TableColumn<Medicamento, String> colNome;
     @FXML private TableColumn<Medicamento, String> colFabricante;
-    @FXML private TableColumn<Medicamento, Number> colQuantidade;
-    @FXML private TableColumn<Medicamento, String> colValidade;
+    @FXML private TableColumn<Medicamento, Integer> colQuantidade;
+    @FXML private TableColumn<Medicamento, LocalDate> colValidade;
 
+    private final MedicamentoDAO medicamentoDAO = new MedicamentoDAO();
     private final ObservableList<Medicamento> listaMedicamentos = FXCollections.observableArrayList();
     private FilteredList<Medicamento> filteredData;
-
-    public record Medicamento(String nome, String fabricante, int quantidade, LocalDate dataValidade) {}
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         configurarColunas();
-        carregarDadosExemplo();
+        carregarMedicamentosDoBanco();
         configurarBusca();
         configurarContextMenu();
         btnAdicionar.setOnAction(event -> showMedicamentoDialog(null));
     }
 
     private void configurarColunas() {
-        colNome.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().nome()));
-        colFabricante.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().fabricante()));
-        colQuantidade.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().quantidade()));
-        colValidade.setCellValueFactory(cellData -> {
-            SimpleStringProperty property = new SimpleStringProperty();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            property.setValue(formatter.format(cellData.getValue().dataValidade()));
-            return property;
+        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        colFabricante.setCellValueFactory(new PropertyValueFactory<>("fabricante"));
+        colQuantidade.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
+        colValidade.setCellValueFactory(new PropertyValueFactory<>("dataValidade"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        colValidade.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                } else {
+                    setText(formatter.format(item));
+                }
+            }
         });
     }
 
-    private void carregarDadosExemplo() {
-        listaMedicamentos.add(new Medicamento("Dipirona", "Medley", 50, LocalDate.of(2026, 10, 5)));
-        listaMedicamentos.add(new Medicamento("Amoxicilina", "EMS", 30, LocalDate.of(2025, 8, 20)));
-        listaMedicamentos.add(new Medicamento("Ivermectina", "Pfizer", 100, LocalDate.of(2027, 1, 15)));
-        listaMedicamentos.add(new Medicamento("Prednisona", "Aché", 25, LocalDate.of(2025, 5, 30)));
-
-        filteredData = new FilteredList<>(listaMedicamentos, p -> true);
-        tabelaMedicamentos.setItems(filteredData);
+    private void carregarMedicamentosDoBanco() {
+        try {
+            listaMedicamentos.clear();
+            listaMedicamentos.addAll(medicamentoDAO.listarTodos());
+            filteredData = new FilteredList<>(listaMedicamentos, p -> true);
+            tabelaMedicamentos.setItems(filteredData);
+        } catch (SQLException e) {
+            MainApplication.showErrorAlert("Erro de Banco de Dados", "Não foi possível carregar os medicamentos do banco de dados.");
+            e.printStackTrace();
+        }
     }
 
     private void configurarBusca() {
@@ -73,22 +86,23 @@ public class MedicamentosController implements Initializable {
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-                if (medicamento.nome().toLowerCase().contains(lowerCaseFilter)) {
-                    return true;
-                } else return medicamento.fabricante().toLowerCase().contains(lowerCaseFilter);
+                return medicamento.getNome().toLowerCase().contains(lowerCaseFilter) ||
+                       medicamento.getFabricante().toLowerCase().contains(lowerCaseFilter);
             });
         });
     }
 
     private void configurarContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
+        MenuItem verMaisItem = new MenuItem("Ver mais");
         MenuItem editarItem = new MenuItem("Editar");
         MenuItem excluirItem = new MenuItem("Excluir");
 
+        verMaisItem.setOnAction(event -> handleVerMais(tabelaMedicamentos.getSelectionModel().getSelectedItem()));
         editarItem.setOnAction(event -> handleEditar(tabelaMedicamentos.getSelectionModel().getSelectedItem()));
         excluirItem.setOnAction(event -> handleExcluir(tabelaMedicamentos.getSelectionModel().getSelectedItem()));
 
-        contextMenu.getItems().addAll(editarItem, excluirItem);
+        contextMenu.getItems().addAll(verMaisItem, new SeparatorMenuItem(), editarItem, excluirItem);
 
         tabelaMedicamentos.setRowFactory(tv -> {
             TableRow<Medicamento> row = new TableRow<>();
@@ -101,40 +115,92 @@ public class MedicamentosController implements Initializable {
         });
     }
 
-    private void handleEditar(Medicamento medicamento) {
+    private void handleVerMais(Medicamento medicamento) {
         if (medicamento != null) {
-            showMedicamentoDialog(medicamento);
+            try {
+                // Buscamos o objeto completo para mostrar todos os detalhes
+                Medicamento fullMedicamento = medicamentoDAO.buscarPorId(medicamento.getId());
+                if (fullMedicamento != null) {
+                    FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/br/edu/clinica/clinicaveterinaria/detalhes-medicamento-view.fxml"));
+                    Stage dialogStage = new Stage();
+                    dialogStage.setTitle("Detalhes do Medicamento");
+                    dialogStage.initModality(Modality.WINDOW_MODAL);
+                    dialogStage.initOwner(btnAdicionar.getScene().getWindow());
+                    dialogStage.setScene(new Scene(loader.load()));
+
+                    DetalhesMedicamentoController controller = loader.getController();
+                    controller.setMedicamento(fullMedicamento);
+
+                    dialogStage.showAndWait();
+                } else {
+                    MainApplication.showErrorAlert("Erro", "Não foi possível encontrar os detalhes completos do medicamento selecionado.");
+                }
+            } catch (SQLException e) {
+                MainApplication.showErrorAlert("Erro de Banco de Dados", "Falha ao buscar os detalhes do medicamento.");
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+                MainApplication.showErrorAlert("Erro de Aplicação", "Falha ao abrir a tela de detalhes do medicamento.");
+            }
         }
     }
 
     private void showMedicamentoDialog(Medicamento medicamento) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/cadastrar-medicamento-view.fxml"));
-            Scene scene = new Scene(loader.load());
+            FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/br/edu/clinica/clinicaveterinaria/cadastrar-medicamento-view.fxml"));
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle(medicamento == null ? "Cadastrar Novo Medicamento" : "Editar Medicamento");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(btnAdicionar.getScene().getWindow());
+            dialogStage.setScene(new Scene(loader.load()));
 
             CadastrarMedicamentoController controller = loader.getController();
             controller.setMedicamentoData(medicamento, listaMedicamentos);
 
-            Stage stage = new Stage();
-            stage.setTitle(medicamento == null ? "Cadastrar Novo Medicamento" : "Editar Medicamento");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(scene);
-            stage.showAndWait();
+            dialogStage.showAndWait();
 
-            Medicamento newMedicamento = controller.getNewMedicamento();
-            if (newMedicamento != null) {
-                if (medicamento == null) {
-                    listaMedicamentos.add(newMedicamento);
-                } else {
-                    int index = listaMedicamentos.indexOf(medicamento);
-                    if (index != -1) {
-                        listaMedicamentos.set(index, newMedicamento);
+            Medicamento result = controller.getNewMedicamento();
+            if (result != null) {
+                try {
+                    if (medicamento == null) { // Criando um novo
+                        medicamentoDAO.inserir(result);
+                        listaMedicamentos.add(result);
+                    } else { // Editando um existente
+                        result.setId(medicamento.getId());
+                        medicamentoDAO.atualizar(result);
+                        // Atualiza o item na lista
+                        int index = listaMedicamentos.indexOf(medicamento);
+                        if (index != -1) {
+                            listaMedicamentos.set(index, result);
+                        }
                     }
+                    tabelaMedicamentos.refresh();
+                } catch (SQLException e) {
+                    MainApplication.showErrorAlert("Erro de Banco de Dados", "Falha ao salvar o medicamento.");
+                    e.printStackTrace();
                 }
-                tabelaMedicamentos.refresh();
             }
         } catch (IOException e) {
             e.printStackTrace();
+            MainApplication.showErrorAlert("Erro de Aplicação", "Falha ao abrir a tela de cadastro de medicamento.");
+        }
+    }
+
+
+    private void handleEditar(Medicamento medicamento) {
+        if (medicamento != null) {
+            try {
+                // O objeto da tabela é 'leve', buscamos o objeto completo para edição
+                Medicamento fullMedicamento = medicamentoDAO.buscarPorId(medicamento.getId());
+                if (fullMedicamento != null) {
+                    showMedicamentoDialog(fullMedicamento);
+                } else {
+                    MainApplication.showErrorAlert("Erro", "Não foi possível encontrar os detalhes completos do medicamento selecionado.");
+                }
+            } catch (SQLException e) {
+                MainApplication.showErrorAlert("Erro de Banco de Dados", "Falha ao buscar os detalhes do medicamento.");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -142,15 +208,20 @@ public class MedicamentosController implements Initializable {
         if (medicamento != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmação de Exclusão");
-            alert.setHeaderText("Tem certeza que deseja excluir o medicamento: " + medicamento.nome() + "?");
+            alert.setHeaderText("Tem certeza que deseja excluir o medicamento: " + medicamento.getNome() + "?");
             alert.setContentText("Esta ação não pode ser desfeita.");
 
-            alert.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.OK) {
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try {
+                    medicamentoDAO.excluir(medicamento.getId());
                     listaMedicamentos.remove(medicamento);
                     tabelaMedicamentos.refresh();
+                } catch (SQLException e) {
+                    MainApplication.showErrorAlert("Erro de Banco de Dados", "Falha ao excluir o medicamento.");
+                    e.printStackTrace();
                 }
-            });
+            }
         }
     }
 }

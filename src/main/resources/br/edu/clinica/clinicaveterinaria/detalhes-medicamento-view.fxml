@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="br.edu.clinica.clinicaveterinaria.controller.DetalhesMedicamentoController"
+      stylesheets="@css/detalhes-paciente.css"
+      styleClass="root"
+      spacing="20">
+    <padding>
+        <Insets top="20" right="30" bottom="20" left="30"/>
+    </padding>
+
+    <Label text="Detalhes do Medicamento" styleClass="title">
+        <font>
+            <Font name="System Bold" size="20.0"/>
+        </font>
+    </Label>
+
+    <GridPane hgap="15" vgap="12" styleClass="info-grid">
+        <Label text="Nome:" styleClass="label-field" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="lblNome" styleClass="value-field" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Fabricante:" styleClass="label-field" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label fx:id="lblFabricante" styleClass="value-field" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Princípio Ativo:" styleClass="label-field" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label fx:id="lblPrincipioAtivo" styleClass="value-field" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Número do Lote:" styleClass="label-field" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <Label fx:id="lblNumeroLote" styleClass="value-field" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Quantidade em Estoque:" styleClass="label-field" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <Label fx:id="lblQuantidade" styleClass="value-field" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <Label text="Data de Validade:" styleClass="label-field" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <Label fx:id="lblDataValidade" styleClass="value-field" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+        <Label text="Data de Entrada:" styleClass="label-field" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <Label fx:id="lblDataEntrada" styleClass="value-field" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <HBox alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+        <Button fx:id="btnFechar" text="Fechar" styleClass="btn-fechar"/>
+    </HBox>
+
+</VBox>
