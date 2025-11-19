@@ -1,75 +1,93 @@
-CREATE TABLE Proprietario (
-  id integer PRIMARY KEY,
-  nome varchar(100) NOT NULL,
-  telefone varchar(20) NOT NULL,
-  email varchar(255) UNIQUE NOT NULL,
+CREATE TABLE proprietario (
+                              cpf VARCHAR PRIMARY KEY,
+                              nome VARCHAR NOT NULL,
+                              telefone VARCHAR NOT NULL,
+                              email VARCHAR UNIQUE NOT NULL,
 
-  rua varchar(100) NOT NULL,
-  numero varchar(10) NOT NULL,
-  bairro varchar(80) NOT NULL,
-  cidade varchar(80) NOT NULL,
-  estado varchar(2) NOT NULL,
-  cep varchar(10) NOT NULL
+                              rua VARCHAR NOT NULL,
+                              numero VARCHAR NOT NULL,
+                              bairro VARCHAR NOT NULL,
+                              cidade VARCHAR NOT NULL,
+                              estado VARCHAR NOT NULL,
+                              cep VARCHAR NOT NULL
 );
 
 
 CREATE TABLE veterinario (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    crmv VARCHAR(20) UNIQUE NOT NULL,
-    telefone VARCHAR(20),
-    especialidade VARCHAR(100)
+                             id SERIAL PRIMARY KEY,
+                             nome VARCHAR NOT NULL,
+                             crmv VARCHAR UNIQUE NOT NULL,
+                             telefone VARCHAR,
+                             especialidade VARCHAR
 );
+
 
 CREATE TABLE funcionario (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    cargo VARCHAR(50),
-    login VARCHAR(50) UNIQUE,
-    senha VARCHAR(50)
+                             id SERIAL PRIMARY KEY,
+                             nome VARCHAR NOT NULL,
+                             cargo VARCHAR,
+                             login VARCHAR UNIQUE,
+                             senha VARCHAR
 );
+
 
 CREATE TABLE paciente (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    especie VARCHAR(50),
-    raca VARCHAR(50),
-    data_nascimento DATE,
-    id_proprietario INTEGER NOT NULL REFERENCES proprietario(id)
+                          id SERIAL PRIMARY KEY,
+                          nome VARCHAR NOT NULL,
+                          especie VARCHAR,
+                          raca VARCHAR,
+                          data_nascimento DATE,
+                          id_proprietario VARCHAR NOT NULL REFERENCES proprietario(cpf),
+                          ativo boolean default true
 );
+
 
 CREATE TABLE consulta (
-    id SERIAL PRIMARY KEY,
-    data_consulta TIMESTAMP,
-    diagnostico TEXT,
-    id_paciente INTEGER REFERENCES paciente(id),
-    id_veterinario INTEGER REFERENCES veterinario(id)
+                          id SERIAL PRIMARY KEY,
+                          data_consulta TIMESTAMP,
+                          diagnostico TEXT,
+                          id_paciente INTEGER REFERENCES paciente(id),
+                          id_veterinario INTEGER REFERENCES veterinario(id)
 );
+
 
 CREATE TABLE tratamento (
-    id SERIAL PRIMARY KEY,
-    descricao VARCHAR(255),
-    id_consulta INTEGER REFERENCES consulta(id)
+                            id SERIAL PRIMARY KEY,
+                            descricao VARCHAR,
+                            id_consulta INTEGER REFERENCES consulta(id)
 );
 
-CREATE TABLE medicamento (
-    id SERIAL PRIMARY KEY,
-    nome_medicamento VARCHAR(100)
+
+CREATE TABLE catalogo_medicamento (
+                                      id SERIAL PRIMARY KEY,
+                                      nome_comercial VARCHAR NOT NULL,
+                                      principio_ativo VARCHAR,
+                                      fabricante VARCHAR
 );
 
--- TABELA N:N CORRETA
+CREATE TABLE estoque_medicamento (
+                                     id SERIAL PRIMARY KEY,
+                                     id_medicamento INTEGER NOT NULL REFERENCES catalogo_medicamento(id),
+                                     numero_lote VARCHAR NOT NULL,
+                                     data_validade DATE NOT NULL,
+                                     quantidade_inicial INTEGER NOT NULL,
+                                     data_entrada DATE NOT NULL,
+                                     UNIQUE (id_medicamento, numero_lote)
+);
+
 CREATE TABLE tratamento_medicamento (
-    id_medicamento INTEGER REFERENCES medicamento(id),
-    id_tratamento INTEGER REFERENCES tratamento(id),
-    quantidade_utilizada INTEGER,
-    PRIMARY KEY (id_medicamento, id_tratamento)
+                                        id_tratamento INTEGER REFERENCES tratamento(id),
+                                        id_estoque_medicamento INTEGER REFERENCES estoque_medicamento(id),
+                                        quantidade_utilizada INTEGER,
+                                        PRIMARY KEY (id_tratamento, id_estoque_medicamento)
 );
+
 
 CREATE TABLE pagamento (
-    id SERIAL PRIMARY KEY,
-    valor_total DECIMAL(10,2),
-    data_pagamento TIMESTAMP,
-    metodo_pagamento VARCHAR(50),
-    id_consulta INTEGER REFERENCES consulta(id),
-    id_funcionario INTEGER REFERENCES funcionario(id)
+                           id SERIAL PRIMARY KEY,
+                           valor_total DECIMAL(10,2),
+                           data_pagamento TIMESTAMP,
+                           metodo_pagamento VARCHAR,
+                           id_consulta INTEGER REFERENCES consulta(id),
+                           id_funcionario INTEGER REFERENCES funcionario(id)
 );
