@@ -1,17 +1,20 @@
 CREATE OR REPLACE PROCEDURE proc_inserir_funcionario(
-    f_nome VARCHAR,
-    f_cargo VARCHAR,
-    f_login VARCHAR,
-    f_senha VARCHAR
+    v_nome VARCHAR,
+    v_cargo VARCHAR,
+    v_login VARCHAR,
+    v_senha VARCHAR,
+    v_e_gerente BOOLEAN DEFAULT FALSE -- NOVO
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
 INSERT INTO funcionario (
-    nome, cargo, login, senha
+    nome, cargo, login, senha, e_gerente
 )
-VALUES (f_nome, f_cargo, f_login, f_senha);
+VALUES (
+           v_nome, v_cargo, v_login, v_senha, v_e_gerente
+       );
 END;
 $$;
 
@@ -45,13 +48,11 @@ END IF;
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION funct_get_infos_funcionario(f_login VARCHAR)
-RETURNS TABLE (
-    id INTEGER,
-    nome VARCHAR,
-    cargo VARCHAR,
-    login VARCHAR
+-- READ: Busca funcionário por Login (incluindo o status de gerente)
+CREATE OR REPLACE FUNCTION funct_get_infos_funcionario(
+    p_login VARCHAR
 )
+RETURNS SETOF funcionario
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
@@ -61,40 +62,43 @@ SELECT
     id,
     nome,
     cargo,
-    login
+    login,
+    -- Senha é omitida por segurança, mesmo em nível acadêmico (é melhor)
+    e_gerente
 FROM funcionario
-WHERE login = f_login;
+WHERE login = p_login;
 
 IF NOT FOUND THEN
-            RAISE EXCEPTION 'Nenhum funcionário encontrado com o login %.', f_login;
+       RAISE EXCEPTION 'Funcionário com login % não encontrado.', p_login;
 END IF;
-
 END;
 $$;
 
 CREATE OR REPLACE PROCEDURE proc_atualizar_funcionario(
-    f_curr_login VARCHAR,
-    f_nome VARCHAR,
-    f_cargo VARCHAR,
-    f_login VARCHAR,
-    f_senha VARCHAR
+    p_current_login VARCHAR, -- Login atual para encontrar o registro
+    v_nome VARCHAR DEFAULT NULL,
+    v_cargo VARCHAR DEFAULT NULL,
+    v_login VARCHAR DEFAULT NULL,
+    v_senha VARCHAR DEFAULT NULL,
+    v_e_gerente BOOLEAN DEFAULT NULL -- NOVO
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM funcionario WHERE login = f_curr_login) THEN
-       RAISE EXCEPTION 'Funcionário com login % não encontrado.', f_curr_login;
+    IF NOT EXISTS (SELECT 1 FROM funcionario WHERE login = p_current_login) THEN
+       RAISE EXCEPTION 'Funcionário com login % não encontrado.', p_current_login;
 END IF;
 
 UPDATE funcionario
 SET
-    nome     = COALESCE(f_nome, nome),
-    cargo    = COALESCE(f_cargo, cargo),
-    login    = COALESCE(f_login, login),
-    senha    = COALESCE(f_senha, senha)
+    nome          = COALESCE(v_nome, nome),
+    cargo         = COALESCE(v_cargo, cargo),
+    login         = COALESCE(v_login, login),
+    senha         = COALESCE(v_senha, senha),
+    e_gerente     = COALESCE(v_e_gerente, e_gerente) -- NOVO
 WHERE
-    login = f_curr_login;
+    login = p_current_login;
 
 END;
 $$;

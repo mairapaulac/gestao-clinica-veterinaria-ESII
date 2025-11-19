@@ -18,7 +18,10 @@ CREATE TABLE veterinario (
                              nome VARCHAR NOT NULL,
                              crmv VARCHAR UNIQUE NOT NULL,
                              telefone VARCHAR,
-                             especialidade VARCHAR
+                             especialidade VARCHAR,
+                             email VARCHAR UNIQUE not null,
+                             senha VARCHAR not null
+
 );
 
 
@@ -27,7 +30,8 @@ CREATE TABLE funcionario (
                              nome VARCHAR NOT NULL,
                              cargo VARCHAR,
                              login VARCHAR UNIQUE,
-                             senha VARCHAR
+                             senha VARCHAR,
+                             e_gerente boolean default false
 );
 
 
