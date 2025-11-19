@@ -7,12 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VeterinarioDAO {
-    private static final String NOME_TABELA = "veterinario"; 
+public class VeterinarioDAO { 
 
     //CREATE
     public void adicionarVeterinario(Veterinario veterinario) throws SQLException {
-        String sql = "INSERT INTO " + NOME_TABELA + " (nome, crmv, telefoneveterinario, especialidade) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO veterinario (nome, crmv, telefone, especialidade) VALUES (?, ?, ?, ?)";
         try (Connection conn = ConnectionFactory.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, veterinario.getNome());
@@ -20,14 +19,13 @@ public class VeterinarioDAO {
             pstmt.setString(3, veterinario.getTelefone());
             pstmt.setString(4, veterinario.getEspecialidade());
             pstmt.executeUpdate();
-
-            System.out.println("Veterinário " + veterinario.getNome() + " inserido com sucesso!");
         }
     }
+    
     //READ
     public List<Veterinario> listarTodos() throws SQLException {
         List<Veterinario> listaVeterinarios = new ArrayList<>();
-        String sql = "SELECT pkidveterinario, nome, crmv, telefoneveterinario, especialidade FROM " + NOME_TABELA;
+        String sql = "SELECT id, nome, crmv, telefone, especialidade FROM veterinario ORDER BY nome";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -35,10 +33,10 @@ public class VeterinarioDAO {
 
             while (rs.next()) {
                 Veterinario vet = new Veterinario(
-                    rs.getInt("pkidveterinario"),
+                    rs.getInt("id"),
                     rs.getString("nome"),
                     rs.getString("crmv"),
-                    rs.getString("telefoneveterinario"),
+                    rs.getString("telefone"),
                     rs.getString("especialidade")
                 );
                 listaVeterinarios.add(vet);
@@ -46,9 +44,32 @@ public class VeterinarioDAO {
         }
         return listaVeterinarios;
     }
+    
+    public Veterinario buscarPorId(int id) throws SQLException {
+        String sql = "SELECT id, nome, crmv, telefone, especialidade FROM veterinario WHERE id = ?";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                return new Veterinario(
+                    rs.getInt("id"),
+                    rs.getString("nome"),
+                    rs.getString("crmv"),
+                    rs.getString("telefone"),
+                    rs.getString("especialidade")
+                );
+            }
+        }
+        return null;
+    }
+    
     //UPDATE
     public void atualizarVeterinario(Veterinario veterinario) throws SQLException {
-        String sql = "UPDATE " + NOME_TABELA + " SET nome = ?, crmv = ?, telefoneveterinario = ?, especialidade = ? WHERE pkidveterinario = ?";
+        String sql = "UPDATE veterinario SET nome = ?, crmv = ?, telefone = ?, especialidade = ? WHERE id = ?";
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -58,28 +79,18 @@ public class VeterinarioDAO {
             pstmt.setString(4, veterinario.getEspecialidade());
             pstmt.setInt(5, veterinario.getId());
 
-            int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Veterinário com ID " + veterinario.getId() + " atualizado com sucesso!");
-            } else {
-                System.out.println("Nenhum veterinário encontrado com ID " + veterinario.getId());
-            }
+            pstmt.executeUpdate();
         }
     }
+    
     //DELETE
     public void deletarVeterinario(int id) throws SQLException {
-        String sql = "DELETE FROM " + NOME_TABELA + " WHERE pkidveterinario = ?";
+        String sql = "DELETE FROM veterinario WHERE id = ?";
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
-
-            int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Veterinário com ID " + id + " deletado com sucesso!");
-            } else {
-                System.out.println("Nenhum veterinário encontrado com ID " + id);
-            }
+            pstmt.executeUpdate();
         }
     }
 

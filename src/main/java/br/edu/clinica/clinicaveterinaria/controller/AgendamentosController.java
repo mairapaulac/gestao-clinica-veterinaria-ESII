@@ -1,7 +1,10 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
+import br.edu.clinica.clinicaveterinaria.dao.ConsultaDAO;
+import br.edu.clinica.clinicaveterinaria.model.Consulta;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,8 +18,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -31,6 +32,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -52,12 +54,26 @@ public class AgendamentosController implements Initializable {
     private YearMonth currentYearMonth;
     private LocalDate selectedDate;
     private VBox selectedCell = null;
+    private ConsultaDAO consultaDAO = new ConsultaDAO();
+    private ObservableList<Consulta> consultasList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         currentYearMonth = YearMonth.now();
         selectedDate = LocalDate.now();
+        carregarConsultasDoBanco();
         gerarCalendario();
+    }
+    
+    private void carregarConsultasDoBanco() {
+        try {
+            List<Consulta> consultas = consultaDAO.listarTodas();
+            consultasList.clear();
+            consultasList.addAll(consultas);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao carregar consultas: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -90,6 +106,7 @@ public class AgendamentosController implements Initializable {
             modalStage.initModality(Modality.APPLICATION_MODAL);
             modalStage.initOwner((Stage) btnNovoAgendamento.getScene().getWindow());
             modalStage.showAndWait();
+            carregarConsultasDoBanco();
             gerarCalendario();
         } catch (IOException e) {
             e.printStackTrace();
@@ -106,8 +123,8 @@ public class AgendamentosController implements Initializable {
         selectedCell.getStyleClass().add("cell-selecionada");
         selectedDate = (LocalDate) selectedCell.getProperties().get("date");
 
-        boolean hasAppointments = AgendamentoController.agendamentosDB.stream()
-                .anyMatch(a -> a.getData().equals(selectedDate));
+        boolean hasAppointments = consultasList.stream()
+                .anyMatch(c -> c.getDataConsulta() != null && c.getDataConsulta().toLocalDate().equals(selectedDate));
 
         if (hasAppointments) {
             mostrarDetalhesAgendamento(selectedDate);
@@ -120,49 +137,72 @@ public class AgendamentosController implements Initializable {
         modalStage.initOwner((Stage) calendarioGrid.getScene().getWindow());
         modalStage.setTitle("Agendamentos para " + data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
-        TableView<AgendamentoController.Agendamento> tableView = new TableView<>();
+        TableView<Consulta> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        TableColumn<AgendamentoController.Agendamento, String> colHorario = new TableColumn<>("Horário");
-        colHorario.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getHora().format(DateTimeFormatter.ofPattern("HH:mm"))));
+        TableColumn<Consulta, String> colHorario = new TableColumn<>("Horário");
+        colHorario.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getDataConsulta() != null) {
+                return new SimpleStringProperty(cellData.getValue().getDataConsulta().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+            }
+            return new SimpleStringProperty("");
+        });
 
-        TableColumn<AgendamentoController.Agendamento, String> colPaciente = new TableColumn<>("Paciente");
-        colPaciente.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPaciente().getNome()));
+        TableColumn<Consulta, String> colPaciente = new TableColumn<>("Paciente");
+        colPaciente.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getPaciente() != null) {
+                return new SimpleStringProperty(cellData.getValue().getPaciente().getNome());
+            }
+            return new SimpleStringProperty("");
+        });
 
-        TableColumn<AgendamentoController.Agendamento, String> colVeterinario = new TableColumn<>("Veterinário(a)");
-        colVeterinario.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getVeterinario().getNome()));
+        TableColumn<Consulta, String> colVeterinario = new TableColumn<>("Veterinário(a)");
+        colVeterinario.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getVeterinario() != null) {
+                return new SimpleStringProperty(cellData.getValue().getVeterinario().getNome());
+            }
+            return new SimpleStringProperty("");
+        });
 
         tableView.getColumns().addAll(colHorario, colPaciente, colVeterinario);
 
-        FilteredList<AgendamentoController.Agendamento> filteredAgendamentos = new FilteredList<>(AgendamentoController.agendamentosDB);
-        filteredAgendamentos.setPredicate(a -> a.getData().equals(data));
-        tableView.setItems(filteredAgendamentos);
+        FilteredList<Consulta> filteredConsultas = new FilteredList<>(consultasList);
+        filteredConsultas.setPredicate(c -> c.getDataConsulta() != null && c.getDataConsulta().toLocalDate().equals(data));
+        tableView.setItems(filteredConsultas);
 
         ContextMenu contextMenu = new ContextMenu();
         MenuItem deleteItem = new MenuItem("Excluir");
         deleteItem.setOnAction(event -> {
-            AgendamentoController.Agendamento item = tableView.getSelectionModel().getSelectedItem();
+            Consulta item = tableView.getSelectionModel().getSelectedItem();
             if (item == null) {
                 return;
             }
 
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Você tem certeza que deseja excluir este agendamento?", ButtonType.YES, ButtonType.NO);
             alert.setTitle("Confirmar Exclusão");
+            String nomePaciente = item.getPaciente() != null ? item.getPaciente().getNome() : "N/A";
+            String hora = item.getDataConsulta() != null ? item.getDataConsulta().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")) : "N/A";
             alert.setHeaderText(String.format("Excluir agendamento de %s às %s?",
-                item.getPaciente().getNome(),
-                item.getHora().format(DateTimeFormatter.ofPattern("HH:mm"))));
+                nomePaciente, hora));
 
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.YES) {
-                    AgendamentoController.agendamentosDB.remove(item);
-                    gerarCalendario();
+                    try {
+                        consultaDAO.deletarConsulta(item.getId());
+                        carregarConsultasDoBanco();
+                        gerarCalendario();
+                        mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Agendamento excluído com sucesso!");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao excluir agendamento: " + e.getMessage());
+                    }
                 }
             });
         });
         contextMenu.getItems().add(deleteItem);
 
         tableView.setRowFactory(tv -> {
-            TableRow<AgendamentoController.Agendamento> row = new TableRow<>();
+            TableRow<Consulta> row = new TableRow<>();
             row.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
                 if (isNowEmpty) {
                     row.setContextMenu(null);
@@ -214,7 +254,7 @@ public class AgendamentosController implements Initializable {
         diaNumero.getStyleClass().add("dia-numero");
         cell.getChildren().add(diaNumero);
 
-        if (AgendamentoController.agendamentosDB.stream().anyMatch(a -> a.getData().equals(date))) {
+        if (consultasList.stream().anyMatch(c -> c.getDataConsulta() != null && c.getDataConsulta().toLocalDate().equals(date))) {
             Circle indicador = new Circle(4);
             indicador.getStyleClass().add("indicador-agendamento");
             cell.getChildren().add(indicador);

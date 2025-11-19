@@ -25,22 +25,75 @@
         </font>
     </Label>
 
-    <GridPane hgap="10" vgap="15">
-        <Label text="Nome do Paciente" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtNome" promptText="Ex: Rex" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+    <VBox spacing="20">
+        <!-- Seção: Dados do Paciente -->
+        <VBox spacing="10">
+            <Label text="Dados do Paciente" styleClass="section-title">
+                <font>
+                    <Font name="System Bold" size="16.0"/>
+                </font>
+            </Label>
+            <GridPane hgap="10" vgap="15">
+                <Label text="Nome do Paciente *" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtNome" promptText="Ex: Rex" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
 
-        <Label text="Espécie" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtEspecie" promptText="Ex: Cachorro" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <Label text="Espécie" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtEspecie" promptText="Ex: Cachorro" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
 
-        <Label text="Raça" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtRaca" promptText="Ex: Labrador" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                <Label text="Raça" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtRaca" promptText="Ex: Labrador" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
 
-        <Label text="Data de Nascimento" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="dpNascimento" promptText="dd/mm/aaaa" GridPane.rowIndex="3" GridPane.columnIndex="1" prefWidth="250"/>
+                <Label text="Data de Nascimento *" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <DatePicker fx:id="dpNascimento" promptText="dd/mm/aaaa" GridPane.rowIndex="3" GridPane.columnIndex="1" prefWidth="250"/>
+            </GridPane>
+        </VBox>
 
-        <Label text="Tutor" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtTutor" promptText="Ex: Carlos Silva" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-    </GridPane>
+        <!-- Seção: Dados do Proprietário/Tutor -->
+        <VBox spacing="10">
+            <Label text="Dados do Proprietário/Tutor" styleClass="section-title">
+                <font>
+                    <Font name="System Bold" size="16.0"/>
+                </font>
+            </Label>
+            <GridPane hgap="10" vgap="15">
+                <Label text="CPF *" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtCpfTutor" promptText="Ex: 123.456.789-00" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+
+                <Label text="Nome Completo *" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtNomeTutor" promptText="Ex: Carlos Silva" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+
+                <Label text="Telefone *" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtTelefoneTutor" promptText="Ex: (11) 98765-4321" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+
+                <Label text="E-mail *" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtEmailTutor" promptText="Ex: carlos@email.com" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+
+                <Label text="Endereço" styleClass="subtitle" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="4">
+                    <font>
+                        <Font name="System Bold" size="14.0"/>
+                    </font>
+                </Label>
+
+                <Label text="Rua *" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtRua" promptText="Ex: Rua das Flores" GridPane.rowIndex="5" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+
+                <Label text="Número *" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtNumero" promptText="Ex: 123" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+                <Label text="Bairro *" GridPane.rowIndex="6" GridPane.columnIndex="2"/>
+                <TextField fx:id="txtBairro" promptText="Ex: Centro" GridPane.rowIndex="6" GridPane.columnIndex="3"/>
+
+                <Label text="Cidade *" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtCidade" promptText="Ex: São Paulo" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+                <Label text="Estado *" GridPane.rowIndex="7" GridPane.columnIndex="2"/>
+                <TextField fx:id="txtEstado" promptText="Ex: SP" GridPane.rowIndex="7" GridPane.columnIndex="3"/>
+
+                <Label text="CEP *" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtCep" promptText="Ex: 01234-567" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+            </GridPane>
+        </VBox>
+    </VBox>
 
     <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 10 0 0 0;">
         <Button fx:id="btnCancelar" text="Cancelar" styleClass="btn-cancelar"/>

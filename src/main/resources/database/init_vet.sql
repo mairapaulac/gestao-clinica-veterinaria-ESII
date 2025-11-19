@@ -28,4 +28,8 @@
 \i crud_estoque_medicamento.sql
 \i crud_tratamento_uso_medicamento.sql
 
+-- 3. INSERIR DADOS INICIAIS
+\echo '--- 3. Inserindo Dados Iniciais (Veterinários) ---'
+\i insert_veterinarios_iniciais.sql
+
 \echo '--- Inicialização da Clínica Veterinária concluída com sucesso! ---'

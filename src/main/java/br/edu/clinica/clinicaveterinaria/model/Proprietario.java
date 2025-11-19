@@ -1,17 +1,26 @@
 package br.edu.clinica.clinicaveterinaria.model;
 
 public class Proprietario {
-    private int id;
+    private String cpf;
     private String nome;
     private String telefone;
     private String email;
-    private String endereco;
+    private String rua;
+    private String numero;
+    private String bairro;
+    private String cidade;
+    private String estado;
+    private String cep;
 
-    public Proprietario() {};
+    public Proprietario() {}
 
-    public int getId() { return id; }
+    public String getCpf() {
+        return cpf;
+    }
 
-    public void setId(int id) { this.id = id; }
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
 
     public String getNome() {
         return nome;
@@ -37,11 +46,51 @@ public class Proprietario {
         this.email = email;
     }
 
-    public String getEndereco() {
-        return endereco;
+    public String getRua() {
+        return rua;
     }
 
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
+    public void setRua(String rua) {
+        this.rua = rua;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 }

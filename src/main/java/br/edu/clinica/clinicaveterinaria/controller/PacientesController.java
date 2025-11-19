@@ -1,5 +1,6 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
+import br.edu.clinica.clinicaveterinaria.dao.PacienteDAO;
 import br.edu.clinica.clinicaveterinaria.model.Paciente;
 import br.edu.clinica.clinicaveterinaria.model.Proprietario;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,9 +18,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -36,11 +37,12 @@ public class PacientesController implements Initializable {
 
     private final ObservableList<Paciente> listaPacientes = FXCollections.observableArrayList();
     private FilteredList<Paciente> filteredData;
+    private PacienteDAO pacienteDAO = new PacienteDAO();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         configurarColunas();
-        carregarDadosExemplo();
+        carregarDadosDoBanco();
         configurarBusca();
         configurarContextMenu();
         btnCadastrar.setOnAction(event -> handleCadastrarPaciente());
@@ -48,46 +50,47 @@ public class PacientesController implements Initializable {
 
     private void configurarColunas() {
         colNome.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNome()));
-        colEspecie.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEspecie()));
-        colRaca.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRaca()));
-        colTutor.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getProprietario().getNome()));
+        colEspecie.setCellValueFactory(cellData -> {
+            String especie = cellData.getValue().getEspecie();
+            return new SimpleStringProperty(especie != null ? especie : "");
+        });
+        colRaca.setCellValueFactory(cellData -> {
+            String raca = cellData.getValue().getRaca();
+            return new SimpleStringProperty(raca != null ? raca : "");
+        });
+        colTutor.setCellValueFactory(cellData -> {
+            Proprietario prop = cellData.getValue().getProprietario();
+            return new SimpleStringProperty(prop != null && prop.getNome() != null ? prop.getNome() : "");
+        });
         colNascimento.setCellValueFactory(cellData -> {
             SimpleStringProperty property = new SimpleStringProperty();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            property.setValue(formatter.format(cellData.getValue().getDataNascimento()));
+            LocalDate data = cellData.getValue().getDataNascimento();
+            if (data != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                property.setValue(formatter.format(data));
+            } else {
+                property.setValue("");
+            }
             return property;
         });
     }
 
-    private void carregarDadosExemplo() {
-        Proprietario p1 = new Proprietario(); p1.setId(1); p1.setNome("Carlos Silva");
-        Proprietario p2 = new Proprietario(); p2.setId(2); p2.setNome("Ana Souza");
-        Proprietario p3 = new Proprietario(); p3.setId(3); p3.setNome("João Pereira");
-        Proprietario p4 = new Proprietario(); p4.setId(4); p4.setNome("Maria Oliveira");
-        Proprietario p5 = new Proprietario(); p5.setId(5); p5.setNome("Pedro Santos");
-
-        List<Paciente> pacientes = new ArrayList<>();
-        pacientes.add(createPaciente(1, "Rex", "Cachorro", "Labrador", LocalDate.of(2020, 5, 10), p1));
-        pacientes.add(createPaciente(2, "Mimi", "Gato", "Siamês", LocalDate.of(2018, 8, 22), p2));
-        pacientes.add(createPaciente(3, "Bolinha", "Cachorro", "Poodle", LocalDate.of(2022, 1, 30), p3));
-        pacientes.add(createPaciente(4, "Nemo", "Peixe", "Palhaço", LocalDate.of(2023, 3, 15), p4));
-        pacientes.add(createPaciente(5, "Pé de Pano", "Cavalo", "Manga-larga", LocalDate.of(2015, 11, 5), p5));
-
-        listaPacientes.addAll(pacientes);
-
-        filteredData = new FilteredList<>(listaPacientes, p -> true);
-        tabelaPacientes.setItems(filteredData);
-    }
-
-    private Paciente createPaciente(int id, String nome, String especie, String raca, LocalDate dataNascimento, Proprietario proprietario) {
-        Paciente p = new Paciente();
-        p.setId(id);
-        p.setNome(nome);
-        p.setEspecie(especie);
-        p.setRaca(raca);
-        p.setDataNascimento(dataNascimento);
-        p.setProprietario(proprietario);
-        return p;
+    private void carregarDadosDoBanco() {
+        try {
+            List<Paciente> pacientes = pacienteDAO.listarTodos();
+            listaPacientes.clear();
+            listaPacientes.addAll(pacientes);
+            
+            filteredData = new FilteredList<>(listaPacientes, p -> true);
+            tabelaPacientes.setItems(filteredData);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro ao Carregar Dados");
+            alert.setHeaderText(null);
+            alert.setContentText("Erro ao carregar pacientes do banco de dados: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     private void configurarBusca() {
@@ -99,13 +102,14 @@ public class PacientesController implements Initializable {
 
                 String lowerCaseFilter = newValue.toLowerCase();
 
-                if (paciente.getNome().toLowerCase().contains(lowerCaseFilter)) {
+                if (paciente.getNome() != null && paciente.getNome().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (paciente.getEspecie().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (paciente.getEspecie() != null && paciente.getEspecie().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (paciente.getRaca().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (paciente.getRaca() != null && paciente.getRaca().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (paciente.getProprietario().getNome().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (paciente.getProprietario() != null && paciente.getProprietario().getNome() != null 
+                        && paciente.getProprietario().getNome().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
                 }
                 return false;
@@ -148,7 +152,39 @@ public class PacientesController implements Initializable {
 
     private void handleVerDetalhes(Paciente paciente) {
         if (paciente != null) {
-            System.out.println("Ação: Ver detalhes do paciente " + paciente.getNome());
+            try {
+                // Buscar dados completos do paciente do banco
+                Paciente pacienteCompleto = pacienteDAO.buscarPorId(paciente.getId());
+                if (pacienteCompleto == null) {
+                    pacienteCompleto = paciente; // Usar o paciente da lista se não encontrar no banco
+                }
+                
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/detalhes-paciente-view.fxml"));
+                Scene scene = new Scene(loader.load());
+
+                DetalhesPacienteController controller = loader.getController();
+                controller.setPaciente(pacienteCompleto);
+
+                Stage stage = new Stage();
+                stage.setTitle("Detalhes do Paciente: " + pacienteCompleto.getNome());
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(scene);
+                stage.showAndWait();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erro");
+                alert.setHeaderText(null);
+                alert.setContentText("Erro ao abrir detalhes do paciente: " + e.getMessage());
+                alert.showAndWait();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erro");
+                alert.setHeaderText(null);
+                alert.setContentText("Erro ao buscar dados do paciente: " + e.getMessage());
+                alert.showAndWait();
+            }
         }
     }
 
@@ -174,15 +210,8 @@ public class PacientesController implements Initializable {
 
             Paciente newPaciente = controller.getNewPaciente();
             if (newPaciente != null) {
-                if (paciente == null) {
-                    listaPacientes.add(newPaciente);
-                } else {
-                    int index = listaPacientes.indexOf(paciente);
-                    if (index != -1) {
-                        listaPacientes.set(index, newPaciente);
-                    }
-                }
-                tabelaPacientes.refresh();
+                // Recarregar dados do banco para garantir que temos o ID correto
+                carregarDadosDoBanco();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -204,9 +233,24 @@ public class PacientesController implements Initializable {
 
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
-                    listaPacientes.remove(paciente);
-                    tabelaPacientes.refresh();
-                    System.out.println("Ação: Excluir o paciente " + paciente.getNome());
+                    try {
+                        pacienteDAO.deletarPaciente(paciente.getId());
+                        listaPacientes.remove(paciente);
+                        tabelaPacientes.refresh();
+                        
+                        Alert sucesso = new Alert(Alert.AlertType.INFORMATION);
+                        sucesso.setTitle("Sucesso");
+                        sucesso.setHeaderText(null);
+                        sucesso.setContentText("Paciente excluído com sucesso!");
+                        sucesso.showAndWait();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        Alert erro = new Alert(Alert.AlertType.ERROR);
+                        erro.setTitle("Erro ao Excluir");
+                        erro.setHeaderText(null);
+                        erro.setContentText("Erro ao excluir paciente: " + e.getMessage());
+                        erro.showAndWait();
+                    }
                 }
             });
         }

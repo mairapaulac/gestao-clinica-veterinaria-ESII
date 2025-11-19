@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="br.edu.clinica.clinicaveterinaria.controller.DetalhesPacienteController"
+      stylesheets="@css/detalhes-paciente.css"
+      styleClass="root"
+      spacing="20">
+    <padding>
+        <Insets top="20" right="30" bottom="20" left="30"/>
+    </padding>
+
+    <Label fx:id="lblTitle" text="Detalhes do Paciente" styleClass="title">
+        <font>
+            <Font name="System Bold" size="20.0"/>
+        </font>
+    </Label>
+
+    <VBox spacing="25">
+        <!-- Seção: Dados do Paciente -->
+        <VBox spacing="10">
+            <Label text="Dados do Paciente" styleClass="section-title">
+                <font>
+                    <Font name="System Bold" size="16.0"/>
+                </font>
+            </Label>
+            <GridPane hgap="15" vgap="12" styleClass="info-grid">
+                <Label text="Nome:" styleClass="label-field"/>
+                <Label fx:id="lblNome" styleClass="value-field" GridPane.columnIndex="1"/>
+
+                <Label text="Espécie:" styleClass="label-field" GridPane.rowIndex="1"/>
+                <Label fx:id="lblEspecie" styleClass="value-field" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Raça:" styleClass="label-field" GridPane.rowIndex="2"/>
+                <Label fx:id="lblRaca" styleClass="value-field" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Data de Nascimento:" styleClass="label-field" GridPane.rowIndex="3"/>
+                <Label fx:id="lblDataNascimento" styleClass="value-field" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            </GridPane>
+        </VBox>
+
+        <!-- Seção: Dados do Proprietário/Tutor -->
+        <VBox spacing="10">
+            <Label text="Dados do Proprietário/Tutor" styleClass="section-title">
+                <font>
+                    <Font name="System Bold" size="16.0"/>
+                </font>
+            </Label>
+            <GridPane hgap="15" vgap="12" styleClass="info-grid">
+                <Label text="CPF:" styleClass="label-field"/>
+                <Label fx:id="lblCpf" styleClass="value-field" GridPane.columnIndex="1"/>
+
+                <Label text="Nome Completo:" styleClass="label-field" GridPane.rowIndex="1"/>
+                <Label fx:id="lblNomeTutor" styleClass="value-field" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Telefone:" styleClass="label-field" GridPane.rowIndex="2"/>
+                <Label fx:id="lblTelefone" styleClass="value-field" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="E-mail:" styleClass="label-field" GridPane.rowIndex="3"/>
+                <Label fx:id="lblEmail" styleClass="value-field" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <Label text="Endereço:" styleClass="subtitle" GridPane.rowIndex="4" GridPane.columnSpan="2">
+                    <font>
+                        <Font name="System Bold" size="14.0"/>
+                    </font>
+                </Label>
+
+                <Label text="Rua:" styleClass="label-field" GridPane.rowIndex="5"/>
+                <Label fx:id="lblRua" styleClass="value-field" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                <Label text="Número:" styleClass="label-field" GridPane.rowIndex="6"/>
+                <Label fx:id="lblNumero" styleClass="value-field" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+                <Label text="Bairro:" styleClass="label-field" GridPane.rowIndex="7"/>
+                <Label fx:id="lblBairro" styleClass="value-field" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+                <Label text="Cidade:" styleClass="label-field" GridPane.rowIndex="8"/>
+                <Label fx:id="lblCidade" styleClass="value-field" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+
+                <Label text="Estado:" styleClass="label-field" GridPane.rowIndex="9"/>
+                <Label fx:id="lblEstado" styleClass="value-field" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+
+                <Label text="CEP:" styleClass="label-field" GridPane.rowIndex="10"/>
+                <Label fx:id="lblCep" styleClass="value-field" GridPane.rowIndex="10" GridPane.columnIndex="1"/>
+            </GridPane>
+        </VBox>
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 20 0 0 0;">
+        <Button fx:id="btnFechar" text="Fechar" styleClass="btn-fechar"/>
+    </HBox>
+
+</VBox>
+
