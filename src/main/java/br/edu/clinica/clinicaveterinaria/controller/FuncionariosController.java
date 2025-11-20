@@ -1,10 +1,13 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
 import br.edu.clinica.clinicaveterinaria.dao.FuncionarioDAO;
+import br.edu.clinica.clinicaveterinaria.dao.VeterinarioDAO;
 import br.edu.clinica.clinicaveterinaria.model.Funcionario;
+import br.edu.clinica.clinicaveterinaria.model.UsuarioSistema;
+import br.edu.clinica.clinicaveterinaria.model.Veterinario;
 import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import br.edu.clinica.clinicaveterinaria.view.SessionManager;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -13,7 +16,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -27,15 +29,17 @@ public class FuncionariosController implements Initializable {
 
     @FXML private Button btnAdicionar;
     @FXML private TextField txtBuscar;
-    @FXML private TableView<Funcionario> tabelaFuncionarios;
-    @FXML private TableColumn<Funcionario, String> colNome;
-    @FXML private TableColumn<Funcionario, String> colCargo;
-    @FXML private TableColumn<Funcionario, String> colLogin;
-    @FXML private TableColumn<Funcionario, Boolean> colGerente;
+    @FXML private TableView<UsuarioSistema> tabelaUsuarios;
+    @FXML private TableColumn<UsuarioSistema, String> colNome;
+    @FXML private TableColumn<UsuarioSistema, String> colTipo;
+    @FXML private TableColumn<UsuarioSistema, String> colCargo;
+    @FXML private TableColumn<UsuarioSistema, String> colLogin;
+    @FXML private TableColumn<UsuarioSistema, String> colGerente;
 
     private final FuncionarioDAO funcionarioDAO = new FuncionarioDAO();
-    private final ObservableList<Funcionario> listaFuncionarios = FXCollections.observableArrayList();
-    private FilteredList<Funcionario> filteredData;
+    private final VeterinarioDAO veterinarioDAO = new VeterinarioDAO();
+    private final ObservableList<UsuarioSistema> listaUsuarios = FXCollections.observableArrayList();
+    private FilteredList<UsuarioSistema> filteredData;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -48,52 +52,69 @@ public class FuncionariosController implements Initializable {
         carregarDadosDoBanco();
         configurarBusca();
         configurarContextMenu();
-        btnAdicionar.setOnAction(event -> showFuncionarioDialog(null));
+        btnAdicionar.setOnAction(event -> showUsuarioDialog(null));
     }
 
     private void configurarColunas() {
-        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
-        colCargo.setCellValueFactory(new PropertyValueFactory<>("cargo"));
-        colLogin.setCellValueFactory(new PropertyValueFactory<>("login"));
-        colGerente.setCellValueFactory(cellData -> {
-            Funcionario func = cellData.getValue();
-            return new SimpleBooleanProperty(func != null && func.isGerente());
+        colNome.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNome()));
+        
+        colTipo.setCellValueFactory(cellData -> {
+            String tipo = cellData.getValue().getTipo();
+            return new SimpleStringProperty(tipo.equals("FUNCIONARIO") ? "Funcionário" : "Veterinário");
         });
-
-        colGerente.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item ? "Sim" : "Não");
-                }
+        
+        colCargo.setCellValueFactory(cellData -> {
+            String cargo = cellData.getValue().getCargo();
+            return new SimpleStringProperty(cargo != null ? cargo : "-");
+        });
+        
+        colLogin.setCellValueFactory(cellData -> {
+            String login = cellData.getValue().getLogin();
+            return new SimpleStringProperty(login != null ? login : "-");
+        });
+        
+        colGerente.setCellValueFactory(cellData -> {
+            UsuarioSistema usuario = cellData.getValue();
+            if (usuario.getTipo().equals("FUNCIONARIO")) {
+                return new SimpleStringProperty(usuario.isGerente() ? "Sim" : "Não");
             }
+            return new SimpleStringProperty("-");
         });
     }
 
     private void carregarDadosDoBanco() {
         try {
-            listaFuncionarios.setAll(funcionarioDAO.listarTodos());
-            filteredData = new FilteredList<>(listaFuncionarios, p -> true);
-            tabelaFuncionarios.setItems(filteredData);
+            listaUsuarios.clear();
+            
+            // Carregar funcionários
+            for (Funcionario funcionario : funcionarioDAO.listarTodos()) {
+                listaUsuarios.add(new UsuarioSistema(funcionario));
+            }
+            
+            // Carregar veterinários
+            for (Veterinario veterinario : veterinarioDAO.listarTodos()) {
+                listaUsuarios.add(new UsuarioSistema(veterinario));
+            }
+            
+            filteredData = new FilteredList<>(listaUsuarios, p -> true);
+            tabelaUsuarios.setItems(filteredData);
         } catch (SQLException e) {
-            MainApplication.showErrorAlert("Erro de Banco de Dados", "Não foi possível carregar os funcionários do banco de dados.");
+            MainApplication.showErrorAlert("Erro de Banco de Dados", "Não foi possível carregar os usuários do banco de dados.");
             e.printStackTrace();
         }
     }
 
     private void configurarBusca() {
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(funcionario -> {
+            filteredData.setPredicate(usuario -> {
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-                return (funcionario.getNome() != null && funcionario.getNome().toLowerCase().contains(lowerCaseFilter)) ||
-                       (funcionario.getCargo() != null && funcionario.getCargo().toLowerCase().contains(lowerCaseFilter)) ||
-                       (funcionario.getLogin() != null && funcionario.getLogin().toLowerCase().contains(lowerCaseFilter));
+                return (usuario.getNome() != null && usuario.getNome().toLowerCase().contains(lowerCaseFilter)) ||
+                       (usuario.getCargo() != null && usuario.getCargo().toLowerCase().contains(lowerCaseFilter)) ||
+                       (usuario.getLogin() != null && usuario.getLogin().toLowerCase().contains(lowerCaseFilter)) ||
+                       (usuario.getTipo() != null && usuario.getTipo().toLowerCase().contains(lowerCaseFilter));
             });
         });
     }
@@ -103,13 +124,13 @@ public class FuncionariosController implements Initializable {
         MenuItem editarItem = new MenuItem("Editar");
         MenuItem excluirItem = new MenuItem("Excluir");
 
-        editarItem.setOnAction(event -> handleEditar(tabelaFuncionarios.getSelectionModel().getSelectedItem()));
-        excluirItem.setOnAction(event -> handleExcluir(tabelaFuncionarios.getSelectionModel().getSelectedItem()));
+        editarItem.setOnAction(event -> handleEditar(tabelaUsuarios.getSelectionModel().getSelectedItem()));
+        excluirItem.setOnAction(event -> handleExcluir(tabelaUsuarios.getSelectionModel().getSelectedItem()));
 
         contextMenu.getItems().addAll(editarItem, excluirItem);
 
-        tabelaFuncionarios.setRowFactory(tv -> {
-            TableRow<Funcionario> row = new TableRow<>();
+        tabelaUsuarios.setRowFactory(tv -> {
+            TableRow<UsuarioSistema> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (!row.isEmpty() && event.getButton() == MouseButton.SECONDARY) {
                     contextMenu.show(row, event.getScreenX(), event.getScreenY());
@@ -119,62 +140,62 @@ public class FuncionariosController implements Initializable {
         });
     }
 
-    private void showFuncionarioDialog(Funcionario funcionario) {
+    private void showUsuarioDialog(UsuarioSistema usuario) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/cadastrar-funcionario-view.fxml"));
             Stage dialogStage = new Stage();
-            dialogStage.setTitle(funcionario == null ? "Cadastrar Novo Funcionário" : "Editar Funcionário");
+            dialogStage.setTitle(usuario == null ? "Cadastrar Novo Usuário" : "Editar Usuário");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(btnAdicionar.getScene().getWindow());
             dialogStage.setScene(new Scene(loader.load()));
 
             CadastrarFuncionarioController controller = loader.getController();
-            controller.setFuncionarioData(funcionario, listaFuncionarios);
+            controller.setUsuarioData(usuario, listaUsuarios);
 
             dialogStage.showAndWait();
 
-            Funcionario result = controller.getNewFuncionario();
+            UsuarioSistema result = controller.getNewUsuario();
             if (result != null) {
                 carregarDadosDoBanco();
             }
         } catch (IOException e) {
             e.printStackTrace();
-            MainApplication.showErrorAlert("Erro de Aplicação", "Falha ao abrir a tela de cadastro de funcionário.");
+            MainApplication.showErrorAlert("Erro de Aplicação", "Falha ao abrir a tela de cadastro de usuário.");
         }
     }
 
-    private void handleEditar(Funcionario funcionario) {
-        if (funcionario != null) {
-            showFuncionarioDialog(funcionario);
+    private void handleEditar(UsuarioSistema usuario) {
+        if (usuario != null) {
+            showUsuarioDialog(usuario);
         }
     }
 
-    private void handleExcluir(Funcionario funcionario) {
-        if (funcionario != null) {
+    private void handleExcluir(UsuarioSistema usuario) {
+        if (usuario != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmação de Exclusão");
-            alert.setHeaderText("Tem certeza que deseja excluir o funcionário: " + funcionario.getNome() + "?");
+            alert.setHeaderText("Tem certeza que deseja excluir " + usuario.getNome() + "?");
             alert.setContentText("Esta ação não pode ser desfeita.");
 
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     try {
-                        funcionarioDAO.deletarFuncionario(funcionario.getId());
-                        listaFuncionarios.remove(funcionario);
-                        tabelaFuncionarios.refresh();
+                        if (usuario.getTipo().equals("FUNCIONARIO")) {
+                            funcionarioDAO.deletarFuncionario(usuario.getId());
+                        } else {
+                            veterinarioDAO.deletarVeterinario(usuario.getId());
+                        }
                         
-                        Alert sucesso = new Alert(Alert.AlertType.INFORMATION);
-                        sucesso.setTitle("Sucesso");
-                        sucesso.setHeaderText(null);
-                        sucesso.setContentText("Funcionário excluído com sucesso!");
-                        sucesso.showAndWait();
+                        // Recarregar dados do banco para garantir consistência
+                        carregarDadosDoBanco();
+                        
+                        MainApplication.showSuccessAlert("Sucesso", "Usuário excluído com sucesso!");
                     } catch (SQLException e) {
                         e.printStackTrace();
-                        MainApplication.showErrorAlert("Erro ao Excluir", "Erro ao excluir funcionário: " + e.getMessage());
+                        MainApplication.showErrorAlert("Erro ao Excluir", "Erro ao excluir usuário: " + e.getMessage());
                     }
                 }
             });
         }
     }
 }
-

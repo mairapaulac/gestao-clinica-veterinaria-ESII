@@ -249,8 +249,9 @@ public class PacientesController implements Initializable {
                 if (response == ButtonType.OK) {
                     try {
                         pacienteDAO.deletarPaciente(paciente.getId());
-                        listaPacientes.remove(paciente);
-                        tabelaPacientes.refresh();
+                        
+                        // Recarregar dados do banco para garantir consistência
+                        carregarDadosDoBanco();
                         
                         Alert sucesso = new Alert(Alert.AlertType.INFORMATION);
                         sucesso.setTitle("Sucesso");

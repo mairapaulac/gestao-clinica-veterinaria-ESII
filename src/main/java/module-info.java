@@ -13,6 +13,7 @@ module br.edu.clinica.clinicaveterinaria {
     requires com.almasb.fxgl.all;
     requires transitive java.sql;
     requires javafx.graphics;
+    requires org.apache.pdfbox;
 
     opens br.edu.clinica.clinicaveterinaria.controller to javafx.fxml;
     opens br.edu.clinica.clinicaveterinaria.view to javafx.fxml;

@@ -210,10 +210,13 @@ public class MedicamentosController implements Initializable {
                 if (response == ButtonType.OK) {
                 try {
                     medicamentoDAO.excluir(medicamento.getId());
-                    listaMedicamentos.remove(medicamento);
-                    tabelaMedicamentos.refresh();
+                    
+                    // Recarregar dados do banco para garantir consistência
+                    carregarMedicamentosDoBanco();
+                    
+                    MainApplication.showSuccessAlert("Sucesso", "Medicamento excluído com sucesso!");
                 } catch (SQLException e) {
-                    MainApplication.showErrorAlert("Erro de Banco de Dados", "Falha ao excluir o medicamento.");
+                    MainApplication.showErrorAlert("Erro de Banco de Dados", "Falha ao excluir o medicamento: " + e.getMessage());
                     e.printStackTrace();
                 }
                 }

@@ -141,6 +141,32 @@ public class TratamentoDAO {
         return tratamentos;
     }
 
+    public List<Tratamento> listarTodos() throws SQLException {
+        List<Tratamento> tratamentos = new ArrayList<>();
+        String sql = "SELECT t.id, t.descricao, t.id_consulta, " +
+                     "c.id AS cons_id, c.data_consulta, c.diagnostico, " +
+                     "p.id AS pac_id, p.nome AS pac_nome, p.especie, p.raca, " +
+                     "v.id AS vet_id, v.nome AS vet_nome, v.crmv, v.telefone AS vet_tel, v.especialidade " +
+                     "FROM tratamento t " +
+                     "JOIN consulta c ON t.id_consulta = c.id " +
+                     "JOIN paciente p ON c.id_paciente = p.id " +
+                     "JOIN veterinario v ON c.id_veterinario = v.id " +
+                     "ORDER BY c.data_consulta DESC, t.id DESC";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                Consulta consulta = criarConsultaDoResultSet(rs);
+                Tratamento tratamento = new Tratamento(rs.getString("descricao"), consulta);
+                tratamento.setId(rs.getInt("id"));
+                tratamentos.add(tratamento);
+            }
+        }
+        return tratamentos;
+    }
+
     public void atualizarTratamento(Tratamento tratamento) throws SQLException {
         String sql = "CALL proc_atualizar_tratamento(?, ?, ?)";
         

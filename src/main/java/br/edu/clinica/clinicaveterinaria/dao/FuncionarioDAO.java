@@ -9,10 +9,10 @@ import java.util.List;
 public class FuncionarioDAO {
 
     public void adicionarFuncionario(Funcionario funcionario) throws SQLException {
-        String sql = "CALL proc_inserir_funcionario(?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO funcionario (nome, cargo, login, senha, e_gerente) VALUES (?, ?, ?, ?, ?) RETURNING id";
 
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, funcionario.getNome());
             pstmt.setString(2, funcionario.getCargo());
@@ -20,11 +20,9 @@ public class FuncionarioDAO {
             pstmt.setString(4, funcionario.getSenha());
             pstmt.setBoolean(5, funcionario.isGerente());
 
-            pstmt.executeUpdate();
-
-            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+            try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    funcionario.setId(rs.getInt(1));
+                    funcionario.setId(rs.getInt("id"));
                 }
             }
 
@@ -33,7 +31,7 @@ public class FuncionarioDAO {
 
     public List<Funcionario> listarTodos() throws SQLException {
         List<Funcionario> listaFuncionarios = new ArrayList<>();
-        String sql = "SELECT id, nome, cargo, login, e_gerente FROM funcionario";
+        String sql = "SELECT id, nome, cargo, login, e_gerente FROM funcionario WHERE login NOT LIKE '%_DESATIVADO_%' ORDER BY nome";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -151,7 +149,7 @@ public class FuncionarioDAO {
     }
 
     public void deletarFuncionario(int id) throws SQLException {
-        String sql = "CALL proc_deletar_funcionario(?)";
+        String sql = "DELETE FROM funcionario WHERE id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

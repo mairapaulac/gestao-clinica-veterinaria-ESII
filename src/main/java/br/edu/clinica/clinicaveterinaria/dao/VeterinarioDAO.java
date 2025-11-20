@@ -11,20 +11,22 @@ import java.util.List;
 public class VeterinarioDAO {
 
     public void adicionarVeterinario(Veterinario veterinario) throws SQLException {
-        String sql = "INSERT INTO veterinario (nome, crmv, telefone, especialidade) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO veterinario (nome, crmv, telefone, especialidade, email, senha) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, veterinario.getNome());
             pstmt.setString(2, veterinario.getCRMV());
             pstmt.setString(3, veterinario.getTelefone());
             pstmt.setString(4, veterinario.getEspecialidade());
+            pstmt.setString(5, veterinario.getEmail());
+            pstmt.setString(6, veterinario.getSenha());
             pstmt.executeUpdate();
         }
     }
 
     public List<Veterinario> listarTodos() throws SQLException {
         List<Veterinario> listaVeterinarios = new ArrayList<>();
-        String sql = "SELECT id, nome, crmv, telefone, especialidade, email, senha FROM veterinario ORDER BY nome";
+        String sql = "SELECT id, nome, crmv, telefone, especialidade, email, senha FROM veterinario WHERE crmv NOT LIKE '%_DESATIVADO_%' ORDER BY nome";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -95,7 +97,7 @@ public class VeterinarioDAO {
     }
 
     public void atualizarVeterinario(Veterinario veterinario) throws SQLException {
-        String sql = "UPDATE veterinario SET nome = ?, crmv = ?, telefone = ?, especialidade = ? WHERE id = ?";
+        String sql = "UPDATE veterinario SET nome = ?, crmv = ?, telefone = ?, especialidade = ?, email = ? WHERE id = ?";
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -103,9 +105,31 @@ public class VeterinarioDAO {
             pstmt.setString(2, veterinario.getCRMV());
             pstmt.setString(3, veterinario.getTelefone());
             pstmt.setString(4, veterinario.getEspecialidade());
-            pstmt.setInt(5, veterinario.getId());
+            pstmt.setString(5, veterinario.getEmail());
+            pstmt.setInt(6, veterinario.getId());
 
             pstmt.executeUpdate();
+        }
+    }
+
+    public void atualizarVeterinarioComSenha(Veterinario veterinario, String senha) throws SQLException {
+        if (senha != null && !senha.isEmpty()) {
+            String sql = "UPDATE veterinario SET nome = ?, crmv = ?, telefone = ?, especialidade = ?, email = ?, senha = ? WHERE id = ?";
+            try (Connection conn = ConnectionFactory.getConnection();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+                pstmt.setString(1, veterinario.getNome());
+                pstmt.setString(2, veterinario.getCRMV());
+                pstmt.setString(3, veterinario.getTelefone());
+                pstmt.setString(4, veterinario.getEspecialidade());
+                pstmt.setString(5, veterinario.getEmail());
+                pstmt.setString(6, senha);
+                pstmt.setInt(7, veterinario.getId());
+
+                pstmt.executeUpdate();
+            }
+        } else {
+            atualizarVeterinario(veterinario);
         }
     }
 

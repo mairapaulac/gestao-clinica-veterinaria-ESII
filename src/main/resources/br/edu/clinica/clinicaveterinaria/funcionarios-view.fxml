@@ -14,17 +14,18 @@
       spacing="20">
 
     <HBox alignment="CENTER_LEFT" spacing="10">
-        <Button fx:id="btnAdicionar" text="+ Adicionar Funcionário" styleClass="btn-cadastrar"/>
+        <Button fx:id="btnAdicionar" text="+ Adicionar Usuário" styleClass="btn-cadastrar"/>
         <HBox HBox.hgrow="ALWAYS" alignment="CENTER_RIGHT">
             <TextField fx:id="txtBuscar" promptText="Buscar" styleClass="search-field"/>
         </HBox>
     </HBox>
 
-    <TableView fx:id="tabelaFuncionarios" VBox.vgrow="ALWAYS">
+    <TableView fx:id="tabelaUsuarios" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="colNome" text="Nome"/>
+            <TableColumn fx:id="colTipo" text="Tipo"/>
             <TableColumn fx:id="colCargo" text="Cargo"/>
-            <TableColumn fx:id="colLogin" text="Login"/>
+            <TableColumn fx:id="colLogin" text="Login/Email"/>
             <TableColumn fx:id="colGerente" text="Administrador"/>
         </columns>
         <columnResizePolicy>
