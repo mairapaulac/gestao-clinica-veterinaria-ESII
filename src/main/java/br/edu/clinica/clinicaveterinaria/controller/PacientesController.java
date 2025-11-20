@@ -215,7 +215,26 @@ public class PacientesController implements Initializable {
 
     private void handleHistorico(Paciente paciente) {
         if (paciente != null) {
-            System.out.println("Ação: Ver histórico do paciente " + paciente.getNome());
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/historico-paciente-view.fxml"));
+                Stage dialogStage = new Stage();
+                dialogStage.setTitle("Histórico do Paciente: " + paciente.getNome());
+                dialogStage.initModality(Modality.WINDOW_MODAL);
+                dialogStage.initOwner(btnCadastrar.getScene().getWindow());
+                dialogStage.setScene(new Scene(loader.load()));
+
+                HistoricoPacienteController controller = loader.getController();
+                controller.setPaciente(paciente);
+
+                dialogStage.showAndWait();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erro");
+                alert.setHeaderText(null);
+                alert.setContentText("Erro ao abrir histórico do paciente: " + e.getMessage());
+                alert.showAndWait();
+            }
         }
     }
 

@@ -1,7 +1,9 @@
 package br.edu.clinica.clinicaveterinaria.dao;
 
 import br.edu.clinica.clinicaveterinaria.model.Consulta;
+import br.edu.clinica.clinicaveterinaria.model.Paciente;
 import br.edu.clinica.clinicaveterinaria.model.Tratamento;
+import br.edu.clinica.clinicaveterinaria.model.Veterinario;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -57,9 +59,12 @@ public class TratamentoDAO {
     public Tratamento buscarPorId(int id) throws SQLException {
         String sql = "SELECT t.id, t.descricao, t.id_consulta, " +
                      "c.id AS cons_id, c.data_consulta, c.diagnostico, " +
-                     "c.id_paciente, c.id_veterinario " +
+                     "p.id AS pac_id, p.nome AS pac_nome, p.especie, p.raca, " +
+                     "v.id AS vet_id, v.nome AS vet_nome, v.crmv, v.telefone AS vet_tel, v.especialidade " +
                      "FROM tratamento t " +
                      "JOIN consulta c ON t.id_consulta = c.id " +
+                     "JOIN paciente p ON c.id_paciente = p.id " +
+                     "JOIN veterinario v ON c.id_veterinario = v.id " +
                      "WHERE t.id = ?";
         
         try (Connection conn = ConnectionFactory.getConnection();
@@ -82,9 +87,12 @@ public class TratamentoDAO {
         List<Tratamento> tratamentos = new ArrayList<>();
         String sql = "SELECT t.id, t.descricao, t.id_consulta, " +
                      "c.id AS cons_id, c.data_consulta, c.diagnostico, " +
-                     "c.id_paciente, c.id_veterinario " +
+                     "p.id AS pac_id, p.nome AS pac_nome, p.especie, p.raca, " +
+                     "v.id AS vet_id, v.nome AS vet_nome, v.crmv, v.telefone AS vet_tel, v.especialidade " +
                      "FROM tratamento t " +
                      "JOIN consulta c ON t.id_consulta = c.id " +
+                     "JOIN paciente p ON c.id_paciente = p.id " +
+                     "JOIN veterinario v ON c.id_veterinario = v.id " +
                      "WHERE t.id_consulta = ? " +
                      "ORDER BY t.id DESC";
         
@@ -108,9 +116,12 @@ public class TratamentoDAO {
         List<Tratamento> tratamentos = new ArrayList<>();
         String sql = "SELECT t.id, t.descricao, t.id_consulta, " +
                      "c.id AS cons_id, c.data_consulta, c.diagnostico, " +
-                     "c.id_paciente, c.id_veterinario " +
+                     "p.id AS pac_id, p.nome AS pac_nome, p.especie, p.raca, " +
+                     "v.id AS vet_id, v.nome AS vet_nome, v.crmv, v.telefone AS vet_tel, v.especialidade " +
                      "FROM tratamento t " +
                      "JOIN consulta c ON t.id_consulta = c.id " +
+                     "JOIN paciente p ON c.id_paciente = p.id " +
+                     "JOIN veterinario v ON c.id_veterinario = v.id " +
                      "WHERE c.id_paciente = ? " +
                      "ORDER BY c.data_consulta DESC, t.id DESC";
         
@@ -156,6 +167,19 @@ public class TratamentoDAO {
     }
 
     private Consulta criarConsultaDoResultSet(ResultSet rs) throws SQLException {
+        Paciente paciente = new Paciente();
+        paciente.setId(rs.getInt("pac_id"));
+        paciente.setNome(rs.getString("pac_nome"));
+        paciente.setEspecie(rs.getString("especie"));
+        paciente.setRaca(rs.getString("raca"));
+        
+        Veterinario veterinario = new Veterinario();
+        veterinario.setId(rs.getInt("vet_id"));
+        veterinario.setNome(rs.getString("vet_nome"));
+        veterinario.setCRMV(rs.getString("crmv"));
+        veterinario.setTelefone(rs.getString("vet_tel"));
+        veterinario.setEspecialidade(rs.getString("especialidade"));
+        
         Consulta consulta = new Consulta();
         consulta.setId(rs.getInt("cons_id"));
         
@@ -165,6 +189,9 @@ public class TratamentoDAO {
         }
         
         consulta.setDiagnostico(rs.getString("diagnostico"));
+        consulta.setPaciente(paciente);
+        consulta.setVeterinario(veterinario);
+        
         return consulta;
     }
 }
