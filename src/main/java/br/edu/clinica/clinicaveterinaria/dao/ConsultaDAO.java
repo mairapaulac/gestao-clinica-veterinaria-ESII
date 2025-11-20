@@ -195,4 +195,55 @@ public class ConsultaDAO {
         }
         return null;
     }
+
+    public List<Consulta> listarPorPaciente(int idPaciente) throws SQLException {
+        List<Consulta> listaConsulta = new ArrayList<>();
+        
+        String sql = "SELECT c.id, c.data_consulta, c.diagnostico, " +
+                     "p.id AS pac_id, p.nome AS pac_nome, p.especie, p.raca, " +
+                     "v.id AS vet_id, v.nome AS vet_nome, v.crmv, v.telefone AS vet_tel, v.especialidade " +
+                     "FROM consulta c " +
+                     "JOIN paciente p ON c.id_paciente = p.id " +
+                     "JOIN veterinario v ON c.id_veterinario = v.id " +
+                     "WHERE c.id_paciente = ? " +
+                     "ORDER BY c.data_consulta DESC";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idPaciente);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Paciente paciente = new Paciente();
+                paciente.setId(rs.getInt("pac_id"));
+                paciente.setNome(rs.getString("pac_nome"));
+                paciente.setEspecie(rs.getString("especie"));
+                paciente.setRaca(rs.getString("raca"));
+                
+                Veterinario veterinario = new Veterinario();
+                veterinario.setId(rs.getInt("vet_id"));
+                veterinario.setNome(rs.getString("vet_nome"));
+                veterinario.setCRMV(rs.getString("crmv"));
+                veterinario.setTelefone(rs.getString("vet_tel"));
+                veterinario.setEspecialidade(rs.getString("especialidade"));
+                
+                Consulta consulta = new Consulta();
+                consulta.setId(rs.getInt("id"));
+                
+                Timestamp timestamp = rs.getTimestamp("data_consulta");
+                if (timestamp != null) {
+                    consulta.setDataConsulta(timestamp.toLocalDateTime());
+                }
+                
+                consulta.setDiagnostico(rs.getString("diagnostico"));
+                consulta.setPaciente(paciente);
+                consulta.setVeterinario(veterinario);
+                
+                listaConsulta.add(consulta);
+            }
+        }
+        
+        return listaConsulta;
+    }
 }

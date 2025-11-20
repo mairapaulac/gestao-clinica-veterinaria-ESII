@@ -28,7 +28,7 @@ SELECT
     em.quantidade_inicial - COALESCE(SUM(tum.quantidade_utilizada), 0)
 INTO v_estoque_disponivel
 FROM estoque_medicamento em
-         LEFT JOIN tratamento_uso_medicamento tum
+         LEFT JOIN tratamento_medicamento tum
                    ON tum.id_estoque_medicamento = em.id
 WHERE em.id = p_id_estoque_medicamento
 GROUP BY em.quantidade_inicial;
@@ -97,7 +97,7 @@ BEGIN
     -- 1. Verifica se o registro existe
 SELECT quantidade_utilizada
 INTO v_old_quantidade
-FROM tratamento_uso_medicamento
+FROM tratamento_medicamento
 WHERE id_tratamento = p_id_tratamento
   AND id_estoque_medicamento = p_id_estoque_medicamento;
 
@@ -150,7 +150,7 @@ END IF;
 END IF;
 
     -- 5. Atualiza registro
-UPDATE tratamento_uso_medicamento
+UPDATE tratamento_medicamento
 SET quantidade_utilizada = p_nova_quantidade
 WHERE id_tratamento = p_id_tratamento
   AND id_estoque_medicamento = p_id_estoque_medicamento;

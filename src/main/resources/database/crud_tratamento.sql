@@ -82,7 +82,7 @@ BEGIN
 END IF;
 
 
-DELETE FROM tratamento_uso_medicamento
+DELETE FROM tratamento_medicamento
 WHERE id_tratamento = p_id;
 
 

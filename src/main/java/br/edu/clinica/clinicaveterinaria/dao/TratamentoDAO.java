@@ -22,6 +22,38 @@ public class TratamentoDAO {
         }
     }
 
+    public int inserirTratamentoERetornarId(Tratamento tratamento) throws SQLException {
+        String sql = "INSERT INTO tratamento (id_consulta, descricao) VALUES (?, ?) RETURNING id";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, tratamento.getConsulta().getId());
+            stmt.setString(2, tratamento.getDescricao());
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
+        }
+        throw new SQLException("Falha ao inserir tratamento e obter ID");
+    }
+
+    public void inserirUsoMedicamento(int idTratamento, int idEstoqueMedicamento, int quantidade) throws SQLException {
+        String sql = "CALL proc_inserir_uso_medicamento(?, ?, ?)";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+            
+            stmt.setInt(1, idTratamento);
+            stmt.setInt(2, idEstoqueMedicamento);
+            stmt.setInt(3, quantidade);
+            
+            stmt.execute();
+        }
+    }
+
     public Tratamento buscarPorId(int id) throws SQLException {
         String sql = "SELECT t.id, t.descricao, t.id_consulta, " +
                      "c.id AS cons_id, c.data_consulta, c.diagnostico, " +

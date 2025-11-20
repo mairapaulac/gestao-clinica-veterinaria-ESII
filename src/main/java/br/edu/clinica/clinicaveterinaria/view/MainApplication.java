@@ -51,4 +51,12 @@ public class MainApplication extends Application {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    public static void showSuccessAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

@@ -168,6 +168,16 @@ public class AgendamentosController implements Initializable {
         tableView.setItems(filteredConsultas);
 
         ContextMenu contextMenu = new ContextMenu();
+        
+        MenuItem registrarTratamentoItem = new MenuItem("Registrar Tratamento");
+        registrarTratamentoItem.setOnAction(event -> {
+            Consulta item = tableView.getSelectionModel().getSelectedItem();
+            if (item == null) {
+                return;
+            }
+            abrirTelaRegistrarTratamento(item);
+        });
+        
         MenuItem deleteItem = new MenuItem("Excluir");
         deleteItem.setOnAction(event -> {
             Consulta item = tableView.getSelectionModel().getSelectedItem();
@@ -196,7 +206,8 @@ public class AgendamentosController implements Initializable {
                 }
             });
         });
-        contextMenu.getItems().add(deleteItem);
+        
+        contextMenu.getItems().addAll(registrarTratamentoItem, deleteItem);
 
         tableView.setRowFactory(tv -> {
             TableRow<Consulta> row = new TableRow<>();
@@ -267,6 +278,29 @@ public class AgendamentosController implements Initializable {
         return cell;
     }
     
+    private void abrirTelaRegistrarTratamento(Consulta consulta) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/registrar-tratamento-view.fxml"));
+            Parent root = loader.load();
+            
+            RegistrarTratamentoController controller = loader.getController();
+            controller.setConsulta(consulta);
+            
+            Stage modalStage = new Stage();
+            modalStage.setTitle("Registrar Tratamento");
+            modalStage.setScene(new Scene(root));
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.initOwner((Stage) calendarioGrid.getScene().getWindow());
+            modalStage.showAndWait();
+            
+            carregarConsultasDoBanco();
+            gerarCalendario();
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de registro de tratamento.");
+        }
+    }
+
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String msg) {
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);
