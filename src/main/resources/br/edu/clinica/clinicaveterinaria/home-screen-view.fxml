@@ -44,8 +44,8 @@
                 <HBox styleClass="doctor-card">
                     <ImageView fx:id="doctorImageView" fitWidth="60" fitHeight="60" preserveRatio="true"/>
                     <VBox styleClass="doctor-info">
-                        <Label text="Dra. Maria Da Silva" styleClass="doctor-name"/>
-                        <Label text="Veterinária" styleClass="doctor-role"/>
+                        <Label fx:id="doctorName" text="Usuário" styleClass="doctor-name"/>
+                        <Label fx:id="doctorRole" text="Tipo" styleClass="doctor-role"/>
                     </VBox>
                 </HBox>
             </HBox>

@@ -53,13 +53,11 @@ public class CadastrarPacienteController {
         this.pacienteToEdit = paciente;
 
         if (paciente != null) {
-            // Dados do paciente
             txtNome.setText(paciente.getNome());
             txtEspecie.setText(paciente.getEspecie() != null ? paciente.getEspecie() : "");
             txtRaca.setText(paciente.getRaca() != null ? paciente.getRaca() : "");
             dpNascimento.setValue(paciente.getDataNascimento());
             
-            // Dados do proprietário
             Proprietario prop = paciente.getProprietario();
             txtCpfTutor.setText(prop.getCpf());
             txtNomeTutor.setText(prop.getNome());
@@ -72,7 +70,7 @@ public class CadastrarPacienteController {
             txtEstado.setText(prop.getEstado() != null ? prop.getEstado() : "");
             txtCep.setText(prop.getCep() != null ? prop.getCep() : "");
             
-            txtCpfTutor.setEditable(false); // Não permite alterar CPF na edição
+            txtCpfTutor.setEditable(false);
             btnSalvar.setText("Salvar");
             lblTitle.setText("Editando Paciente");
         } else {
@@ -92,7 +90,6 @@ public class CadastrarPacienteController {
             return;
         }
 
-        // Validação dos dados do proprietário
         String cpfTutor = txtCpfTutor.getText().trim().replaceAll("[^0-9]", "");
         if (cpfTutor.isEmpty()) {
             showAlert("Erro de Validação", "O CPF do tutor é obrigatório.");
@@ -156,7 +153,6 @@ public class CadastrarPacienteController {
         String especie = txtEspecie.getText().trim();
         String raca = txtRaca.getText().trim();
 
-        // Validação da Data
         LocalDate dataNascimento = dpNascimento.getValue();
         String dataTexto = dpNascimento.getEditor().getText();
 
@@ -166,14 +162,13 @@ public class CadastrarPacienteController {
         }
 
         try {
-            // Tenta forçar a conversão do texto para garantir que é válido
             dpNascimento.getConverter().fromString(dataTexto);
         } catch (Exception e) {
             showAlert("Erro de Validação", "O formato da data é inválido. Use dd/mm/aaaa.");
             return;
         }
         
-        dataNascimento = dpNascimento.getValue(); // Pega o valor após a conversão bem-sucedida
+        dataNascimento = dpNascimento.getValue();
 
         if (dataNascimento.isAfter(LocalDate.now())) {
             showAlert("Erro de Validação", "A data de nascimento não pode ser uma data futura.");
@@ -181,11 +176,9 @@ public class CadastrarPacienteController {
         }
 
         try {
-            // Buscar ou criar proprietário
             Proprietario proprietario = proprietarioDAO.buscarPorCpf(cpfTutor);
             
             if (proprietario == null) {
-                // Criar novo proprietário apenas se não existir
                 proprietario = new Proprietario();
                 proprietario.setCpf(cpfTutor);
                 proprietario.setNome(nomeTutor);
@@ -200,9 +193,7 @@ public class CadastrarPacienteController {
                 
                 proprietarioDAO.inserirProprietario(proprietario);
             } else {
-                // Proprietário já existe
                 if (pacienteToEdit != null) {
-                    // Edição de paciente: atualizar proprietário com os novos dados
                     proprietario.setNome(nomeTutor);
                     proprietario.setTelefone(telefoneTutor);
                     proprietario.setEmail(emailTutor);
@@ -214,16 +205,10 @@ public class CadastrarPacienteController {
                     proprietario.setCep(cep);
                     
                     proprietarioDAO.atualizarProprietario(proprietario);
-                } else {
-                    // Novo cadastro: usar o proprietário existente sem atualizar
-                    // Isso evita sobrescrever dados de outros pacientes que compartilham o mesmo CPF
-                    // Os dados informados no formulário são ignorados e usamos os do banco
                 }
             }
 
-            // Criar ou atualizar paciente
             if (pacienteToEdit == null) {
-                // Novo paciente
                 newPaciente = new Paciente();
                 newPaciente.setNome(nome);
                 newPaciente.setEspecie(especie);
@@ -234,7 +219,6 @@ public class CadastrarPacienteController {
                 pacienteDAO.inserirPaciente(newPaciente);
                 showAlert("Sucesso", "Paciente cadastrado com sucesso!");
             } else {
-                // Atualizar paciente existente
                 pacienteToEdit.setNome(nome);
                 pacienteToEdit.setEspecie(especie);
                 pacienteToEdit.setRaca(raca);

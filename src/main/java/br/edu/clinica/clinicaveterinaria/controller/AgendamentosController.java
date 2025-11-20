@@ -40,7 +40,6 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class AgendamentosController implements Initializable {
 
@@ -67,9 +66,7 @@ public class AgendamentosController implements Initializable {
     
     private void carregarConsultasDoBanco() {
         try {
-            List<Consulta> consultas = consultaDAO.listarTodas();
-            consultasList.clear();
-            consultasList.addAll(consultas);
+            consultasList.setAll(consultaDAO.listarTodas());
         } catch (SQLException e) {
             e.printStackTrace();
             mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao carregar consultas: " + e.getMessage());
@@ -213,10 +210,11 @@ public class AgendamentosController implements Initializable {
             return row;
         });
 
-        VBox layout = new VBox(10, new Label("Consultas do dia:"), tableView);
+        Label labelConsultas = new Label("Consultas do dia:");
+        labelConsultas.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        VBox layout = new VBox(10, labelConsultas, tableView);
         layout.setPadding(new Insets(15));
         VBox.setVgrow(tableView, Priority.ALWAYS);
-        layout.getChildren().get(0).setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         Scene scene = new Scene(layout, 600, 400);
         scene.getStylesheets().add(getClass().getResource("/br/edu/clinica/clinicaveterinaria/css/pacientes.css").toExternalForm());

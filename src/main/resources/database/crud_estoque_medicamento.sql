@@ -151,6 +151,8 @@ FROM
 WHERE
     -- 3. FILTRO CRÍTICO: Exclui lotes cuja validade já expirou
     em.data_validade >= CURRENT_DATE
+    -- 4. FILTRO: Exclui medicamentos desativados
+    AND cm.nome_comercial NOT LIKE '%_DESATIVADO_%'
 GROUP BY
     cm.id, cm.nome_comercial
 HAVING

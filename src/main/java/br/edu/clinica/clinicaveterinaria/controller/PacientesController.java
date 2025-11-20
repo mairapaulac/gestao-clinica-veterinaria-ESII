@@ -21,7 +21,6 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class PacientesController implements Initializable {
@@ -77,9 +76,7 @@ public class PacientesController implements Initializable {
 
     private void carregarDadosDoBanco() {
         try {
-            List<Paciente> pacientes = pacienteDAO.listarTodos();
-            listaPacientes.clear();
-            listaPacientes.addAll(pacientes);
+            listaPacientes.setAll(pacienteDAO.listarTodos());
             
             filteredData = new FilteredList<>(listaPacientes, p -> true);
             tabelaPacientes.setItems(filteredData);
@@ -153,10 +150,9 @@ public class PacientesController implements Initializable {
     private void handleVerDetalhes(Paciente paciente) {
         if (paciente != null) {
             try {
-                // Buscar dados completos do paciente do banco
                 Paciente pacienteCompleto = pacienteDAO.buscarPorId(paciente.getId());
                 if (pacienteCompleto == null) {
-                    pacienteCompleto = paciente; // Usar o paciente da lista se não encontrar no banco
+                    pacienteCompleto = paciente;
                 }
                 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/detalhes-paciente-view.fxml"));
@@ -210,7 +206,6 @@ public class PacientesController implements Initializable {
 
             Paciente newPaciente = controller.getNewPaciente();
             if (newPaciente != null) {
-                // Recarregar dados do banco para garantir que temos o ID correto
                 carregarDadosDoBanco();
             }
         } catch (IOException e) {

@@ -49,7 +49,6 @@ public class ConsultaDAO {
                 paciente.setEspecie(rs.getString("especie"));
                 paciente.setRaca(rs.getString("raca"));
                 
-                // Criar veterinário
                 Veterinario veterinario = new Veterinario();
                 veterinario.setId(rs.getInt("vet_id"));
                 veterinario.setNome(rs.getString("vet_nome"));
@@ -57,7 +56,6 @@ public class ConsultaDAO {
                 veterinario.setTelefone(rs.getString("vet_tel"));
                 veterinario.setEspecialidade(rs.getString("especialidade"));
                 
-                // Criar consulta
                 Consulta consulta = new Consulta();
                 consulta.setId(rs.getInt("id"));
                 
@@ -141,7 +139,6 @@ public class ConsultaDAO {
     }
 
     public void deletarConsulta(int id) throws SQLException {
-        // A tabela consulta não tem campo ativo, então fazemos delete direto
         String sql = "DELETE FROM consulta WHERE id = ?";
         
         try (Connection conn = ConnectionFactory.getConnection();

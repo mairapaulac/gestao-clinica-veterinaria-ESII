@@ -1,6 +1,7 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
 import br.edu.clinica.clinicaveterinaria.model.Paciente;
+import br.edu.clinica.clinicaveterinaria.model.Proprietario;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -105,7 +106,10 @@ public class SelecionarPacienteController implements Initializable {
         colNome.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNome()));
         colEspecie.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEspecie()));
         colRaca.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRaca()));
-        colTutor.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getProprietario().getNome()));
+        colTutor.setCellValueFactory(cellData -> {
+            Proprietario prop = cellData.getValue().getProprietario();
+            return new SimpleStringProperty(prop != null && prop.getNome() != null ? prop.getNome() : "");
+        });
     }
 
     private void configurarBusca() {
@@ -115,13 +119,14 @@ public class SelecionarPacienteController implements Initializable {
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-                if (paciente.getNome().toLowerCase().contains(lowerCaseFilter)) {
+                if (paciente.getNome() != null && paciente.getNome().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (paciente.getEspecie().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (paciente.getEspecie() != null && paciente.getEspecie().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (paciente.getRaca().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (paciente.getRaca() != null && paciente.getRaca().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (paciente.getProprietario().getNome().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (paciente.getProprietario() != null && paciente.getProprietario().getNome() != null 
+                        && paciente.getProprietario().getNome().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
                 }
                 return false;

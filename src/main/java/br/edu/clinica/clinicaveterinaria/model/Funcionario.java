@@ -12,7 +12,7 @@ public class Funcionario {
     public Funcionario(int id, String nome, boolean isGerente, String cargo, String login, String senha) {
         this.id = id;
         this.nome = nome;
-        this.isGerente = false;
+        this.isGerente = isGerente;
         this.cargo = cargo;
         this.login = login;
         this.senha = senha;
@@ -52,6 +52,10 @@ public class Funcionario {
 
     public void setisGerente() {
         this.isGerente = true;
+    }
+
+    public void setGerente(boolean isGerente) {
+        this.isGerente = isGerente;
     }
 
     public boolean isGerente() {

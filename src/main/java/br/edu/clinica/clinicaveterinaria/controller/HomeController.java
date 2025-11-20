@@ -1,6 +1,7 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
 import br.edu.clinica.clinicaveterinaria.view.SceneManager;
+import br.edu.clinica.clinicaveterinaria.view.SessionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +23,6 @@ import java.util.ResourceBundle;
 
 public class HomeController implements Initializable {
 
-    // Sidebar buttons
     @FXML private Button btnInicio;
     @FXML private Button btnPacientes;
     @FXML private Button btnAgendamentos;
@@ -32,17 +32,16 @@ public class HomeController implements Initializable {
     @FXML private Button btnFinanceiro;
     @FXML private Button btnSair;
 
-    // Images
     @FXML private ImageView logoImageView;
     @FXML private ImageView doctorImageView;
 
-    // Content area
     @FXML private VBox mainContent;
     @FXML private VBox contentArea;
     @FXML private TilePane cardsGrid;
 
-    // Header
     @FXML private Label headerTitle;
+    @FXML private Label doctorName;
+    @FXML private Label doctorRole;
 
     // Cards
     @FXML private VBox cardPacientes;
@@ -60,7 +59,7 @@ public class HomeController implements Initializable {
             if (is != null) {
                 Image logoImage = new Image(is);
                 logoImageView.setImage(logoImage);
-                doctorImageView.setImage(logoImage); // Placeholder
+                doctorImageView.setImage(logoImage);
             } else {
                 System.err.println("Logo not found or path is incorrect.");
             }
@@ -69,6 +68,27 @@ public class HomeController implements Initializable {
         }
 
         setActive(btnInicio);
+        atualizarInfoUsuario();
+        configurarPermissoes();
+    }
+
+    private void atualizarInfoUsuario() {
+        String nome = SessionManager.getNomeUsuario();
+        String tipo = SessionManager.getTipoUsuarioString();
+        
+        if (doctorName != null) {
+            doctorName.setText(nome);
+        }
+        if (doctorRole != null) {
+            doctorRole.setText(tipo);
+        }
+    }
+
+    private void configurarPermissoes() {
+        boolean isAdmin = SessionManager.isAdministrador();
+        
+        btnFuncionarios.setVisible(isAdmin);
+        btnFuncionarios.setManaged(isAdmin);
     }
 
     @FXML
@@ -152,6 +172,7 @@ public class HomeController implements Initializable {
     @FXML
     private void sair() {
         try {
+            SessionManager.logout();
             SceneManager.switchScene("/br/edu/clinica/clinicaveterinaria/login-view.fxml", "PetManager - Login");
         } catch (IOException e) {
             e.printStackTrace();

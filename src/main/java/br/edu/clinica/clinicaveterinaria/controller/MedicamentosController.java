@@ -21,7 +21,6 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MedicamentosController implements Initializable {
@@ -69,8 +68,7 @@ public class MedicamentosController implements Initializable {
 
     private void carregarMedicamentosDoBanco() {
         try {
-            listaMedicamentos.clear();
-            listaMedicamentos.addAll(medicamentoDAO.listarTodos());
+            listaMedicamentos.setAll(medicamentoDAO.listarTodos());
             filteredData = new FilteredList<>(listaMedicamentos, p -> true);
             tabelaMedicamentos.setItems(filteredData);
         } catch (SQLException e) {
@@ -118,7 +116,6 @@ public class MedicamentosController implements Initializable {
     private void handleVerMais(Medicamento medicamento) {
         if (medicamento != null) {
             try {
-                // Buscamos o objeto completo para mostrar todos os detalhes
                 Medicamento fullMedicamento = medicamentoDAO.buscarPorId(medicamento.getId());
                 if (fullMedicamento != null) {
                     FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/br/edu/clinica/clinicaveterinaria/detalhes-medicamento-view.fxml"));
@@ -162,13 +159,12 @@ public class MedicamentosController implements Initializable {
             Medicamento result = controller.getNewMedicamento();
             if (result != null) {
                 try {
-                    if (medicamento == null) { // Criando um novo
+                    if (medicamento == null) {
                         medicamentoDAO.inserir(result);
                         listaMedicamentos.add(result);
-                    } else { // Editando um existente
+                    } else {
                         result.setId(medicamento.getId());
                         medicamentoDAO.atualizar(result);
-                        // Atualiza o item na lista
                         int index = listaMedicamentos.indexOf(medicamento);
                         if (index != -1) {
                             listaMedicamentos.set(index, result);
@@ -190,7 +186,6 @@ public class MedicamentosController implements Initializable {
     private void handleEditar(Medicamento medicamento) {
         if (medicamento != null) {
             try {
-                // O objeto da tabela é 'leve', buscamos o objeto completo para edição
                 Medicamento fullMedicamento = medicamentoDAO.buscarPorId(medicamento.getId());
                 if (fullMedicamento != null) {
                     showMedicamentoDialog(fullMedicamento);
@@ -211,8 +206,8 @@ public class MedicamentosController implements Initializable {
             alert.setHeaderText("Tem certeza que deseja excluir o medicamento: " + medicamento.getNome() + "?");
             alert.setContentText("Esta ação não pode ser desfeita.");
 
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
                 try {
                     medicamentoDAO.excluir(medicamento.getId());
                     listaMedicamentos.remove(medicamento);
@@ -221,7 +216,8 @@ public class MedicamentosController implements Initializable {
                     MainApplication.showErrorAlert("Erro de Banco de Dados", "Falha ao excluir o medicamento.");
                     e.printStackTrace();
                 }
-            }
+                }
+            });
         }
     }
 }

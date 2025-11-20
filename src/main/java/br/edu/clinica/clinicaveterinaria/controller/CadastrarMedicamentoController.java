@@ -52,7 +52,7 @@ public class CadastrarMedicamentoController {
         } else {
             lblTitle.setText("Cadastrar Novo Medicamento");
             btnSalvar.setText("Cadastrar");
-            dpEntrada.setValue(LocalDate.now()); // Padrão para data de entrada
+            dpEntrada.setValue(LocalDate.now());
         }
     }
 
@@ -71,7 +71,6 @@ public class CadastrarMedicamentoController {
             return;
         }
 
-        // Validação de duplicidade de nome (apenas para novos medicamentos)
         if (medicamentoToEdit == null) {
             for (Medicamento m : existingMedicamentos) {
                 if (m.getNome().equalsIgnoreCase(nome)) {
@@ -80,7 +79,6 @@ public class CadastrarMedicamentoController {
                 }
             }
         }
-
 
         int quantidade;
         try {

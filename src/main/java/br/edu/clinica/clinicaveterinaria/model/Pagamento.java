@@ -1,17 +1,16 @@
 package br.edu.clinica.clinicaveterinaria.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Pagamento {
     private int id;
-    private LocalDate dataPagamento;
+    private LocalDateTime dataPagamento;
     private String metodoPagamento;
     private float valorTotal;
     private Funcionario funcionario;
     private Consulta consulta;
 
-
-    public Pagamento(String metodoPagamento, float valorTotal, LocalDate dataPagamento, Funcionario funcionario, Consulta consulta) {
+    public Pagamento(String metodoPagamento, float valorTotal, LocalDateTime dataPagamento, Funcionario funcionario, Consulta consulta) {
         this.metodoPagamento = metodoPagamento;
         this.dataPagamento = dataPagamento;
         this.valorTotal = valorTotal;
@@ -27,7 +26,7 @@ public class Pagamento {
         return metodoPagamento;
     }
 
-    public LocalDate getDataPagamento() {
+    public LocalDateTime getDataPagamento() {
         return dataPagamento;
     }
 
@@ -47,7 +46,7 @@ public class Pagamento {
         this.metodoPagamento = metodoPagamento;
     }
 
-    public void setDataPagamento(LocalDate dataPagamento) {
+    public void setDataPagamento(LocalDateTime dataPagamento) {
         this.dataPagamento = dataPagamento;
     }
 
@@ -63,4 +62,7 @@ public class Pagamento {
         this.consulta = consulta;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 }

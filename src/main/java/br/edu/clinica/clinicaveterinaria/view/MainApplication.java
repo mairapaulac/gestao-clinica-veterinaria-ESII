@@ -23,7 +23,7 @@ public class MainApplication extends Application {
 
         stage.setTitle("PetManager - Login");
         stage.setScene(scene);
-        stage.setMaximized(true); // Start maximized instead of forced full-screen
+        stage.setMaximized(true);
         stage.show();
     }
 
@@ -33,7 +33,7 @@ public class MainApplication extends Application {
     }
 
     private static void handleException(Thread t, Throwable e) {
-        e.printStackTrace(); // Log to console for developer
+        e.printStackTrace();
 
         Platform.runLater(() -> {
             if (e instanceof SQLException) {

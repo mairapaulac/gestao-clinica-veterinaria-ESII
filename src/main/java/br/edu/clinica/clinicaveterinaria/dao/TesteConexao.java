@@ -1,5 +1,4 @@
-package br.edu.clinica.clinicaveterinaria.dao; // Ajuste o pacote se necessário
-
+package br.edu.clinica.clinicaveterinaria.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,7 +10,6 @@ public class TesteConexao {
         try {
             System.out.println("Tentando conectar ao banco de dados...");
 
-            // Chama o método que você criou para obter a conexão
             conn = ConnectionFactory.getConnection();
 
             if (conn != null && !conn.isClosed()) {
@@ -27,8 +25,6 @@ public class TesteConexao {
             System.err.println("  1. Se o servidor PostgreSQL está rodando.");
             System.err.println("  2. A URL, Usuário e Senha no config.properties.");
             System.err.println("Detalhes do erro: " + e.getMessage());
-            // Removendo e.printStackTrace() para um output mais limpo no console:
-            // e.printStackTrace(); 
 
         } catch (RuntimeException e) {
             System.err.println("!!! ERRO! Falha ao carregar o arquivo config.properties. !!!");

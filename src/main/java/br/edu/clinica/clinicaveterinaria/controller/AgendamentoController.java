@@ -78,13 +78,10 @@ public class AgendamentoController implements Initializable {
         datePicker.valueProperty().addListener((obs, old, val) -> carregarHorarios());
         comboVeterinarios.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> carregarHorarios());
         
-        // Garantir que os horários sejam carregados quando o combo for clicado
         comboHorarios.setOnShowing(event -> {
-            // Sempre recarregar horários quando o combo for aberto (para garantir dados atualizados)
             if (datePicker.getValue() != null && comboVeterinarios.getValue() != null) {
                 carregarHorarios();
             } else {
-                // Se não tiver data ou veterinário, mostrar mensagem
                 comboHorarios.hide();
                 if (datePicker.getValue() == null) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Atenção", "Selecione uma data primeiro.");
@@ -111,7 +108,6 @@ public class AgendamentoController implements Initializable {
             }
         });
         
-        // Configurar formatador para horários
         comboHorarios.setConverter(new StringConverter<LocalTime>() {
             @Override
             public String toString(LocalTime time) {
@@ -141,7 +137,7 @@ public class AgendamentoController implements Initializable {
 
         comboBuscarPaciente.setOnShowing(event -> {
             try {
-                comboBuscarPaciente.hide(); // Explicitly hide the dropdown
+                comboBuscarPaciente.hide();
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/selecionar-paciente-view.fxml"));
                 Parent root = loader.load();
 
@@ -162,7 +158,7 @@ public class AgendamentoController implements Initializable {
                     this.pacienteSelecionado = selecionado;
                     comboBuscarPaciente.setValue(selecionado);
                 }
-                event.consume(); // Prevent the empty dropdown from showing
+                event.consume();
             } catch (IOException e) {
                 e.printStackTrace();
                 mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de seleção de paciente.");
@@ -189,17 +185,14 @@ public class AgendamentoController implements Initializable {
         
         try {
             if (validarDisponibilidade(datePicker.getValue(), comboHorarios.getValue(), comboVeterinarios.getValue())) {
-                // Criar LocalDateTime combinando data e hora
                 LocalDateTime dataHora = LocalDateTime.of(datePicker.getValue(), comboHorarios.getValue());
                 
-                // Criar consulta
                 Consulta consulta = new Consulta();
                 consulta.setDataConsulta(dataHora);
-                consulta.setDiagnostico(""); // Diagnóstico será preenchido na consulta
+                consulta.setDiagnostico("");
                 consulta.setPaciente(pacienteSelecionado);
                 consulta.setVeterinario(comboVeterinarios.getValue());
                 
-                // Salvar no banco
                 consultaDAO.inserirConsulta(consulta);
                 
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Agendamento confirmado!");
@@ -243,20 +236,16 @@ public class AgendamentoController implements Initializable {
         if (data == null || vet == null) return;
 
         try {
-            // Buscar consultas já agendadas para esta data e veterinário
             List<Consulta> consultasAgendadas = consultaDAO.listarPorDataEVeterinario(data, vet.getId());
             
-            // Criar lista de horários disponíveis (9h às 17h, de 1 em 1 hora)
             List<LocalTime> horarios = new ArrayList<>();
             for (int h = 9; h <= 17; h++) {
                 horarios.add(LocalTime.of(h, 0));
             }
             
-            // Remover horários já ocupados
             for (Consulta consulta : consultasAgendadas) {
                 if (consulta.getDataConsulta() != null) {
                     LocalTime horaConsulta = consulta.getDataConsulta().toLocalTime();
-                    // Remove o horário exato ou qualquer horário dentro da mesma hora
                     horarios.removeIf(horario -> {
                         int horaOcupada = horaConsulta.getHour();
                         int horaDisponivel = horario.getHour();

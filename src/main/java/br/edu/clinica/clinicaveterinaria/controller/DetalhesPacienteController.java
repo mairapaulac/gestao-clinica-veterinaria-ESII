@@ -48,7 +48,6 @@ public class DetalhesPacienteController implements Initializable {
             return;
         }
 
-        // Dados do paciente
         lblNome.setText(paciente.getNome() != null ? paciente.getNome() : "-");
         lblEspecie.setText(paciente.getEspecie() != null ? paciente.getEspecie() : "-");
         lblRaca.setText(paciente.getRaca() != null ? paciente.getRaca() : "-");
@@ -60,7 +59,6 @@ public class DetalhesPacienteController implements Initializable {
             lblDataNascimento.setText("-");
         }
 
-        // Dados do proprietário
         Proprietario prop = paciente.getProprietario();
         if (prop != null) {
             lblCpf.setText(prop.getCpf() != null ? formatarCpf(prop.getCpf()) : "-");

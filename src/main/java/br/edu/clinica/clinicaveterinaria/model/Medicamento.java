@@ -13,7 +13,6 @@ public class Medicamento {
     private LocalDate dataValidade;
     private LocalDate dataEntrada;
 
-    // Construtor para criar um objeto completo (vindo da UI de cadastro/edição)
     public Medicamento(int id, String nome, String fabricante, String principioAtivo, String numeroLote, int quantidade, LocalDate dataValidade, LocalDate dataEntrada) {
         this.id = id;
         this.nome = nome;
@@ -25,13 +24,10 @@ public class Medicamento {
         this.dataEntrada = dataEntrada;
     }
 
-    // Construtor simplificado para quando o ID ainda não existe (novo cadastro)
     public Medicamento(String nome, String fabricante, String principioAtivo, String numeroLote, int quantidade, LocalDate dataValidade, LocalDate dataEntrada) {
         this(0, nome, fabricante, principioAtivo, numeroLote, quantidade, dataValidade, dataEntrada);
     }
 
-
-    // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getNome() { return nome; }
@@ -62,7 +58,6 @@ public class Medicamento {
         return Objects.hash(id);
     }
 
-    // Construtor para a listagem principal, que tem menos campos
     public Medicamento(int id, String nome, String fabricante, int quantidade) {
         this.id = id;
         this.nome = nome;

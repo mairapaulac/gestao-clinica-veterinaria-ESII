@@ -22,17 +22,13 @@ public class SceneManager {
     }
 
     public static void switchScene(String fxmlFileName, String title) throws IOException {
-        // Load the new FXML root
         Parent root = FXMLLoader.load(Objects.requireNonNull(SceneManager.class.getResource(fxmlFileName)));
 
-        // Preserve fullscreen state
         boolean isFullScreen = primaryStage.isFullScreen();
 
-        // Set the new root on the existing scene
         primaryScene.setRoot(root);
         primaryStage.setTitle(title);
 
-        // Re-apply fullscreen state
         primaryStage.setFullScreen(isFullScreen);
     }
 }

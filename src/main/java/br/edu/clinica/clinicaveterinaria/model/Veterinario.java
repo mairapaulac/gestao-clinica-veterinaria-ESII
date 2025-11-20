@@ -6,6 +6,8 @@ public class Veterinario {
     private String CRMV;
     private String telefone;
     private String especialidade;
+    private String email;
+    private String senha;
 
     public Veterinario() {}
 
@@ -17,9 +19,14 @@ public class Veterinario {
     }
 
     public Veterinario(int id, String nome, String CRMV, String telefone, String especialidade) {
-        // Chamamos o construtor anterior para evitar repetição
         this(nome, CRMV, telefone, especialidade);
-        this.id = id; // Definimos o ID
+        this.id = id;
+    }
+
+    public Veterinario(int id, String nome, String CRMV, String telefone, String especialidade, String email, String senha) {
+        this(id, nome, CRMV, telefone, especialidade);
+        this.email = email;
+        this.senha = senha;
     }
 
     public int getId() {
@@ -29,7 +36,6 @@ public class Veterinario {
     public void setId(int id) {
         this.id = id;
     }
-
 
     public String getNome() {
         return nome;
@@ -61,5 +67,21 @@ public class Veterinario {
 
     public void setEspecialidade(String especialidade) {
         this.especialidade = especialidade;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }
