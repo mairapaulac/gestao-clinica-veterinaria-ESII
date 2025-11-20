@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="br.edu.clinica.clinicaveterinaria.controller.FaturarConsultaController"
+      stylesheets="@css/faturamento.css"
+      style="-fx-background-color: #f5f7fa; -fx-padding: 20;"
+      spacing="15">
+
+    <Label text="Faturar Consulta" styleClass="title"/>
+
+    <VBox styleClass="content-container" spacing="15">
+        <!-- Informações da Consulta -->
+        <VBox spacing="8">
+            <Label text="Informações da Consulta" styleClass="section-title"/>
+            <VBox styleClass="info-box" spacing="8">
+                <HBox spacing="20">
+                    <VBox spacing="5">
+                        <Label text="Paciente:" styleClass="info-label"/>
+                        <Label fx:id="lblPaciente" text="" styleClass="info-value"/>
+                    </VBox>
+                    <VBox spacing="5">
+                        <Label text="Data/Hora:" styleClass="info-label"/>
+                        <Label fx:id="lblDataHora" text="" styleClass="info-value"/>
+                    </VBox>
+                    <VBox spacing="5">
+                        <Label text="Veterinário:" styleClass="info-label"/>
+                        <Label fx:id="lblVeterinario" text="" styleClass="info-value"/>
+                    </VBox>
+                </HBox>
+                <VBox spacing="5">
+                    <Label text="Diagnóstico:" styleClass="info-label"/>
+                    <Label fx:id="lblDiagnostico" text="" styleClass="info-value"/>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <!-- Detalhes da Fatura -->
+        <VBox spacing="8">
+            <Label text="Detalhes da Fatura" styleClass="section-title"/>
+            <VBox styleClass="info-box" spacing="8">
+                <HBox spacing="20">
+                    <VBox spacing="5">
+                        <Label text="Valor da Consulta:" styleClass="info-label"/>
+                        <TextField fx:id="txtValorConsulta" text="100.00" styleClass="text-field" prefWidth="150"/>
+                    </VBox>
+                    <VBox spacing="5">
+                        <Label text="Valor dos Tratamentos:" styleClass="info-label"/>
+                        <TextField fx:id="txtValorTratamentos" text="0.00" styleClass="text-field" prefWidth="150" editable="false"/>
+                    </VBox>
+                    <VBox spacing="5">
+                        <Label text="Valor dos Medicamentos:" styleClass="info-label"/>
+                        <TextField fx:id="txtValorMedicamentos" text="0.00" styleClass="text-field" prefWidth="150" editable="false"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <!-- Valor Total -->
+        <VBox styleClass="total-box" spacing="5">
+            <Label text="Valor Total:" styleClass="total-label"/>
+            <Label fx:id="lblValorTotal" text="R$ 0,00" styleClass="total-value"/>
+        </VBox>
+
+        <!-- Forma de Pagamento -->
+        <VBox spacing="8">
+            <Label text="Forma de Pagamento" styleClass="section-title"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ComboBox fx:id="comboMetodoPagamento" promptText="Selecione a forma de pagamento" styleClass="combo-box" prefWidth="250"/>
+            </HBox>
+        </VBox>
+
+        <!-- Botões de Ação -->
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <Button fx:id="btnCancelar" text="Cancelar" styleClass="btn-secondary"/>
+            <Button fx:id="btnGerarFatura" text="Gerar Fatura" styleClass="btn-primary"/>
+            <Button fx:id="btnConfirmarPagamento" text="Confirmar Pagamento" styleClass="btn-success" visible="false" managed="false"/>
+        </HBox>
+    </VBox>
+</VBox>
+

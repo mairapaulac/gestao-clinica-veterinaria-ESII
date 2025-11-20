@@ -86,9 +86,16 @@ public class HomeController implements Initializable {
 
     private void configurarPermissoes() {
         boolean isAdmin = SessionManager.isAdministrador();
+        boolean isFuncionario = SessionManager.isFuncionario();
         
         btnFuncionarios.setVisible(isAdmin);
         btnFuncionarios.setManaged(isAdmin);
+        
+        // Faturamento e Pagamento apenas para funcionários
+        btnFinanceiro.setVisible(isFuncionario);
+        btnFinanceiro.setManaged(isFuncionario);
+        cardFinanceiro.setVisible(isFuncionario);
+        cardFinanceiro.setManaged(isFuncionario);
     }
 
     @FXML
