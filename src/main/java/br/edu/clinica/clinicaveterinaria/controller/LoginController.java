@@ -32,6 +32,7 @@ public class LoginController implements Initializable {
     @FXML
     private PasswordField passwordField;
 
+
     private FuncionarioDAO funcionarioDAO = new FuncionarioDAO();
     private VeterinarioDAO veterinarioDAO = new VeterinarioDAO();
 
