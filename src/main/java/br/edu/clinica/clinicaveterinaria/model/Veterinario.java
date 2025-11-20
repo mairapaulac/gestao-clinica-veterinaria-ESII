@@ -7,7 +7,9 @@ public class Veterinario {
     private String telefone;
     private String especialidade;
 
-    public Veterinario(String nome, String CRMV, String telefone, String especialidade) {        
+    public Veterinario() {}
+
+    public Veterinario(String nome, String CRMV, String telefone, String especialidade) {
         this.nome = nome;
         this.CRMV = CRMV;
         this.telefone = telefone;
@@ -16,7 +18,7 @@ public class Veterinario {
 
     public Veterinario(int id, String nome, String CRMV, String telefone, String especialidade) {
         // Chamamos o construtor anterior para evitar repetição
-        this(nome, CRMV, telefone, especialidade); 
+        this(nome, CRMV, telefone, especialidade);
         this.id = id; // Definimos o ID
     }
 
@@ -27,6 +29,7 @@ public class Veterinario {
     public void setId(int id) {
         this.id = id;
     }
+
 
     public String getNome() {
         return nome;
