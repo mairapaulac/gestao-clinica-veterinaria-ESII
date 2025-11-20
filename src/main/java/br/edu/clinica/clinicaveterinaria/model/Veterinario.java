@@ -7,8 +7,6 @@ public class Veterinario {
     private String telefone;
     private String especialidade;
 
-    public Veterinario() {}
-
     public Veterinario(String nome, String CRMV, String telefone, String especialidade) {        
         this.nome = nome;
         this.CRMV = CRMV;
@@ -29,7 +27,6 @@ public class Veterinario {
     public void setId(int id) {
         this.id = id;
     }
-
 
     public String getNome() {
         return nome;

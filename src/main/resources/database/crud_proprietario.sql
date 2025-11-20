@@ -80,42 +80,7 @@ WHERE
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE proc_atualizar_proprietario (
-    p_cpf_alvo VARCHAR,           -- NOVO: CPF para identificar o registro
-    p_nome VARCHAR,
-    p_telefone VARCHAR,
-    p_email VARCHAR,              -- Email pode ser alterado
-    p_rua VARCHAR,
-    p_numero VARCHAR,
-    p_bairro VARCHAR,
-    p_cidade VARCHAR,
-    p_estado VARCHAR,
-    p_cep VARCHAR
-)
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM proprietario WHERE cpf = p_cpf_alvo) THEN
-       RAISE EXCEPTION 'Proprietário com CPF % não encontrado.', p_cpf_alvo;
-END IF;
 
-UPDATE proprietario
-SET
-    nome     = COALESCE(p_nome, nome),
-    telefone = COALESCE(p_telefone, telefone),
-    email    = COALESCE(p_email, email),
-    rua      = COALESCE(p_rua, rua),
-    numero   = COALESCE(p_numero, numero),
-    bairro   = COALESCE(p_bairro, bairro),
-    cidade   = COALESCE(p_cidade, cidade),
-    estado   = COALESCE(p_estado, estado),
-    cep      = COALESCE(p_cep, cep)
-WHERE
-    cpf = p_cpf_alvo;
-
-END;
-$$;
 
 CREATE OR REPLACE PROCEDURE proc_deletar_proprietario_soft(
     p_cpf_alvo VARCHAR

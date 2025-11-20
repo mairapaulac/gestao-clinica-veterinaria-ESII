@@ -2,17 +2,19 @@ CREATE OR REPLACE PROCEDURE proc_inserir_veterinario(
     v_nome VARCHAR,
     v_crmv VARCHAR,
     v_telefone VARCHAR,
-    v_especialidade VARCHAR
+    v_especialidade VARCHAR,
+    v_email VARCHAR,               -- NOVO
+    v_senha VARCHAR                -- NOVO
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
 INSERT INTO veterinario (
-    nome, crmv, telefone, especialidade
+    nome, crmv, telefone, especialidade, email, senha
 )
 VALUES (
-           v_nome, v_crmv, v_telefone, v_especialidade
+           v_nome, v_crmv, v_telefone, v_especialidade, v_email, v_senha
        );
 END;
 $$;
@@ -34,12 +36,44 @@ RETURN var_vet;
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION funct_validar_login_veterinario(
+    p_email_fornecido VARCHAR, -- O login (email) fornecido pelo usuário
+    p_senha_fornecida VARCHAR  -- A senha fornecida pelo usuário
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+v_senha_armazenada VARCHAR;
+BEGIN
+    -- 1. Tenta buscar a senha armazenada (em texto puro, para seu caso acadêmico)
+SELECT senha INTO v_senha_armazenada
+FROM veterinario
+WHERE email = p_email_fornecido;
+
+-- 2. Verifica se o email (login) foi encontrado
+IF NOT FOUND THEN
+        RETURN FALSE; -- Veterinário não encontrado
+END IF;
+
+    -- 3. Compara a senha fornecida com a senha armazenada
+    IF v_senha_armazenada = p_senha_fornecida THEN
+        RETURN TRUE; -- Login bem-sucedido
+ELSE
+        RETURN FALSE; -- Senha incorreta
+END IF;
+END;
+$$;
+
 CREATE OR REPLACE PROCEDURE proc_atualizar_veterinario(
-    p_current_crmv VARCHAR, -- CRMV atual para identificar o registro
+    p_current_crmv VARCHAR,
     v_nome VARCHAR,
-    v_crmv VARCHAR,         -- Novo CRMV (opcional)
+    v_crmv VARCHAR,
     v_telefone VARCHAR,
-    v_especialidade VARCHAR
+    v_especialidade VARCHAR,
+    v_email VARCHAR,               -- NOVO
+    v_senha VARCHAR                -- NOVO
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -54,7 +88,9 @@ SET
     nome          = COALESCE(v_nome, nome),
     crmv          = COALESCE(v_crmv, crmv),
     telefone      = COALESCE(v_telefone, telefone),
-    especialidade = COALESCE(v_especialidade, especialidade)
+    especialidade = COALESCE(v_especialidade, especialidade),
+    email         = COALESCE(v_email, email),           -- NOVO
+    senha         = COALESCE(v_senha, senha)           -- NOVO
 WHERE
     crmv = p_current_crmv;
 
