@@ -19,8 +19,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class MedicamentosController implements Initializable {
@@ -31,7 +29,6 @@ public class MedicamentosController implements Initializable {
     @FXML private TableColumn<Medicamento, String> colNome;
     @FXML private TableColumn<Medicamento, String> colFabricante;
     @FXML private TableColumn<Medicamento, Integer> colQuantidade;
-    @FXML private TableColumn<Medicamento, LocalDate> colValidade;
 
     private final MedicamentoDAO medicamentoDAO = new MedicamentoDAO();
     private final ObservableList<Medicamento> listaMedicamentos = FXCollections.observableArrayList();
@@ -50,20 +47,6 @@ public class MedicamentosController implements Initializable {
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colFabricante.setCellValueFactory(new PropertyValueFactory<>("fabricante"));
         colQuantidade.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
-        colValidade.setCellValueFactory(new PropertyValueFactory<>("dataValidade"));
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        colValidade.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) {
-                    setText(null);
-                } else {
-                    setText(formatter.format(item));
-                }
-            }
-        });
     }
 
     private void carregarMedicamentosDoBanco() {

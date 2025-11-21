@@ -25,7 +25,6 @@
             <TableColumn fx:id="colNome" text="Nome do Medicamento"/>
             <TableColumn fx:id="colFabricante" text="Fabricante"/>
             <TableColumn fx:id="colQuantidade" text="Quantidade"/>
-            <TableColumn fx:id="colValidade" text="Data de Validade"/>
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
