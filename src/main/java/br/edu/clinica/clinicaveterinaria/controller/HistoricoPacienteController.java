@@ -82,9 +82,13 @@ public class HistoricoPacienteController implements Initializable {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
+                
+                // Limpa completamente o estilo e texto quando vazio
+                if (empty || item == null || item.isEmpty()) {
                     setText(null);
+                    setGraphic(null);
                     setStyle("");
+                    getStyleClass().clear();
                 } else {
                     setText(item);
                     getStyleClass().clear();
@@ -266,6 +270,9 @@ public class HistoricoPacienteController implements Initializable {
                    diagnostico.contains(filtroTexto) || 
                    veterinario.contains(filtroTexto);
         });
+        
+        // Força atualização das células para evitar células vazias com estilo
+        tabelaHistorico.refresh();
     }
 
     private void mostrarDetalhes(HistoricoItem item) {

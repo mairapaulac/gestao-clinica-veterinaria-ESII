@@ -87,52 +87,20 @@ public class HomeController implements Initializable {
     private void configurarPermissoes() {
         boolean isAdmin = SessionManager.isAdministrador();
         boolean isFuncionario = SessionManager.isFuncionario();
-        boolean isVeterinario = SessionManager.isVeterinario();
         
-        // Administrador pode acessar tudo - não desabilitar nada
+        btnFuncionarios.setVisible(isAdmin);
+        btnFuncionarios.setManaged(isAdmin);
         
-        // Veterinário pode: Início, Pacientes (para histórico), Agendamentos (para registrar tratamento)
-        // Funcionário pode: Início, Pacientes, Agendamentos, Estoque, Faturamento, Relatórios
-        
-        if (!isAdmin) {
-            // Gestão de Funcionários - apenas Administrador
-            desabilitarItem(btnFuncionarios, cardFuncionarios);
-            
-            if (isVeterinario) {
-                // Veterinário: desabilitar Estoque, Faturamento e Relatórios
-                desabilitarItem(btnEstoque, cardEstoque);
-                desabilitarItem(btnFinanceiro, cardFinanceiro);
-                desabilitarItem(btnRelatorios, cardRelatorios);
-                // Pacientes e Agendamentos ficam habilitados para veterinário
-            } else if (isFuncionario) {
-                // Funcionário: desabilitar apenas Gestão de Funcionários (já feito acima)
-                // Todos os outros ficam habilitados
-            }
-        }
-    }
-    
-    private void desabilitarItem(Button button, VBox card) {
-        if (button != null) {
-            button.getStyleClass().add("disabled");
-            button.setDisable(true);
-        }
-        if (card != null) {
-            card.getStyleClass().add("disabled");
-            card.setDisable(true);
-        }
+        // Faturamento e Pagamento apenas para funcionários
+        btnFinanceiro.setVisible(isFuncionario);
+        btnFinanceiro.setManaged(isFuncionario);
+        cardFinanceiro.setVisible(isFuncionario);
+        cardFinanceiro.setManaged(isFuncionario);
     }
 
     @FXML
     private void handleCardClick(MouseEvent event) {
         Object source = event.getSource();
-        // Verificar se o card está desabilitado
-        if (source instanceof VBox) {
-            VBox card = (VBox) source;
-            if (card.isDisable() || card.getStyleClass().contains("disabled")) {
-                return; // Não fazer nada se o card estiver desabilitado
-            }
-        }
-        
         if (source == cardPacientes) {
             btnPacientes.fire();
         } else if (source == cardAgendamentos) {
@@ -152,11 +120,6 @@ public class HomeController implements Initializable {
     private void handleMenuClick(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
         if (clickedButton == activeButton) return;
-        
-        // Verificar se o botão está desabilitado
-        if (clickedButton.isDisable() || clickedButton.getStyleClass().contains("disabled")) {
-            return; // Não fazer nada se o botão estiver desabilitado
-        }
 
         setActive(clickedButton);
 

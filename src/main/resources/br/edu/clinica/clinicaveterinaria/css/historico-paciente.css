@@ -133,6 +133,15 @@
     -fx-text-fill: white;
 }
 
+/* Garantir que células vazias não tenham background */
+.table-view .table-cell:empty {
+    -fx-background-color: transparent;
+}
+
+.table-view .table-cell:empty .type-badge {
+    -fx-background-color: transparent;
+}
+
 .btn-primary {
     -fx-background-color: #0066cc;
     -fx-text-fill: white;

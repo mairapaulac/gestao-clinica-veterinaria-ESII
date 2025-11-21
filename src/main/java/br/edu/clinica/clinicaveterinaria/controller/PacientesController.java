@@ -221,7 +221,14 @@ public class PacientesController implements Initializable {
                 dialogStage.setTitle("Histórico do Paciente: " + paciente.getNome());
                 dialogStage.initModality(Modality.WINDOW_MODAL);
                 dialogStage.initOwner(btnCadastrar.getScene().getWindow());
-                dialogStage.setScene(new Scene(loader.load()));
+                Scene scene = new Scene(loader.load());
+                dialogStage.setScene(scene);
+                
+                // Define tamanho maior para a janela
+                dialogStage.setMinWidth(1000);
+                dialogStage.setMinHeight(700);
+                dialogStage.setWidth(1200);
+                dialogStage.setHeight(800);
 
                 HistoricoPacienteController controller = loader.getController();
                 controller.setPaciente(paciente);
