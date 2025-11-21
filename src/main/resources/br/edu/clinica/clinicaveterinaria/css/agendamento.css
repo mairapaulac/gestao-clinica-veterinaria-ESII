@@ -1,6 +1,11 @@
+.root {
+    -fx-font-family: 'Poppins', 'Segoe UI', sans-serif;
+}
+
 .titulo-pagina {
-    -fx-font-size: 26px;
-    -fx-font-weight: bold;
+    -fx-font-size: 32px;
+    -fx-font-weight: normal;
+    -fx-font-family: 'Poppins Regular', 'Poppins', 'Segoe UI', sans-serif;
     -fx-text-fill: #333;
     -fx-padding: 0 0 15px 0;
 }

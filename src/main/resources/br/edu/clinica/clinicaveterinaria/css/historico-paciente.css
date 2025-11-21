@@ -1,6 +1,6 @@
 .root {
     -fx-background-color: #f5f7fa;
-    -fx-font-family: 'System';
+    -fx-font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
 
 .content-container {
@@ -11,8 +11,9 @@
 }
 
 .title {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
+    -fx-font-size: 32px;
+    -fx-font-weight: normal;
+    -fx-font-family: 'Poppins Regular', 'Poppins', 'Segoe UI', sans-serif;
     -fx-text-fill: #333;
     -fx-padding: 0 0 10px 0;
 }

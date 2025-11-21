@@ -1,3 +1,7 @@
+.root {
+    -fx-font-family: 'Poppins', 'Segoe UI', sans-serif;
+}
+
 .table-view {
     -fx-background-color: white;
     -fx-background-radius: 8;

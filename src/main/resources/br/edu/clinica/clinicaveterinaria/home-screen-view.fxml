@@ -14,9 +14,9 @@
 
     <!-- SIDEBAR -->
     <left>
-        <VBox styleClass="sidebar" prefWidth="200">
+        <VBox styleClass="sidebar" prefWidth="280" minWidth="280" maxWidth="280">
             <VBox alignment="CENTER" styleClass="sidebar-logo">
-                <ImageView fx:id="logoImageView" fitWidth="80" fitHeight="80" pickOnBounds="true" preserveRatio="true" />
+                <ImageView fx:id="logoImageView" fitWidth="156" fitHeight="156" pickOnBounds="true" preserveRatio="true" />
             </VBox>
 
             <VBox styleClass="sidebar-menu" VBox.vgrow="ALWAYS">
@@ -39,49 +39,49 @@
     <center>
         <VBox styleClass="main-content" spacing="30" fx:id="mainContent">
             <!-- HEADER -->
-            <HBox styleClass="header">
-                <Label fx:id="headerTitle" text="Clínica Veterinária" styleClass="header-title" />
-                <HBox styleClass="doctor-card">
-                    <ImageView fx:id="doctorImageView" fitWidth="60" fitHeight="60" preserveRatio="true"/>
+            <HBox styleClass="header" HBox.hgrow="ALWAYS">
+                <Label fx:id="headerTitle" text="Clínica Veterinária" styleClass="header-title" HBox.hgrow="ALWAYS" />
+                <HBox styleClass="doctor-card" alignment="CENTER_RIGHT">
                     <VBox styleClass="doctor-info">
                         <Label fx:id="doctorName" text="Usuário" styleClass="doctor-name"/>
                         <Label fx:id="doctorRole" text="Tipo" styleClass="doctor-role"/>
                     </VBox>
+                    <ImageView fx:id="doctorImageView" fitWidth="70" fitHeight="70" preserveRatio="true"/>
                 </HBox>
             </HBox>
 
             <!-- Content Container -->
             <VBox fx:id="contentArea" VBox.vgrow="ALWAYS">
                 <!-- CARDS -->
-                <TilePane fx:id="cardsGrid" styleClass="cards-grid" VBox.vgrow="ALWAYS">
-                    <VBox fx:id="cardPacientes" styleClass="card" onMouseClicked="#handleCardClick">
-                        <Label text="Pacientes" styleClass="card-title"/>
-                        <Label text="Cadastrar e gerenciar os pacientes" styleClass="card-text"/>
+                <TilePane fx:id="cardsGrid" styleClass="cards-grid" VBox.vgrow="ALWAYS" prefColumns="3" prefRows="2">
+                    <VBox fx:id="cardPacientes" styleClass="card" onMouseClicked="#handleCardClick" alignment="CENTER">
+                        <Label text="Pacientes" styleClass="card-title" alignment="CENTER"/>
+                        <Label text="Cadastrar e gerenciar os pacientes" styleClass="card-text" alignment="CENTER" wrapText="true"/>
                     </VBox>
 
-                    <VBox fx:id="cardAgendamentos" styleClass="card" onMouseClicked="#handleCardClick">
-                        <Label text="Agendamentos" styleClass="card-title"/>
-                        <Label text="Agendar consultas e gerenciar agendamentos" styleClass="card-text"/>
+                    <VBox fx:id="cardAgendamentos" styleClass="card" onMouseClicked="#handleCardClick" alignment="CENTER">
+                        <Label text="Agendamentos" styleClass="card-title" alignment="CENTER"/>
+                        <Label text="Agendar consultas e gerenciar agendamentos" styleClass="card-text" alignment="CENTER" wrapText="true"/>
                     </VBox>
 
-                    <VBox fx:id="cardEstoque" styleClass="card" onMouseClicked="#handleCardClick">
-                        <Label text="Controle de Estoque" styleClass="card-title"/>
-                        <Label text="Gerenciar medicamentos" styleClass="card-text"/>
+                    <VBox fx:id="cardEstoque" styleClass="card" onMouseClicked="#handleCardClick" alignment="CENTER">
+                        <Label text="Controle de Estoque" styleClass="card-title" alignment="CENTER"/>
+                        <Label text="Gerenciar medicamentos" styleClass="card-text" alignment="CENTER" wrapText="true"/>
                     </VBox>
 
-                    <VBox fx:id="cardFuncionarios" styleClass="card" onMouseClicked="#handleCardClick">
-                        <Label text="Gestão de Funcionários" styleClass="card-title"/>
-                        <Label text="Gerenciar funcionários" styleClass="card-text"/>
+                    <VBox fx:id="cardFuncionarios" styleClass="card" onMouseClicked="#handleCardClick" alignment="CENTER">
+                        <Label text="Gestão de Funcionários" styleClass="card-title" alignment="CENTER"/>
+                        <Label text="Gerenciar funcionários" styleClass="card-text" alignment="CENTER" wrapText="true"/>
                     </VBox>
 
-                    <VBox fx:id="cardRelatorios" styleClass="card" onMouseClicked="#handleCardClick">
-                        <Label text="Relatórios" styleClass="card-title"/>
-                        <Label text="Gerar relatórios" styleClass="card-text"/>
+                    <VBox fx:id="cardRelatorios" styleClass="card" onMouseClicked="#handleCardClick" alignment="CENTER">
+                        <Label text="Relatórios" styleClass="card-title" alignment="CENTER"/>
+                        <Label text="Gerar relatórios" styleClass="card-text" alignment="CENTER" wrapText="true"/>
                     </VBox>
 
-                    <VBox fx:id="cardFinanceiro" styleClass="card" onMouseClicked="#handleCardClick">
-                        <Label text="Faturamento e Pagamento" styleClass="card-title"/>
-                        <Label text="Gerenciar pagamentos" styleClass="card-text"/>
+                    <VBox fx:id="cardFinanceiro" styleClass="card" onMouseClicked="#handleCardClick" alignment="CENTER">
+                        <Label text="Faturamento e Pagamento" styleClass="card-title" alignment="CENTER"/>
+                        <Label text="Gerenciar pagamentos" styleClass="card-text" alignment="CENTER" wrapText="true"/>
                     </VBox>
                 </TilePane>
             </VBox>

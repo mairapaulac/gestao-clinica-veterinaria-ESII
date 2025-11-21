@@ -1,4 +1,7 @@
 /* Estilo geral do VBox raiz é definido inline no FXML para corresponder a pacientes-view.fxml */
+.root {
+    -fx-font-family: 'Poppins', 'Segoe UI', sans-serif;
+}
 
 /* Botão de Novo Agendamento - Estilo baseado no .btn-cadastrar de pacientes.css */
 .btn-novo-agendamento {
