@@ -17,8 +17,6 @@
       style="-fx-background-color: #f5f7fa; -fx-padding: 20;"
       spacing="15">
 
-    <Label text="Faturamento e Pagamento" styleClass="title"/>
-
     <VBox styleClass="content-container" spacing="15">
         <!-- Toggle entre Pendentes e Pagos -->
         <HBox spacing="10" alignment="CENTER_LEFT">

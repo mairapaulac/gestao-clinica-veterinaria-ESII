@@ -32,43 +32,39 @@ public class MainApplication extends Application {
     }
     
     private void loadPoppinsFont() {
+        // Suprimir avisos do FontBox (Apache) sobre tabelas TTF
+        java.util.logging.Logger fontboxLogger = java.util.logging.Logger.getLogger("org.apache.fontbox");
+        fontboxLogger.setLevel(java.util.logging.Level.SEVERE);
+        
         int fontsLoaded = 0;
-        try {
-            // Tentar carregar as variantes da fonte Poppins
-            java.io.InputStream regularStream = getClass().getResourceAsStream("/br/edu/clinica/clinicaveterinaria/fonts/Poppins-Regular.ttf");
-            java.io.InputStream boldStream = getClass().getResourceAsStream("/br/edu/clinica/clinicaveterinaria/fonts/Poppins-Bold.ttf");
-            java.io.InputStream semiBoldStream = getClass().getResourceAsStream("/br/edu/clinica/clinicaveterinaria/fonts/Poppins-SemiBold.ttf");
-            java.io.InputStream mediumStream = getClass().getResourceAsStream("/br/edu/clinica/clinicaveterinaria/fonts/Poppins-Medium.ttf");
-            
-            if (regularStream != null) {
-                Font font = Font.loadFont(regularStream, 12);
-                regularStream.close();
-                if (font != null) fontsLoaded++;
+        String[] fontFiles = {
+            "Poppins-Regular.ttf",
+            "Poppins-Bold.ttf",
+            "Poppins-SemiBold.ttf",
+            "Poppins-Medium.ttf"
+        };
+        
+        for (String fontFile : fontFiles) {
+            try (java.io.InputStream fontStream = getClass().getResourceAsStream("/br/edu/clinica/clinicaveterinaria/fonts/" + fontFile)) {
+                if (fontStream != null) {
+                    // Verificar se o stream tem conteúdo válido
+                    if (fontStream.available() > 0) {
+                        Font font = Font.loadFont(fontStream, 12);
+                        if (font != null) {
+                            fontsLoaded++;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Ignorar erros individuais de fonte, continuar tentando as outras
+                System.err.println("⚠ Não foi possível carregar " + fontFile + ": " + e.getMessage());
             }
-            if (boldStream != null) {
-                Font font = Font.loadFont(boldStream, 12);
-                boldStream.close();
-                if (font != null) fontsLoaded++;
-            }
-            if (semiBoldStream != null) {
-                Font font = Font.loadFont(semiBoldStream, 12);
-                semiBoldStream.close();
-                if (font != null) fontsLoaded++;
-            }
-            if (mediumStream != null) {
-                Font font = Font.loadFont(mediumStream, 12);
-                mediumStream.close();
-                if (font != null) fontsLoaded++;
-            }
-            
-            if (fontsLoaded > 0) {
-                System.out.println("✓ Fonte Poppins carregada com sucesso! (" + fontsLoaded + " variantes carregadas)");
-            } else {
-                System.out.println("⚠ Aviso: Arquivos de fonte Poppins não encontrados. Usando fonte do sistema.");
-            }
-        } catch (Exception e) {
-            System.err.println("⚠ Erro ao carregar fonte Poppins: " + e.getMessage());
-            e.printStackTrace();
+        }
+        
+        if (fontsLoaded > 0) {
+            System.out.println("✓ Fonte Poppins carregada com sucesso! (" + fontsLoaded + " variantes carregadas)");
+        } else {
+            System.out.println("⚠ Aviso: Arquivos de fonte Poppins não encontrados ou inválidos. Usando fonte do sistema.");
         }
     }
 

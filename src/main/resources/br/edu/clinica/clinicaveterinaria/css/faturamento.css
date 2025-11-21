@@ -7,52 +7,52 @@
     -fx-background-color: white;
     -fx-background-radius: 12px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 10, 0, 0, 2);
-    -fx-padding: 20px;
+    -fx-padding: 22px;
 }
 
 .title {
-    -fx-font-size: 32px;
+    -fx-font-size: 35px;
     -fx-font-weight: normal;
     -fx-font-family: 'Poppins Regular', 'Poppins', 'Segoe UI', sans-serif;
     -fx-text-fill: #333;
-    -fx-padding: 0 0 10px 0;
+    -fx-padding: 0 0 11px 0;
 }
 
 .section-title {
-    -fx-font-size: 16px;
+    -fx-font-size: 18px;
     -fx-font-weight: 600;
     -fx-text-fill: #333;
-    -fx-padding: 10px 0 5px 0;
+    -fx-padding: 11px 0 6px 0;
 }
 
 .info-box {
     -fx-background-color: #f8f9fa;
     -fx-background-radius: 8px;
-    -fx-padding: 15px;
+    -fx-padding: 17px;
     -fx-border-color: #e0e0e0;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
 }
 
 .info-label {
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
     -fx-text-fill: #666;
     -fx-padding: 3px 0;
 }
 
 .info-value {
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
     -fx-font-weight: 600;
     -fx-text-fill: #333;
     -fx-padding: 3px 0;
 }
 
 .search-field {
-    -fx-padding: 8px 12px;
+    -fx-padding: 9px 13px;
     -fx-border-color: #ddd;
     -fx-border-radius: 6px;
-    -fx-font-size: 13px;
-    -fx-pref-width: 300px;
+    -fx-font-size: 14px;
+    -fx-pref-width: 330px;
     -fx-background-color: white;
 }
 
@@ -81,18 +81,20 @@
 .table-view .column-header {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-padding: 10px;
-    -fx-font-size: 12px;
+    -fx-padding: 15px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #333;
+    -fx-alignment: center;
 }
 
 .table-view .table-cell {
-    -fx-padding: 10px;
+    -fx-padding: 18px;
     -fx-border-color: #f0f0f0;
     -fx-border-width: 0 0 1px 0;
-    -fx-font-size: 12px;
+    -fx-font-size: 15px;
     -fx-text-fill: #555;
+    -fx-alignment: center;
 }
 
 .table-row-cell {
@@ -112,8 +114,8 @@
     -fx-background-color: #0066cc;
     -fx-text-fill: white;
     -fx-font-weight: 600;
-    -fx-font-size: 13px;
-    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-padding: 11px 22px;
     -fx-background-radius: 6px;
     -fx-cursor: hand;
 }
@@ -126,8 +128,8 @@
     -fx-background-color: #f0f0f0;
     -fx-text-fill: #333;
     -fx-font-weight: 600;
-    -fx-font-size: 13px;
-    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-padding: 11px 22px;
     -fx-background-radius: 6px;
     -fx-border-color: #ddd;
     -fx-border-width: 1px;
@@ -142,8 +144,8 @@
     -fx-background-color: #28a745;
     -fx-text-fill: white;
     -fx-font-weight: 600;
-    -fx-font-size: 13px;
-    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-padding: 11px 22px;
     -fx-background-radius: 6px;
     -fx-cursor: hand;
 }
@@ -153,11 +155,11 @@
 }
 
 .combo-box {
-    -fx-padding: 8px 12px;
+    -fx-padding: 9px 13px;
     -fx-border-color: #ddd;
     -fx-border-radius: 6px;
-    -fx-font-size: 13px;
-    -fx-pref-width: 200px;
+    -fx-font-size: 14px;
+    -fx-pref-width: 220px;
     -fx-background-color: white;
 }
 
@@ -166,10 +168,10 @@
 }
 
 .text-field {
-    -fx-padding: 8px 12px;
+    -fx-padding: 9px 13px;
     -fx-border-color: #ddd;
     -fx-border-radius: 6px;
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
     -fx-background-color: white;
 }
 
@@ -180,32 +182,32 @@
 .total-box {
     -fx-background-color: #e6f2ff;
     -fx-background-radius: 8px;
-    -fx-padding: 15px;
+    -fx-padding: 17px;
     -fx-border-color: #0066cc;
     -fx-border-radius: 8px;
     -fx-border-width: 2px;
 }
 
 .total-label {
-    -fx-font-size: 14px;
+    -fx-font-size: 15px;
     -fx-text-fill: #666;
-    -fx-padding: 5px 0;
+    -fx-padding: 6px 0;
 }
 
 .total-value {
-    -fx-font-size: 24px;
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
     -fx-text-fill: #0066cc;
 }
 
 .empty-state {
     -fx-alignment: center;
-    -fx-padding: 40px;
-    -fx-spacing: 10px;
+    -fx-padding: 44px;
+    -fx-spacing: 11px;
 }
 
 .empty-state-label {
-    -fx-font-size: 14px;
+    -fx-font-size: 15px;
     -fx-text-fill: #666;
 }
 
@@ -213,8 +215,8 @@
     -fx-background-color: #f0f0f0;
     -fx-text-fill: #333;
     -fx-font-weight: 600;
-    -fx-font-size: 13px;
-    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-padding: 11px 22px;
     -fx-background-radius: 6px;
     -fx-border-color: #ddd;
     -fx-border-width: 1px;

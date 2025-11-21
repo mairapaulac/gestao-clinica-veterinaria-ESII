@@ -25,8 +25,8 @@
                 <Button fx:id="btnAgendamentos" text="Agendamentos" styleClass="menu-btn" onAction="#handleMenuClick"/>
                 <Button fx:id="btnEstoque" text="Controle de Estoque" styleClass="menu-btn" onAction="#handleMenuClick"/>
                 <Button fx:id="btnFuncionarios" text="Gestão de Funcionários" styleClass="menu-btn" onAction="#handleMenuClick"/>
-                <Button fx:id="btnRelatorios" text="Relatórios" styleClass="menu-btn" onAction="#handleMenuClick"/>
                 <Button fx:id="btnFinanceiro" text="Faturamento e Pagamento" styleClass="menu-btn" onAction="#handleMenuClick"/>
+                <Button fx:id="btnRelatorios" text="Relatórios" styleClass="menu-btn" onAction="#handleMenuClick"/>
             </VBox>
 
             <VBox styleClass="sidebar-logout">
@@ -74,14 +74,14 @@
                         <Label text="Gerenciar funcionários" styleClass="card-text" alignment="CENTER" wrapText="true"/>
                     </VBox>
 
-                    <VBox fx:id="cardRelatorios" styleClass="card" onMouseClicked="#handleCardClick" alignment="CENTER">
-                        <Label text="Relatórios" styleClass="card-title" alignment="CENTER"/>
-                        <Label text="Gerar relatórios" styleClass="card-text" alignment="CENTER" wrapText="true"/>
-                    </VBox>
-
                     <VBox fx:id="cardFinanceiro" styleClass="card" onMouseClicked="#handleCardClick" alignment="CENTER">
                         <Label text="Faturamento e Pagamento" styleClass="card-title" alignment="CENTER"/>
                         <Label text="Gerenciar pagamentos" styleClass="card-text" alignment="CENTER" wrapText="true"/>
+                    </VBox>
+
+                    <VBox fx:id="cardRelatorios" styleClass="card" onMouseClicked="#handleCardClick" alignment="CENTER">
+                        <Label text="Relatórios" styleClass="card-title" alignment="CENTER"/>
+                        <Label text="Gerar relatórios" styleClass="card-text" alignment="CENTER" wrapText="true"/>
                     </VBox>
                 </TilePane>
             </VBox>

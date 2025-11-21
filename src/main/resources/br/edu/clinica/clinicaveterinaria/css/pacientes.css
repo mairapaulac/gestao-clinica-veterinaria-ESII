@@ -20,18 +20,20 @@
 .table-view .column-header {
     -fx-background-color: white;
     -fx-border-color: transparent;
-    -fx-padding: 18px;
-    -fx-font-size: 14px;
+    -fx-padding: 20px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #333;
+    -fx-alignment: center;
 }
 
 .table-view .table-cell {
-    -fx-padding: 16px;
+    -fx-padding: 18px;
     -fx-border-color: #f0f0f0;
     -fx-border-width: 0 0 1px 0;
-    -fx-font-size: 14px;
+    -fx-font-size: 15px;
     -fx-text-fill: #555;
+    -fx-alignment: center;
 }
 
 .table-row-cell {
@@ -83,19 +85,19 @@
 }
 
 .search-field {
-    -fx-padding: 10px 16px;
+    -fx-padding: 11px 18px;
     -fx-border-color: #ddd;
     -fx-border-radius: 6px;
-    -fx-font-size: 14px;
-    -fx-pref-width: 250px;
+    -fx-font-size: 15px;
+    -fx-pref-width: 275px;
 }
 
 .btn-cadastrar {
     -fx-background-color: #0066cc;
     -fx-text-fill: white;
     -fx-font-weight: 600;
-    -fx-font-size: 14px;
-    -fx-padding: 12px 20px;
+    -fx-font-size: 15px;
+    -fx-padding: 13px 22px;
     -fx-background-radius: 6px;
     -fx-cursor: hand;
 }

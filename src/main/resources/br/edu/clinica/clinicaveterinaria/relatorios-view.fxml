@@ -17,7 +17,6 @@
       style="-fx-background-color: #f5f7fa; -fx-padding: 20;"
       spacing="15">
 
-    <Label text="Relatórios" styleClass="title"/>
 
     <VBox styleClass="content-container" spacing="15">
         <!-- Seleção de Tipo de Relatório -->

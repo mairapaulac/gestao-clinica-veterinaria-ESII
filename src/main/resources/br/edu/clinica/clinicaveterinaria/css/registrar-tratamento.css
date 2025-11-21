@@ -98,6 +98,7 @@
 }
 
 .table-view .column-header {
+    -fx-alignment: center;
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-padding: 8px;
