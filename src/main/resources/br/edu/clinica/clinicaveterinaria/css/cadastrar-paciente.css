@@ -97,3 +97,9 @@
     -fx-text-fill: #555;
     -fx-padding: 10px 0 5px 0;
 }
+
+.cpf-status-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #28a745;
+    -fx-padding: 0 5px;
+}

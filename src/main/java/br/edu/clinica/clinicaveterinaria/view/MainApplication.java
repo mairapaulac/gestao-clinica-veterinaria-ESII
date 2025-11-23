@@ -16,9 +16,7 @@ import java.util.Objects;
 public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        // Carregar fonte Poppins se disponível
         loadPoppinsFont();
-        
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/br/edu/clinica/clinicaveterinaria/login-view.fxml")));
         Scene scene = new Scene(root, 1280, 720);
 
@@ -32,7 +30,6 @@ public class MainApplication extends Application {
     }
     
     private void loadPoppinsFont() {
-        // Suprimir avisos do FontBox (Apache) sobre tabelas TTF
         java.util.logging.Logger fontboxLogger = java.util.logging.Logger.getLogger("org.apache.fontbox");
         fontboxLogger.setLevel(java.util.logging.Level.SEVERE);
         
@@ -47,7 +44,6 @@ public class MainApplication extends Application {
         for (String fontFile : fontFiles) {
             try (java.io.InputStream fontStream = getClass().getResourceAsStream("/br/edu/clinica/clinicaveterinaria/fonts/" + fontFile)) {
                 if (fontStream != null) {
-                    // Verificar se o stream tem conteúdo válido
                     if (fontStream.available() > 0) {
                         Font font = Font.loadFont(fontStream, 12);
                         if (font != null) {
@@ -56,7 +52,6 @@ public class MainApplication extends Application {
                     }
                 }
             } catch (Exception e) {
-                // Ignorar erros individuais de fonte, continuar tentando as outras
                 System.err.println("⚠ Não foi possível carregar " + fontFile + ": " + e.getMessage());
             }
         }

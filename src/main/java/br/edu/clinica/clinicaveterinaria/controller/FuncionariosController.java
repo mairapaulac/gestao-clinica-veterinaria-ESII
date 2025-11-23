@@ -5,6 +5,7 @@ import br.edu.clinica.clinicaveterinaria.dao.VeterinarioDAO;
 import br.edu.clinica.clinicaveterinaria.model.Funcionario;
 import br.edu.clinica.clinicaveterinaria.model.UsuarioSistema;
 import br.edu.clinica.clinicaveterinaria.model.Veterinario;
+import br.edu.clinica.clinicaveterinaria.util.DatabaseErrorHandler;
 import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import br.edu.clinica.clinicaveterinaria.view.SessionManager;
 import javafx.beans.property.SimpleStringProperty;
@@ -99,8 +100,9 @@ public class FuncionariosController implements Initializable {
             filteredData = new FilteredList<>(listaUsuarios, p -> true);
             tabelaUsuarios.setItems(filteredData);
         } catch (SQLException e) {
-            MainApplication.showErrorAlert("Erro de Banco de Dados", "Não foi possível carregar os usuários do banco de dados.");
             e.printStackTrace();
+            String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "carregar usuários");
+            MainApplication.showErrorAlert("Erro de Banco de Dados", mensagem);
         }
     }
 
@@ -192,7 +194,9 @@ public class FuncionariosController implements Initializable {
                         MainApplication.showSuccessAlert("Sucesso", "Usuário excluído com sucesso!");
                     } catch (SQLException e) {
                         e.printStackTrace();
-                        MainApplication.showErrorAlert("Erro ao Excluir", "Erro ao excluir usuário: " + e.getMessage());
+                        String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "excluir usuário");
+                        String titulo = DatabaseErrorHandler.getErrorTitle("excluir usuário");
+                        MainApplication.showErrorAlert(titulo, mensagem);
                     }
                 }
             });

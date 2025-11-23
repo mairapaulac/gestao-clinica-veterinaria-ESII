@@ -105,7 +105,6 @@
     -fx-font-weight: normal;
     -fx-font-family: 'Poppins Regular', 'Poppins', 'Segoe UI', sans-serif;
     -fx-text-fill: #333;
-    -fx-hgrow: ALWAYS;
 }
 
 .doctor-card {
@@ -118,6 +117,7 @@
     -fx-pref-width: 350px;
     -fx-min-width: 350px;
     -fx-max-width: 350px;
+    -fx-hgrow: NEVER;
 }
 
 .doctor-card ImageView {

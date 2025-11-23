@@ -5,6 +5,7 @@ import br.edu.clinica.clinicaveterinaria.dao.VeterinarioDAO;
 import br.edu.clinica.clinicaveterinaria.model.Funcionario;
 import br.edu.clinica.clinicaveterinaria.model.UsuarioSistema;
 import br.edu.clinica.clinicaveterinaria.model.Veterinario;
+import br.edu.clinica.clinicaveterinaria.util.DatabaseErrorHandler;
 import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -138,7 +139,9 @@ public class CadastrarFuncionarioController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            MainApplication.showErrorAlert("Erro no Banco de Dados", "Erro ao salvar: " + e.getMessage());
+            String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "salvar usuário");
+            String titulo = DatabaseErrorHandler.getErrorTitle("salvar usuário");
+            MainApplication.showErrorAlert(titulo, mensagem);
         }
     }
 

@@ -2,15 +2,6 @@ module br.edu.clinica.clinicaveterinaria {
 
     requires javafx.controls;
     requires javafx.fxml;
-    requires javafx.web;
-
-    requires org.controlsfx.controls;
-    requires com.dlsc.formsfx;
-    requires net.synedra.validatorfx;
-    requires org.kordamp.ikonli.javafx;
-    requires org.kordamp.bootstrapfx.core;
-    //requires eu.hansolo.tilesfx;
-    requires com.almasb.fxgl.all;
     requires transitive java.sql;
     requires javafx.graphics;
     requires org.apache.pdfbox;
@@ -21,4 +12,5 @@ module br.edu.clinica.clinicaveterinaria {
     exports br.edu.clinica.clinicaveterinaria.view;
     exports br.edu.clinica.clinicaveterinaria.model;
     exports br.edu.clinica.clinicaveterinaria.dao;
+    exports br.edu.clinica.clinicaveterinaria.util;
 }

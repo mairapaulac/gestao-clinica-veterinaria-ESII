@@ -39,16 +39,20 @@
     <center>
         <VBox styleClass="main-content" spacing="30" fx:id="mainContent">
             <!-- HEADER -->
-            <HBox styleClass="header" HBox.hgrow="ALWAYS">
-                <Label fx:id="headerTitle" text="Clínica Veterinária" styleClass="header-title" HBox.hgrow="ALWAYS" />
-                <HBox styleClass="doctor-card" alignment="CENTER_RIGHT">
-                    <VBox styleClass="doctor-info">
-                        <Label fx:id="doctorName" text="Usuário" styleClass="doctor-name"/>
-                        <Label fx:id="doctorRole" text="Tipo" styleClass="doctor-role"/>
-                    </VBox>
-                    <ImageView fx:id="doctorImageView" fitWidth="70" fitHeight="70" preserveRatio="true"/>
-                </HBox>
-            </HBox>
+            <BorderPane styleClass="header">
+                <left>
+                    <Label fx:id="headerTitle" text="Clínica Veterinária" styleClass="header-title" />
+                </left>
+                <right>
+                    <HBox styleClass="doctor-card" alignment="CENTER_RIGHT">
+                        <VBox styleClass="doctor-info">
+                            <Label fx:id="doctorName" text="Usuário" styleClass="doctor-name"/>
+                            <Label fx:id="doctorRole" text="Tipo" styleClass="doctor-role"/>
+                        </VBox>
+                        <ImageView fx:id="doctorImageView" fitWidth="70" fitHeight="70" preserveRatio="true"/>
+                    </HBox>
+                </right>
+            </BorderPane>
 
             <!-- Content Container -->
             <VBox fx:id="contentArea" VBox.vgrow="ALWAYS">

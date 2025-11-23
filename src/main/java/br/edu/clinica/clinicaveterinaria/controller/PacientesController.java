@@ -2,6 +2,7 @@ package br.edu.clinica.clinicaveterinaria.controller;
 
 import br.edu.clinica.clinicaveterinaria.dao.PacienteDAO;
 import br.edu.clinica.clinicaveterinaria.model.Paciente;
+import br.edu.clinica.clinicaveterinaria.util.DatabaseErrorHandler;
 import br.edu.clinica.clinicaveterinaria.model.Proprietario;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -82,10 +83,11 @@ public class PacientesController implements Initializable {
             tabelaPacientes.setItems(filteredData);
         } catch (SQLException e) {
             e.printStackTrace();
+            String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "carregar pacientes");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erro ao Carregar Dados");
             alert.setHeaderText(null);
-            alert.setContentText("Erro ao carregar pacientes do banco de dados: " + e.getMessage());
+            alert.setContentText(mensagem);
             alert.showAndWait();
         }
     }
@@ -175,10 +177,11 @@ public class PacientesController implements Initializable {
                 alert.showAndWait();
             } catch (SQLException e) {
                 e.printStackTrace();
+                String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "buscar dados do paciente");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Erro");
                 alert.setHeaderText(null);
-                alert.setContentText("Erro ao buscar dados do paciente: " + e.getMessage());
+                alert.setContentText(mensagem);
                 alert.showAndWait();
             }
         }
@@ -267,10 +270,12 @@ public class PacientesController implements Initializable {
                         sucesso.showAndWait();
                     } catch (SQLException e) {
                         e.printStackTrace();
+                        String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "excluir paciente");
+                        String titulo = DatabaseErrorHandler.getErrorTitle("excluir paciente");
                         Alert erro = new Alert(Alert.AlertType.ERROR);
-                        erro.setTitle("Erro ao Excluir");
+                        erro.setTitle(titulo);
                         erro.setHeaderText(null);
-                        erro.setContentText("Erro ao excluir paciente: " + e.getMessage());
+                        erro.setContentText(mensagem);
                         erro.showAndWait();
                     }
                 }

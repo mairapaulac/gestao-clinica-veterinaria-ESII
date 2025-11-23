@@ -1,9 +1,9 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
 import br.edu.clinica.clinicaveterinaria.model.Medicamento;
+import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -67,14 +67,14 @@ public class CadastrarMedicamentoController {
         String numeroLote = txtNumeroLote.getText().trim();
 
         if (nome.isEmpty() || fabricante.isEmpty() || numeroLote.isEmpty()) {
-            showAlert("Erro de Validação", "Nome, Fabricante e Número do Lote não podem estar em branco.");
+            MainApplication.showErrorAlert("Erro de Validação", "Nome, Fabricante e Número do Lote não podem estar em branco.");
             return;
         }
 
         if (medicamentoToEdit == null) {
             for (Medicamento m : existingMedicamentos) {
                 if (m.getNome().equalsIgnoreCase(nome)) {
-                    showAlert("Erro", "Um medicamento com este nome já existe.");
+                    MainApplication.showErrorAlert("Erro", "Um medicamento com este nome já existe.");
                     return;
                 }
             }
@@ -84,11 +84,11 @@ public class CadastrarMedicamentoController {
         try {
             quantidade = Integer.parseInt(txtQuantidade.getText());
             if (quantidade < 0) {
-                showAlert("Erro de Validação", "A quantidade não pode ser negativa.");
+                MainApplication.showErrorAlert("Erro de Validação", "A quantidade não pode ser negativa.");
                 return;
             }
         } catch (NumberFormatException e) {
-            showAlert("Erro de Validação", "A quantidade deve ser um número válido.");
+            MainApplication.showErrorAlert("Erro de Validação", "A quantidade deve ser um número válido.");
             return;
         }
 
@@ -96,7 +96,7 @@ public class CadastrarMedicamentoController {
         LocalDate dataEntrada = dpEntrada.getValue();
 
         if (dataValidade == null || dataEntrada == null) {
-            showAlert("Erro de Validação", "As datas de validade e entrada não podem estar em branco.");
+            MainApplication.showErrorAlert("Erro de Validação", "As datas de validade e entrada não podem estar em branco.");
             return;
         }
 
@@ -111,13 +111,5 @@ public class CadastrarMedicamentoController {
     private void fecharJanela() {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

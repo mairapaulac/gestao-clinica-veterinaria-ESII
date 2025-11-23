@@ -4,10 +4,14 @@ import br.edu.clinica.clinicaveterinaria.dao.PacienteDAO;
 import br.edu.clinica.clinicaveterinaria.dao.ProprietarioDAO;
 import br.edu.clinica.clinicaveterinaria.model.Paciente;
 import br.edu.clinica.clinicaveterinaria.model.Proprietario;
+import br.edu.clinica.clinicaveterinaria.util.DatabaseErrorHandler;
+import br.edu.clinica.clinicaveterinaria.view.MainApplication;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -35,21 +39,31 @@ public class CadastrarPacienteController {
     @FXML private Button btnSalvar;
     @FXML private Button btnCancelar;
     @FXML private Label lblTitle;
+    @FXML private ProgressIndicator cpfLoadingIndicator;
+    @FXML private Label cpfStatusLabel;
 
     private Paciente pacienteToEdit;
-    private List<Paciente> existingPacientes;
     private Paciente newPaciente = null;
     private PacienteDAO pacienteDAO = new PacienteDAO();
     private ProprietarioDAO proprietarioDAO = new ProprietarioDAO();
+    private Task<Proprietario> buscaProprietarioTask = null;
 
     @FXML
     private void initialize() {
         btnSalvar.setOnAction(event -> salvarPaciente());
         btnCancelar.setOnAction(event -> cancelar());
+        
+        // Listener para buscar proprietário automaticamente quando CPF for digitado
+        txtCpfTutor.textProperty().addListener((observable, oldValue, newValue) -> {
+            // Só busca se não estiver editando um paciente existente e se o CPF for diferente do anterior
+            if (pacienteToEdit == null && newValue != null && !newValue.trim().isEmpty() 
+                && (oldValue == null || !oldValue.trim().equals(newValue.trim()))) {
+                buscarProprietarioPorCpf(newValue.trim());
+            }
+        });
     }
 
     public void setPacienteData(Paciente paciente, List<Paciente> pacientes) {
-        this.existingPacientes = pacientes;
         this.pacienteToEdit = paciente;
 
         if (paciente != null) {
@@ -73,9 +87,13 @@ public class CadastrarPacienteController {
             txtCpfTutor.setEditable(false);
             btnSalvar.setText("Salvar");
             lblTitle.setText("Editando Paciente");
+            
+            // Desabilita busca automática ao editar
+            resetarStatusCpf();
         } else {
             btnSalvar.setText("Cadastrar");
             lblTitle.setText("Cadastrar Novo Paciente");
+            txtCpfTutor.setEditable(true);
         }
     }
 
@@ -86,67 +104,67 @@ public class CadastrarPacienteController {
     private void salvarPaciente() {
         String nome = txtNome.getText().trim();
         if (nome.isEmpty()) {
-            showAlert("Erro de Validação", "O nome do paciente não pode estar em branco.");
+            MainApplication.showErrorAlert("Erro de Validação", "O nome do paciente não pode estar em branco.");
             return;
         }
 
         String cpfTutor = txtCpfTutor.getText().trim().replaceAll("[^0-9]", "");
         if (cpfTutor.isEmpty()) {
-            showAlert("Erro de Validação", "O CPF do tutor é obrigatório.");
+            MainApplication.showErrorAlert("Erro de Validação", "O CPF do tutor é obrigatório.");
             return;
         }
 
         String nomeTutor = txtNomeTutor.getText().trim();
         if (nomeTutor.isEmpty()) {
-            showAlert("Erro de Validação", "O nome do tutor é obrigatório.");
+            MainApplication.showErrorAlert("Erro de Validação", "O nome do tutor é obrigatório.");
             return;
         }
 
         String telefoneTutor = txtTelefoneTutor.getText().trim();
         if (telefoneTutor.isEmpty()) {
-            showAlert("Erro de Validação", "O telefone do tutor é obrigatório.");
+            MainApplication.showErrorAlert("Erro de Validação", "O telefone do tutor é obrigatório.");
             return;
         }
 
         String emailTutor = txtEmailTutor.getText().trim();
         if (emailTutor.isEmpty()) {
-            showAlert("Erro de Validação", "O e-mail do tutor é obrigatório.");
+            MainApplication.showErrorAlert("Erro de Validação", "O e-mail do tutor é obrigatório.");
             return;
         }
 
         String rua = txtRua.getText().trim();
         if (rua.isEmpty()) {
-            showAlert("Erro de Validação", "A rua é obrigatória.");
+            MainApplication.showErrorAlert("Erro de Validação", "A rua é obrigatória.");
             return;
         }
 
         String numero = txtNumero.getText().trim();
         if (numero.isEmpty()) {
-            showAlert("Erro de Validação", "O número é obrigatório.");
+            MainApplication.showErrorAlert("Erro de Validação", "O número é obrigatório.");
             return;
         }
 
         String bairro = txtBairro.getText().trim();
         if (bairro.isEmpty()) {
-            showAlert("Erro de Validação", "O bairro é obrigatório.");
+            MainApplication.showErrorAlert("Erro de Validação", "O bairro é obrigatório.");
             return;
         }
 
         String cidade = txtCidade.getText().trim();
         if (cidade.isEmpty()) {
-            showAlert("Erro de Validação", "A cidade é obrigatória.");
+            MainApplication.showErrorAlert("Erro de Validação", "A cidade é obrigatória.");
             return;
         }
 
         String estado = txtEstado.getText().trim();
         if (estado.isEmpty()) {
-            showAlert("Erro de Validação", "O estado é obrigatório.");
+            MainApplication.showErrorAlert("Erro de Validação", "O estado é obrigatório.");
             return;
         }
 
         String cep = txtCep.getText().trim();
         if (cep.isEmpty()) {
-            showAlert("Erro de Validação", "O CEP é obrigatório.");
+            MainApplication.showErrorAlert("Erro de Validação", "O CEP é obrigatório.");
             return;
         }
 
@@ -157,21 +175,21 @@ public class CadastrarPacienteController {
         String dataTexto = dpNascimento.getEditor().getText();
 
         if (dataTexto == null || dataTexto.trim().isEmpty()) {
-             showAlert("Erro de Validação", "A data de nascimento não pode estar em branco.");
+             MainApplication.showErrorAlert("Erro de Validação", "A data de nascimento não pode estar em branco.");
              return;
         }
 
         try {
             dpNascimento.getConverter().fromString(dataTexto);
         } catch (Exception e) {
-            showAlert("Erro de Validação", "O formato da data é inválido. Use dd/mm/aaaa.");
+            MainApplication.showErrorAlert("Erro de Validação", "O formato da data é inválido. Use dd/mm/aaaa.");
             return;
         }
         
         dataNascimento = dpNascimento.getValue();
 
         if (dataNascimento.isAfter(LocalDate.now())) {
-            showAlert("Erro de Validação", "A data de nascimento não pode ser uma data futura.");
+            MainApplication.showErrorAlert("Erro de Validação", "A data de nascimento não pode ser uma data futura.");
             return;
         }
 
@@ -217,7 +235,7 @@ public class CadastrarPacienteController {
                 newPaciente.setProprietario(proprietario);
                 
                 pacienteDAO.inserirPaciente(newPaciente);
-                showAlert("Sucesso", "Paciente cadastrado com sucesso!");
+                MainApplication.showSuccessAlert("Sucesso", "Paciente cadastrado com sucesso!");
             } else {
                 pacienteToEdit.setNome(nome);
                 pacienteToEdit.setEspecie(especie);
@@ -227,14 +245,16 @@ public class CadastrarPacienteController {
                 
                 pacienteDAO.atualizarPaciente(pacienteToEdit);
                 newPaciente = pacienteToEdit;
-                showAlert("Sucesso", "Paciente atualizado com sucesso!");
+                MainApplication.showSuccessAlert("Sucesso", "Paciente atualizado com sucesso!");
             }
             
             fecharJanela();
             
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert("Erro no Banco de Dados", "Erro ao salvar paciente: " + e.getMessage());
+            String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "salvar paciente");
+            String titulo = DatabaseErrorHandler.getErrorTitle("salvar paciente");
+            MainApplication.showErrorAlert(titulo, mensagem);
         }
     }
 
@@ -246,14 +266,123 @@ public class CadastrarPacienteController {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
     }
-
-    private void showAlert(String title, String message) {
-        Alert.AlertType type = title.equals("Sucesso") ? Alert.AlertType.INFORMATION : Alert.AlertType.ERROR;
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    
+    private void buscarProprietarioPorCpf(String cpfCompleto) {
+        // Remove caracteres especiais do CPF
+        String cpf = cpfCompleto.replaceAll("[^0-9]", "");
+        
+        // Só busca se tiver exatamente 11 dígitos (CPF completo)
+        if (cpf.length() != 11) {
+            resetarStatusCpf();
+            return;
+        }
+        
+        // Cancela busca anterior se estiver em andamento
+        if (buscaProprietarioTask != null && buscaProprietarioTask.isRunning()) {
+            buscaProprietarioTask.cancel();
+        }
+        
+        // Mostra indicador de carregamento
+        cpfLoadingIndicator.setVisible(true);
+        cpfLoadingIndicator.setManaged(true);
+        cpfStatusLabel.setVisible(false);
+        cpfStatusLabel.setManaged(false);
+        
+        // Cria task assíncrona para buscar no banco
+        buscaProprietarioTask = new Task<Proprietario>() {
+            @Override
+            protected Proprietario call() throws Exception {
+                // Pequeno delay para evitar múltiplas buscas enquanto usuário digita
+                Thread.sleep(300);
+                
+                if (isCancelled()) {
+                    return null;
+                }
+                
+                try {
+                    return proprietarioDAO.buscarPorCpf(cpf);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        };
+        
+        // Quando a busca terminar
+        buscaProprietarioTask.setOnSucceeded(e -> {
+            try {
+                Proprietario proprietario = buscaProprietarioTask.getValue();
+                Platform.runLater(() -> {
+                    cpfLoadingIndicator.setVisible(false);
+                    cpfLoadingIndicator.setManaged(false);
+                    
+                    if (proprietario != null) {
+                        // Preenche automaticamente os campos do proprietário
+                        preencherDadosProprietario(proprietario);
+                        
+                        // Mostra ícone de verificado
+                        cpfStatusLabel.setText("✓");
+                        cpfStatusLabel.setVisible(true);
+                        cpfStatusLabel.setManaged(true);
+                    } else {
+                        // Limpa os campos se não encontrou
+                        resetarStatusCpf();
+                    }
+                });
+            } catch (Exception ex) {
+                Platform.runLater(() -> {
+                    resetarStatusCpf();
+                    ex.printStackTrace();
+                });
+            }
+        });
+        
+        // Trata erros
+        buscaProprietarioTask.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                resetarStatusCpf();
+                Throwable ex = buscaProprietarioTask.getException();
+                if (ex != null && !(ex instanceof InterruptedException)) {
+                    ex.printStackTrace();
+                }
+            });
+        });
+        
+        // Cancela task se for cancelada
+        buscaProprietarioTask.setOnCancelled(e -> {
+            Platform.runLater(() -> {
+                resetarStatusCpf();
+            });
+        });
+        
+        // Executa a task em uma thread separada
+        Thread thread = new Thread(buscaProprietarioTask);
+        thread.setDaemon(true);
+        thread.start();
+    }
+    
+    private void preencherDadosProprietario(Proprietario proprietario) {
+        if (proprietario == null) {
+            return;
+        }
+        
+        // Preenche os campos do proprietário
+        txtNomeTutor.setText(proprietario.getNome() != null ? proprietario.getNome() : "");
+        txtTelefoneTutor.setText(proprietario.getTelefone() != null ? proprietario.getTelefone() : "");
+        txtEmailTutor.setText(proprietario.getEmail() != null ? proprietario.getEmail() : "");
+        txtRua.setText(proprietario.getRua() != null ? proprietario.getRua() : "");
+        txtNumero.setText(proprietario.getNumero() != null ? proprietario.getNumero() : "");
+        txtBairro.setText(proprietario.getBairro() != null ? proprietario.getBairro() : "");
+        txtCidade.setText(proprietario.getCidade() != null ? proprietario.getCidade() : "");
+        txtEstado.setText(proprietario.getEstado() != null ? proprietario.getEstado() : "");
+        txtCep.setText(proprietario.getCep() != null ? proprietario.getCep() : "");
+    }
+    
+    private void resetarStatusCpf() {
+        cpfLoadingIndicator.setVisible(false);
+        cpfLoadingIndicator.setManaged(false);
+        cpfStatusLabel.setVisible(false);
+        cpfStatusLabel.setManaged(false);
     }
 }
 

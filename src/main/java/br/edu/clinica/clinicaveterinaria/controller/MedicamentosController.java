@@ -2,6 +2,7 @@ package br.edu.clinica.clinicaveterinaria.controller;
 
 import br.edu.clinica.clinicaveterinaria.dao.MedicamentoDAO;
 import br.edu.clinica.clinicaveterinaria.model.Medicamento;
+import br.edu.clinica.clinicaveterinaria.util.DatabaseErrorHandler;
 import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -55,8 +56,9 @@ public class MedicamentosController implements Initializable {
             filteredData = new FilteredList<>(listaMedicamentos, p -> true);
             tabelaMedicamentos.setItems(filteredData);
         } catch (SQLException e) {
-            MainApplication.showErrorAlert("Erro de Banco de Dados", "Não foi possível carregar os medicamentos do banco de dados.");
             e.printStackTrace();
+            String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "carregar medicamentos");
+            MainApplication.showErrorAlert("Erro de Banco de Dados", mensagem);
         }
     }
 
@@ -116,8 +118,9 @@ public class MedicamentosController implements Initializable {
                     MainApplication.showErrorAlert("Erro", "Não foi possível encontrar os detalhes completos do medicamento selecionado.");
                 }
             } catch (SQLException e) {
-                MainApplication.showErrorAlert("Erro de Banco de Dados", "Falha ao buscar os detalhes do medicamento.");
                 e.printStackTrace();
+                String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "buscar detalhes do medicamento");
+                MainApplication.showErrorAlert("Erro de Banco de Dados", mensagem);
             } catch (IOException e) {
                 e.printStackTrace();
                 MainApplication.showErrorAlert("Erro de Aplicação", "Falha ao abrir a tela de detalhes do medicamento.");
@@ -155,8 +158,10 @@ public class MedicamentosController implements Initializable {
                     }
                     tabelaMedicamentos.refresh();
                 } catch (SQLException e) {
-                    MainApplication.showErrorAlert("Erro de Banco de Dados", "Falha ao salvar o medicamento.");
                     e.printStackTrace();
+                    String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "salvar medicamento");
+                    String titulo = DatabaseErrorHandler.getErrorTitle("salvar medicamento");
+                    MainApplication.showErrorAlert(titulo, mensagem);
                 }
             }
         } catch (IOException e) {
@@ -199,8 +204,10 @@ public class MedicamentosController implements Initializable {
                     
                     MainApplication.showSuccessAlert("Sucesso", "Medicamento excluído com sucesso!");
                 } catch (SQLException e) {
-                    MainApplication.showErrorAlert("Erro de Banco de Dados", "Falha ao excluir o medicamento: " + e.getMessage());
                     e.printStackTrace();
+                    String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "excluir medicamento");
+                    String titulo = DatabaseErrorHandler.getErrorTitle("excluir medicamento");
+                    MainApplication.showErrorAlert(titulo, mensagem);
                 }
                 }
             });
