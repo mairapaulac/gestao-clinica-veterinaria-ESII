@@ -109,6 +109,7 @@ public class MedicamentosController implements Initializable {
                     dialogStage.initModality(Modality.WINDOW_MODAL);
                     dialogStage.initOwner(btnAdicionar.getScene().getWindow());
                     dialogStage.setScene(new Scene(loader.load()));
+                    MainApplication.setStageIcon(dialogStage);
 
                     DetalhesMedicamentoController controller = loader.getController();
                     controller.setMedicamento(fullMedicamento);
@@ -136,6 +137,7 @@ public class MedicamentosController implements Initializable {
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(btnAdicionar.getScene().getWindow());
             dialogStage.setScene(new Scene(loader.load()));
+            MainApplication.setStageIcon(dialogStage);
 
             CadastrarMedicamentoController controller = loader.getController();
             controller.setMedicamentoData(medicamento, listaMedicamentos);
@@ -147,16 +149,13 @@ public class MedicamentosController implements Initializable {
                 try {
                     if (medicamento == null) {
                         medicamentoDAO.inserir(result);
-                        listaMedicamentos.add(result);
                     } else {
                         result.setId(medicamento.getId());
                         medicamentoDAO.atualizar(result);
-                        int index = listaMedicamentos.indexOf(medicamento);
-                        if (index != -1) {
-                            listaMedicamentos.set(index, result);
-                        }
                     }
-                    tabelaMedicamentos.refresh();
+                    // Recarregar do banco para garantir que a quantidade está sincronizada
+                    carregarMedicamentosDoBanco();
+                    MainApplication.showSuccessAlert("Sucesso", medicamento == null ? "Medicamento cadastrado com sucesso!" : "Medicamento atualizado com sucesso!");
                 } catch (SQLException e) {
                     e.printStackTrace();
                     String mensagem = DatabaseErrorHandler.getFriendlyMessage(e, "salvar medicamento");
@@ -174,7 +173,8 @@ public class MedicamentosController implements Initializable {
     private void handleEditar(Medicamento medicamento) {
         if (medicamento != null) {
             try {
-                Medicamento fullMedicamento = medicamentoDAO.buscarPorId(medicamento.getId());
+                // Usar método específico para edição que retorna quantidade_inicial do lote
+                Medicamento fullMedicamento = medicamentoDAO.buscarPorIdParaEdicao(medicamento.getId());
                 if (fullMedicamento != null) {
                     showMedicamentoDialog(fullMedicamento);
                 } else {

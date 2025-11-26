@@ -4,6 +4,7 @@ import br.edu.clinica.clinicaveterinaria.dao.PacienteDAO;
 import br.edu.clinica.clinicaveterinaria.model.Paciente;
 import br.edu.clinica.clinicaveterinaria.util.DatabaseErrorHandler;
 import br.edu.clinica.clinicaveterinaria.model.Proprietario;
+import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -167,6 +168,7 @@ public class PacientesController implements Initializable {
                 stage.setTitle("Detalhes do Paciente: " + pacienteCompleto.getNome());
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.setScene(scene);
+                MainApplication.setStageIcon(stage);
                 stage.showAndWait();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -205,6 +207,7 @@ public class PacientesController implements Initializable {
             stage.setTitle(paciente == null ? "Cadastrar Novo Paciente" : "Editar Paciente");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(scene);
+            MainApplication.setStageIcon(stage);
             stage.showAndWait();
 
             Paciente newPaciente = controller.getNewPaciente();
@@ -226,6 +229,7 @@ public class PacientesController implements Initializable {
                 dialogStage.initOwner(btnCadastrar.getScene().getWindow());
                 Scene scene = new Scene(loader.load());
                 dialogStage.setScene(scene);
+                MainApplication.setStageIcon(dialogStage);
                 
                 // Define tamanho maior para a janela
                 dialogStage.setMinWidth(1000);

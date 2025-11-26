@@ -134,3 +134,19 @@
 .indicador-agendamento {
     -fx-fill: #0066cc;
 }
+
+/* Menu de contexto - estilo semelhante ao da tela de pacientes */
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
+    -fx-padding: 5px;
+}
+
+.context-menu .menu-item:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+.context-menu .menu-item .label {
+    -fx-text-fill: #333;
+}

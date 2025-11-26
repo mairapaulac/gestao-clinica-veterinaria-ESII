@@ -276,32 +276,28 @@ public class HistoricoPacienteController implements Initializable {
     }
 
     private void mostrarDetalhes(HistoricoItem item) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Detalhes do " + item.getTipo());
-        alert.setHeaderText(null);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/detalhes-historico-view.fxml"));
+            Scene scene = new Scene(loader.load());
 
-        StringBuilder detalhes = new StringBuilder();
-        detalhes.append("Data: ").append(item.getData() != null ? 
-                item.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "-").append("\n");
-        detalhes.append("Tipo: ").append(item.getTipo()).append("\n");
-        
-        if (item.getVeterinario() != null) {
-            detalhes.append("Veterinário: ").append(item.getVeterinario().getNome()).append("\n");
-        }
-        
-        if (item.getTipo().equals("CONSULTA")) {
-            detalhes.append("Diagnóstico: ").append(item.getDiagnostico() != null ? item.getDiagnostico() : "-").append("\n");
-        } else {
-            detalhes.append("Tratamento:\n").append(item.getDescricao() != null ? item.getDescricao() : "-").append("\n");
-            if (item.getDiagnostico() != null) {
-                detalhes.append("\nDiagnóstico da Consulta: ").append(item.getDiagnostico());
-            }
-        }
+            DetalhesHistoricoController controller = loader.getController();
+            controller.setHistoricoItem(item);
 
-        alert.setContentText(detalhes.toString());
-        alert.setResizable(true);
-        alert.getDialogPane().setPrefWidth(500);
-        alert.showAndWait();
+            Stage stage = new Stage();
+            stage.setTitle("Detalhes da " + item.getTipo());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(btnFechar.getScene().getWindow());
+            stage.setScene(scene);
+            MainApplication.setStageIcon(stage);
+            stage.setMinWidth(750);
+            stage.setMinHeight(650);
+            stage.setWidth(850);
+            stage.setHeight(750);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            MainApplication.showErrorAlert("Erro", "Erro ao abrir detalhes: " + e.getMessage());
+        }
     }
 
     private void abrirCadastroPaciente() {
@@ -312,6 +308,7 @@ public class HistoricoPacienteController implements Initializable {
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(btnFechar.getScene().getWindow());
             dialogStage.setScene(new Scene(loader.load()));
+            MainApplication.setStageIcon(dialogStage);
 
             dialogStage.showAndWait();
             

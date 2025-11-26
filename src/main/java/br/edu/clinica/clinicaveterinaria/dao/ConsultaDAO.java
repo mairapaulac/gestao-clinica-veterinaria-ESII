@@ -139,12 +139,66 @@ public class ConsultaDAO {
     }
 
     public void deletarConsulta(int id) throws SQLException {
-        String sql = "DELETE FROM consulta WHERE id = ?";
-        
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection conn = ConnectionFactory.getConnection();
+        try {
+            // Desabilitar auto-commit para usar transação
+            conn.setAutoCommit(false);
             
-            stmt.setInt(1, id);
+            // Primeiro, deletar todos os tratamentos associados à consulta
+            // Isso também deleta automaticamente os registros em tratamento_medicamento
+            String sqlTratamentos = "SELECT id FROM tratamento WHERE id_consulta = ?";
+            List<Integer> idsTratamentos = new ArrayList<>();
+            
+            try (PreparedStatement stmt = conn.prepareStatement(sqlTratamentos)) {
+                stmt.setInt(1, id);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        idsTratamentos.add(rs.getInt("id"));
+                    }
+                }
+            }
+            
+            // Deletar cada tratamento (isso também deleta os registros em tratamento_medicamento)
+            for (Integer idTratamento : idsTratamentos) {
+                // Usar a connection existente para manter a transação
+                deletarTratamentoComConnection(conn, idTratamento);
+            }
+            
+            // Agora deletar a consulta
+            String sql = "DELETE FROM consulta WHERE id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, id);
+                stmt.executeUpdate();
+            }
+            
+            // Commit da transação
+            conn.commit();
+        } catch (SQLException e) {
+            // Rollback em caso de erro
+            conn.rollback();
+            throw e;
+        } finally {
+            conn.setAutoCommit(true);
+            conn.close();
+        }
+    }
+    
+    /**
+     * Método auxiliar para deletar tratamento usando uma connection específica
+     * (para manter a transação)
+     */
+    private void deletarTratamentoComConnection(Connection conn, int idTratamento) throws SQLException {
+        // Primeiro deletar os registros em tratamento_medicamento
+        String sqlMedicamentos = "DELETE FROM tratamento_medicamento WHERE id_tratamento = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlMedicamentos)) {
+            stmt.setInt(1, idTratamento);
+            stmt.executeUpdate();
+        }
+        
+        // Depois deletar o tratamento
+        String sqlTratamento = "DELETE FROM tratamento WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlTratamento)) {
+            stmt.setInt(1, idTratamento);
             stmt.executeUpdate();
         }
     }

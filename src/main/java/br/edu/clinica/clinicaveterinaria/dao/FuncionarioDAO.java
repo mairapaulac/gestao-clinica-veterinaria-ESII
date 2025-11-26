@@ -149,11 +149,30 @@ public class FuncionarioDAO {
     }
 
     public void deletarFuncionario(int id) throws SQLException {
+        // Verificar se há pagamentos relacionados antes de tentar excluir
+        String sqlVerificarPagamentos = "SELECT COUNT(*) FROM pagamento WHERE id_funcionario = ?";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmtVerificar = conn.prepareStatement(sqlVerificarPagamentos)) {
+            
+            pstmtVerificar.setInt(1, id);
+            try (ResultSet rs = pstmtVerificar.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    // Usar soft delete (desativar) ao invés de excluir
+                    String sql = "CALL proc_deletar_funcionario(?)";
+                    try (CallableStatement cstmt = conn.prepareCall(sql)) {
+                        cstmt.setInt(1, id);
+                        cstmt.execute();
+                    }
+                    return;
+                }
+            }
+        }
+        
+        // Se não há pagamentos, fazer exclusão direta
         String sql = "DELETE FROM funcionario WHERE id = ?";
-
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
         }

@@ -150,6 +150,7 @@ public class FuncionariosController implements Initializable {
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(btnAdicionar.getScene().getWindow());
             dialogStage.setScene(new Scene(loader.load()));
+            MainApplication.setStageIcon(dialogStage);
 
             CadastrarFuncionarioController controller = loader.getController();
             controller.setUsuarioData(usuario, listaUsuarios);

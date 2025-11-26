@@ -85,22 +85,133 @@ public class HomeController implements Initializable {
     }
 
     private void configurarPermissoes() {
-        boolean isAdmin = SessionManager.isAdministrador();
-        boolean isFuncionario = SessionManager.isFuncionario();
+        SessionManager.TipoUsuario tipoUsuario = SessionManager.getTipoUsuario();
         
-        btnFuncionarios.setVisible(isAdmin);
-        btnFuncionarios.setManaged(isAdmin);
+        if (tipoUsuario == null) {
+            return;
+        }
         
-        // Faturamento e Pagamento apenas para funcionários
-        btnFinanceiro.setVisible(isFuncionario);
-        btnFinanceiro.setManaged(isFuncionario);
-        cardFinanceiro.setVisible(isFuncionario);
-        cardFinanceiro.setManaged(isFuncionario);
+        switch (tipoUsuario) {
+            case VETERINARIO:
+                configurarPermissoesVeterinario();
+                break;
+            case FUNCIONARIO:
+                configurarPermissoesFuncionario();
+                break;
+            case ADMINISTRADOR:
+                configurarPermissoesAdministrador();
+                break;
+        }
+    }
+    
+    private void configurarPermissoesVeterinario() {
+        // Veterinário: apenas Início, Pacientes e Agendamentos
+        
+        // Sidebar - ocultar opções sem acesso
+        btnEstoque.setVisible(false);
+        btnEstoque.setManaged(false);
+        btnFuncionarios.setVisible(false);
+        btnFuncionarios.setManaged(false);
+        btnFinanceiro.setVisible(false);
+        btnFinanceiro.setManaged(false);
+        btnRelatorios.setVisible(false);
+        btnRelatorios.setManaged(false);
+        
+        // Cards - todos visíveis, mas alguns desabilitados
+        // Cards com acesso
+        habilitarCard(cardPacientes);
+        habilitarCard(cardAgendamentos);
+        
+        // Cards sem acesso - desabilitar
+        desabilitarCard(cardEstoque);
+        desabilitarCard(cardFuncionarios);
+        desabilitarCard(cardFinanceiro);
+        desabilitarCard(cardRelatorios);
+    }
+    
+    private void configurarPermissoesFuncionario() {
+        // Funcionário não-admin: tudo exceto Relatórios
+        
+        // Sidebar - ocultar opções sem acesso
+        btnRelatorios.setVisible(false);
+        btnRelatorios.setManaged(false);
+        
+        // Cards - todos visíveis, mas alguns desabilitados
+        // Cards com acesso
+        habilitarCard(cardPacientes);
+        habilitarCard(cardAgendamentos);
+        habilitarCard(cardEstoque);
+        habilitarCard(cardFuncionarios);
+        habilitarCard(cardFinanceiro);
+        
+        // Cards sem acesso - desabilitar
+        desabilitarCard(cardRelatorios);
+    }
+    
+    private void configurarPermissoesAdministrador() {
+        // Administrador: tudo
+        
+        // Sidebar - todas visíveis
+        btnEstoque.setVisible(true);
+        btnEstoque.setManaged(true);
+        btnFuncionarios.setVisible(true);
+        btnFuncionarios.setManaged(true);
+        btnFinanceiro.setVisible(true);
+        btnFinanceiro.setManaged(true);
+        btnRelatorios.setVisible(true);
+        btnRelatorios.setManaged(true);
+        
+        // Cards - todos habilitados
+        habilitarCard(cardPacientes);
+        habilitarCard(cardAgendamentos);
+        habilitarCard(cardEstoque);
+        habilitarCard(cardFuncionarios);
+        habilitarCard(cardFinanceiro);
+        habilitarCard(cardRelatorios);
+    }
+    
+    private void desabilitarCard(VBox card) {
+        if (card == null) return;
+        
+        // Remover evento de clique
+        card.setOnMouseClicked(null);
+        
+        // Adicionar estilo de desabilitado
+        card.getStyleClass().add("card-disabled");
+        card.getStyleClass().remove("card");
+        
+        // Desabilitar cursor pointer
+        card.setCursor(javafx.scene.Cursor.DEFAULT);
+    }
+    
+    private void habilitarCard(VBox card) {
+        if (card == null) return;
+        
+        // Restaurar evento de clique
+        card.setOnMouseClicked(this::handleCardClick);
+        
+        // Remover estilo de desabilitado e adicionar estilo normal
+        card.getStyleClass().remove("card-disabled");
+        if (!card.getStyleClass().contains("card")) {
+            card.getStyleClass().add("card");
+        }
+        
+        // Restaurar cursor pointer
+        card.setCursor(javafx.scene.Cursor.HAND);
     }
 
     @FXML
     private void handleCardClick(MouseEvent event) {
         Object source = event.getSource();
+        
+        // Verificar se o card está desabilitado
+        if (source instanceof VBox) {
+            VBox card = (VBox) source;
+            if (card.getStyleClass().contains("card-disabled")) {
+                return; // Não fazer nada se o card estiver desabilitado
+            }
+        }
+        
         if (source == cardPacientes) {
             btnPacientes.fire();
         } else if (source == cardAgendamentos) {

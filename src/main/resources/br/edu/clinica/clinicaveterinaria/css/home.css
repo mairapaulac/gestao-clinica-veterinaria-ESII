@@ -182,6 +182,40 @@
     -fx-border-color: #E3F4FF;
 }
 
+.card-disabled {
+    -fx-background-color: #E8E8E8;
+    -fx-background-radius: 20;
+    -fx-padding: 60 50;
+    -fx-border-color: #D0D0D0;
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 8, 0, 0, 2);
+    -fx-cursor: default;
+    -fx-opacity: 0.6;
+    -fx-pref-width: 450px;
+    -fx-pref-height: 320px;
+    -fx-min-width: 450px;
+    -fx-min-height: 320px;
+    -fx-max-width: 450px;
+    -fx-max-height: 320px;
+    -fx-alignment: center;
+}
+
+.card-disabled:hover {
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 8, 0, 0, 2);
+    -fx-border-color: #D0D0D0;
+}
+
+.card-disabled .card-title {
+    -fx-text-fill: #999;
+}
+
+.card-disabled .card-text {
+    -fx-text-fill: #999;
+}
+
 .card-title {
     -fx-font-size: 28px;
     -fx-font-weight: 700;

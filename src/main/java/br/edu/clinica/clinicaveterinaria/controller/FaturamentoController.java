@@ -331,17 +331,35 @@ public class FaturamentoController implements Initializable {
             dialogStage.initModality(javafx.stage.Modality.WINDOW_MODAL);
             dialogStage.initOwner(tabelaConsultas.getScene().getWindow());
             dialogStage.setScene(new javafx.scene.Scene(loader.load()));
+            MainApplication.setStageIcon(dialogStage);
 
             FaturarConsultaController controller = loader.getController();
             controller.setConsulta(consulta);
 
             dialogStage.showAndWait();
             
-            // Recarregar listas após fechar a janela
-            if (togglePendentes.isSelected()) {
+            // Sempre recarregar ambas as listas após fechar a janela
+            // para garantir que as mudanças sejam refletidas
+            if (controller.foiPagamentoRealizado()) {
+                // Se pagamento foi realizado, recarregar ambas as listas
                 carregarConsultasPendentes();
-            } else {
                 carregarPagamentos();
+                
+                // Mudar automaticamente para a aba de pagos para mostrar o pagamento recém-criado
+                if (!togglePagos.isSelected()) {
+                    togglePagos.setSelected(true);
+                    mostrarPagos();
+                } else {
+                    // Se já estava na aba de pagos, apenas recarregar
+                    mostrarPagos();
+                }
+            } else {
+                // Se não houve pagamento, apenas recarregar a lista atual
+                if (togglePendentes.isSelected()) {
+                    carregarConsultasPendentes();
+                } else if (togglePagos.isSelected()) {
+                    carregarPagamentos();
+                }
             }
         } catch (java.io.IOException e) {
             MainApplication.showErrorAlert("Erro", "Erro ao abrir tela de faturamento: " + e.getMessage());

@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -26,6 +27,7 @@ public class MainApplication extends Application {
         stage.setTitle("PetManager - Login");
         stage.setScene(scene);
         stage.setMaximized(true);
+        setStageIcon(stage);
         stage.show();
     }
     
@@ -94,5 +96,48 @@ public class MainApplication extends Application {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Define o ícone da aplicação em uma janela (Stage)
+     * @param stage A janela onde o ícone será definido
+     */
+    public static void setStageIcon(Stage stage) {
+        if (stage == null) {
+            return;
+        }
+        
+        // Tenta carregar o ícone .ico primeiro
+        boolean icoLoaded = false;
+        try {
+            java.net.URL iconUrl = MainApplication.class.getResource("/br/edu/clinica/clinicaveterinaria/images/logo-icon.ico");
+            if (iconUrl != null) {
+                Image icon = new Image(iconUrl.toExternalForm());
+                // Verifica se a imagem foi carregada com sucesso
+                if (!icon.isError()) {
+                    stage.getIcons().clear();
+                    stage.getIcons().add(icon);
+                    icoLoaded = true;
+                }
+            }
+        } catch (Exception e) {
+            // Silenciosamente tenta o fallback
+        }
+        
+        // Se o .ico não funcionou, usa o logo.png como fallback
+        if (!icoLoaded) {
+            try {
+                java.net.URL iconUrl = MainApplication.class.getResource("/br/edu/clinica/clinicaveterinaria/images/logo.png");
+                if (iconUrl != null) {
+                    Image icon = new Image(iconUrl.toExternalForm());
+                    if (!icon.isError()) {
+                        stage.getIcons().clear();
+                        stage.getIcons().add(icon);
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao carregar ícone da aplicação: " + e.getMessage());
+            }
+        }
     }
 }

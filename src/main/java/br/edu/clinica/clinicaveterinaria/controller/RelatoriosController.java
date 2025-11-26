@@ -40,7 +40,7 @@ public class RelatoriosController implements Initializable {
     @FXML private Button btnGerar;
     @FXML private Button btnLimpar;
     @FXML private VBox vboxResultados;
-    @FXML private TableView tabelaRelatorio;
+    @FXML private TableView<Object> tabelaRelatorio;
     @FXML private Button btnExportarPDF;
     @FXML private Button btnExportarExcel;
     @FXML private VBox vboxEmptyState;
@@ -54,15 +54,27 @@ public class RelatoriosController implements Initializable {
 
     private ObservableList<Object> dadosRelatorio = FXCollections.observableArrayList();
     private String tipoRelatorioAtual = "";
-    private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+    private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Suprimir warnings do PDFBox relacionados a fontes do sistema
+        configurarLoggersPDFBox();
         configurarTipoRelatorio();
         configurarEventos();
         carregarFiltros();
+    }
+    
+    private void configurarLoggersPDFBox() {
+        // Configurar loggers do PDFBox para suprimir warnings de fontes corrompidas
+        java.util.logging.Logger pdfboxLogger = java.util.logging.Logger.getLogger("org.apache.pdfbox");
+        java.util.logging.Logger fontboxLogger = java.util.logging.Logger.getLogger("org.apache.fontbox");
+        
+        // Definir nível SEVERE para suprimir warnings (apenas erros críticos serão exibidos)
+        pdfboxLogger.setLevel(java.util.logging.Level.SEVERE);
+        fontboxLogger.setLevel(java.util.logging.Level.SEVERE);
     }
 
     private void configurarTipoRelatorio() {
@@ -170,28 +182,9 @@ public class RelatoriosController implements Initializable {
         // Configurar filtros específicos por tipo
         switch (tipo) {
             case "Consultas":
-                lblFiltro1.setText("Veterinário:");
-                lblFiltro1.setVisible(true);
-                lblFiltro1.setManaged(true);
-                comboVeterinario.setVisible(true);
-                comboVeterinario.setManaged(true);
-                lblFiltro2.setText("Paciente:");
-                lblFiltro2.setVisible(true);
-                lblFiltro2.setManaged(true);
-                comboPaciente.setVisible(true);
-                comboPaciente.setManaged(true);
-                break;
             case "Tratamentos":
-                lblFiltro1.setText("Veterinário:");
-                lblFiltro1.setVisible(true);
-                lblFiltro1.setManaged(true);
-                comboVeterinario.setVisible(true);
-                comboVeterinario.setManaged(true);
-                lblFiltro2.setText("Paciente:");
-                lblFiltro2.setVisible(true);
-                lblFiltro2.setManaged(true);
-                comboPaciente.setVisible(true);
-                comboPaciente.setManaged(true);
+                // Removidos filtros de veterinário e paciente - o PDF será gerado agrupado por veterinário
+                // Apenas filtros de data são necessários
                 break;
             case "Faturamento":
                 lblFiltro3.setText("Status:");
@@ -265,7 +258,7 @@ public class RelatoriosController implements Initializable {
     private void gerarRelatorioConsultas(LocalDate dataInicial, LocalDate dataFinal) throws SQLException {
         List<Consulta> consultas = consultaDAO.listarTodas();
 
-        // Aplicar filtros
+        // Aplicar apenas filtros de data (inclusivo nas datas limites)
         if (dataInicial != null) {
             consultas.removeIf(c -> c.getDataConsulta() != null && 
                 c.getDataConsulta().toLocalDate().isBefore(dataInicial));
@@ -273,18 +266,6 @@ public class RelatoriosController implements Initializable {
         if (dataFinal != null) {
             consultas.removeIf(c -> c.getDataConsulta() != null && 
                 c.getDataConsulta().toLocalDate().isAfter(dataFinal));
-        }
-
-        Veterinario vetSelecionado = comboVeterinario.getSelectionModel().getSelectedItem();
-        if (vetSelecionado != null) {
-            consultas.removeIf(c -> c.getVeterinario() == null || 
-                c.getVeterinario().getId() != vetSelecionado.getId());
-        }
-
-        Paciente pacSelecionado = comboPaciente.getSelectionModel().getSelectedItem();
-        if (pacSelecionado != null) {
-            consultas.removeIf(c -> c.getPaciente() == null || 
-                c.getPaciente().getId() != pacSelecionado.getId());
         }
 
         dadosRelatorio.addAll(consultas);
@@ -324,14 +305,14 @@ public class RelatoriosController implements Initializable {
         });
 
         @SuppressWarnings("unchecked")
-        ObservableList<TableColumn<Consulta, ?>> colunas = (ObservableList<TableColumn<Consulta, ?>>) (ObservableList<?>) tabelaRelatorio.getColumns();
+        ObservableList<TableColumn<?, ?>> colunas = (ObservableList<TableColumn<?, ?>>) (ObservableList<?>) tabelaRelatorio.getColumns();
         colunas.addAll(colData, colPaciente, colVeterinario, colDiagnostico);
     }
 
     private void gerarRelatorioTratamentos(LocalDate dataInicial, LocalDate dataFinal) throws SQLException {
         List<Tratamento> tratamentos = tratamentoDAO.listarTodos();
 
-        // Aplicar filtros
+        // Aplicar apenas filtros de data (inclusivo nas datas limites)
         if (dataInicial != null || dataFinal != null) {
             tratamentos.removeIf(t -> {
                 if (t.getConsulta() == null || t.getConsulta().getDataConsulta() == null) {
@@ -346,20 +327,6 @@ public class RelatoriosController implements Initializable {
                 }
                 return false;
             });
-        }
-
-        Veterinario vetSelecionado = comboVeterinario.getSelectionModel().getSelectedItem();
-        if (vetSelecionado != null) {
-            tratamentos.removeIf(t -> t.getConsulta() == null || 
-                t.getConsulta().getVeterinario() == null || 
-                t.getConsulta().getVeterinario().getId() != vetSelecionado.getId());
-        }
-
-        Paciente pacSelecionado = comboPaciente.getSelectionModel().getSelectedItem();
-        if (pacSelecionado != null) {
-            tratamentos.removeIf(t -> t.getConsulta() == null || 
-                t.getConsulta().getPaciente() == null || 
-                t.getConsulta().getPaciente().getId() != pacSelecionado.getId());
         }
 
         dadosRelatorio.addAll(tratamentos);
@@ -398,21 +365,28 @@ public class RelatoriosController implements Initializable {
             return new SimpleStringProperty(t.getDescricao() != null ? t.getDescricao() : "");
         });
 
-        @SuppressWarnings("unchecked")
-        ObservableList<TableColumn<Tratamento, ?>> colunas = (ObservableList<TableColumn<Tratamento, ?>>) (ObservableList<?>) tabelaRelatorio.getColumns();
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        ObservableList<TableColumn> colunas = (ObservableList<TableColumn>) (ObservableList) tabelaRelatorio.getColumns();
         colunas.addAll(colData, colPaciente, colVeterinario, colDescricao);
     }
 
     private void gerarRelatorioFaturamento(LocalDate dataInicial, LocalDate dataFinal) throws SQLException {
         String statusSelecionado = comboStatus.getSelectionModel().getSelectedItem();
         
-        List<Pagamento> pagamentos = null;
-        if (statusSelecionado == null || statusSelecionado.equals("Todos") || statusSelecionado.equals("Pagos")) {
-            pagamentos = pagamentoDAO.listarTodos();
-        }
-
+        // Se for "Pendentes", mostrar consultas pendentes
         if (statusSelecionado != null && statusSelecionado.equals("Pendentes")) {
             List<Consulta> consultasPendentes = pagamentoDAO.listarConsultasPendentes();
+            
+            // Aplicar filtros de data nas consultas pendentes
+            if (dataInicial != null) {
+                consultasPendentes.removeIf(c -> c.getDataConsulta() != null && 
+                    c.getDataConsulta().toLocalDate().isBefore(dataInicial));
+            }
+            if (dataFinal != null) {
+                consultasPendentes.removeIf(c -> c.getDataConsulta() != null && 
+                    c.getDataConsulta().toLocalDate().isAfter(dataFinal));
+            }
+            
             dadosRelatorio.addAll(consultasPendentes);
             
             // Configurar colunas para consultas pendentes
@@ -446,14 +420,17 @@ public class RelatoriosController implements Initializable {
             TableColumn<Consulta, String> colStatus = new TableColumn<>("Status");
             colStatus.setCellValueFactory(cellData -> new SimpleStringProperty("Pendente"));
 
-            @SuppressWarnings("unchecked")
-            ObservableList<TableColumn<Consulta, ?>> colunas = (ObservableList<TableColumn<Consulta, ?>>) (ObservableList<?>) tabelaRelatorio.getColumns();
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            ObservableList<TableColumn> colunas = (ObservableList<TableColumn>) (ObservableList) tabelaRelatorio.getColumns();
             colunas.addAll(colData, colPaciente, colVeterinario, colStatus);
             return;
         }
 
-        if (pagamentos != null) {
-            // Aplicar filtros de data
+        // Para "Todos" ou "Pagos", mostrar pagamentos
+        List<Pagamento> pagamentos = pagamentoDAO.listarTodos();
+        
+        if (pagamentos != null && !pagamentos.isEmpty()) {
+            // Aplicar filtros de data (inclusivo nas datas limites)
             if (dataInicial != null) {
                 pagamentos.removeIf(p -> p.getDataPagamento() != null && 
                     p.getDataPagamento().toLocalDate().isBefore(dataInicial));
@@ -505,8 +482,8 @@ public class RelatoriosController implements Initializable {
                 return new SimpleStringProperty("");
             });
 
-            @SuppressWarnings("unchecked")
-            ObservableList<TableColumn<Pagamento, ?>> colunas = (ObservableList<TableColumn<Pagamento, ?>>) (ObservableList<?>) tabelaRelatorio.getColumns();
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            ObservableList<TableColumn> colunas = (ObservableList<TableColumn>) (ObservableList) tabelaRelatorio.getColumns();
             colunas.addAll(colData, colPaciente, colValor, colMetodo, colFuncionario);
         }
     }
@@ -534,8 +511,8 @@ public class RelatoriosController implements Initializable {
             return new SimpleStringProperty(String.valueOf(m.getQuantidade()));
         });
 
-        @SuppressWarnings("unchecked")
-        ObservableList<TableColumn<Medicamento, ?>> colunas = (ObservableList<TableColumn<Medicamento, ?>>) (ObservableList<?>) tabelaRelatorio.getColumns();
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        ObservableList<TableColumn> colunas = (ObservableList<TableColumn>) (ObservableList) tabelaRelatorio.getColumns();
         colunas.addAll(colNome, colFabricante, colQuantidade);
     }
 
@@ -620,38 +597,48 @@ public class RelatoriosController implements Initializable {
                     break;
             }
 
+            // Método auxiliar para escapar campos CSV
+            java.util.function.Function<String, String> escapeCSV = (text) -> {
+                if (text == null) return "";
+                // Se contém vírgula, aspas ou quebra de linha, envolver em aspas e duplicar aspas internas
+                if (text.contains(",") || text.contains("\"") || text.contains("\n")) {
+                    return "\"" + text.replace("\"", "\"\"") + "\"";
+                }
+                return text;
+            };
+
             // Escrever dados
             for (Object item : dadosRelatorio) {
                 if (item instanceof Consulta) {
                     Consulta c = (Consulta) item;
-                    writer.append(c.getDataConsulta() != null ? 
-                        c.getDataConsulta().format(dateTimeFormatter) : "").append(",");
-                    writer.append(c.getPaciente() != null ? c.getPaciente().getNome() : "").append(",");
-                    writer.append(c.getVeterinario() != null ? c.getVeterinario().getNome() : "").append(",");
-                    writer.append(c.getDiagnostico() != null ? c.getDiagnostico() : "");
+                    writer.append(escapeCSV.apply(c.getDataConsulta() != null ? 
+                        c.getDataConsulta().format(dateTimeFormatter) : "")).append(",");
+                    writer.append(escapeCSV.apply(c.getPaciente() != null ? c.getPaciente().getNome() : "")).append(",");
+                    writer.append(escapeCSV.apply(c.getVeterinario() != null ? c.getVeterinario().getNome() : "")).append(",");
+                    writer.append(escapeCSV.apply(c.getDiagnostico() != null ? c.getDiagnostico() : ""));
                 } else if (item instanceof Tratamento) {
                     Tratamento t = (Tratamento) item;
-                    writer.append(t.getConsulta() != null && t.getConsulta().getDataConsulta() != null ? 
-                        t.getConsulta().getDataConsulta().format(dateFormatter) : "").append(",");
-                    writer.append(t.getConsulta() != null && t.getConsulta().getPaciente() != null ? 
-                        t.getConsulta().getPaciente().getNome() : "").append(",");
-                    writer.append(t.getConsulta() != null && t.getConsulta().getVeterinario() != null ? 
-                        t.getConsulta().getVeterinario().getNome() : "").append(",");
-                    writer.append(t.getDescricao() != null ? t.getDescricao() : "");
+                    writer.append(escapeCSV.apply(t.getConsulta() != null && t.getConsulta().getDataConsulta() != null ? 
+                        t.getConsulta().getDataConsulta().format(dateFormatter) : "")).append(",");
+                    writer.append(escapeCSV.apply(t.getConsulta() != null && t.getConsulta().getPaciente() != null ? 
+                        t.getConsulta().getPaciente().getNome() : "")).append(",");
+                    writer.append(escapeCSV.apply(t.getConsulta() != null && t.getConsulta().getVeterinario() != null ? 
+                        t.getConsulta().getVeterinario().getNome() : "")).append(",");
+                    writer.append(escapeCSV.apply(t.getDescricao() != null ? t.getDescricao() : ""));
                 } else if (item instanceof Pagamento) {
                     Pagamento p = (Pagamento) item;
-                    writer.append(p.getDataPagamento() != null ? 
-                        p.getDataPagamento().format(dateTimeFormatter) : "").append(",");
-                    writer.append(p.getConsulta() != null && p.getConsulta().getPaciente() != null ? 
-                        p.getConsulta().getPaciente().getNome() : "").append(",");
-                    writer.append(currencyFormat.format(p.getValorTotal())).append(",");
-                    writer.append(p.getMetodoPagamento() != null ? p.getMetodoPagamento() : "").append(",");
-                    writer.append(p.getFuncionario() != null ? p.getFuncionario().getNome() : "");
+                    writer.append(escapeCSV.apply(p.getDataPagamento() != null ? 
+                        p.getDataPagamento().format(dateTimeFormatter) : "")).append(",");
+                    writer.append(escapeCSV.apply(p.getConsulta() != null && p.getConsulta().getPaciente() != null ? 
+                        p.getConsulta().getPaciente().getNome() : "")).append(",");
+                    writer.append(escapeCSV.apply(currencyFormat.format(p.getValorTotal()))).append(",");
+                    writer.append(escapeCSV.apply(p.getMetodoPagamento() != null ? p.getMetodoPagamento() : "")).append(",");
+                    writer.append(escapeCSV.apply(p.getFuncionario() != null ? p.getFuncionario().getNome() : ""));
                 } else if (item instanceof Medicamento) {
                     Medicamento m = (Medicamento) item;
-                    writer.append(m.getNome() != null ? m.getNome() : "").append(",");
-                    writer.append(m.getFabricante() != null ? m.getFabricante() : "").append(",");
-                    writer.append(String.valueOf(m.getQuantidade()));
+                    writer.append(escapeCSV.apply(m.getNome() != null ? m.getNome() : "")).append(",");
+                    writer.append(escapeCSV.apply(m.getFabricante() != null ? m.getFabricante() : "")).append(",");
+                    writer.append(escapeCSV.apply(String.valueOf(m.getQuantidade())));
                 }
                 writer.append("\n");
             }
@@ -659,6 +646,17 @@ public class RelatoriosController implements Initializable {
     }
 
     private void exportarParaPDF(File file) throws Exception {
+        // Para Consultas e Tratamentos, usar formato hierárquico
+        if (tipoRelatorioAtual.equals("Consultas") || tipoRelatorioAtual.equals("Tratamentos")) {
+            exportarParaPDFHierarquico(file);
+            return;
+        }
+        
+        // Para outros tipos, usar formato de tabela tradicional
+        exportarParaPDFTabela(file);
+    }
+    
+    private void exportarParaPDFTabela(File file) throws Exception {
         org.apache.pdfbox.pdmodel.PDDocument document = new org.apache.pdfbox.pdmodel.PDDocument();
         org.apache.pdfbox.pdmodel.PDPage page = new org.apache.pdfbox.pdmodel.PDPage();
         document.addPage(page);
@@ -805,6 +803,456 @@ public class RelatoriosController implements Initializable {
         contentStream.close();
         document.save(file);
         document.close();
+    }
+    
+    private void exportarParaPDFHierarquico(File file) throws Exception {
+        org.apache.pdfbox.pdmodel.PDDocument document = new org.apache.pdfbox.pdmodel.PDDocument();
+        org.apache.pdfbox.pdmodel.PDPage page = new org.apache.pdfbox.pdmodel.PDPage();
+        document.addPage(page);
+
+        org.apache.pdfbox.pdmodel.PDPageContentStream contentStream = new org.apache.pdfbox.pdmodel.PDPageContentStream(document, page);
+
+        float margin = 50;
+        float yPosition = 750;
+        float pageWidth = 500;
+        float sectionSpacing = 20;
+        
+        // Título
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 18);
+        contentStream.newLineAtOffset(margin, yPosition);
+        contentStream.showText("Relatório de " + tipoRelatorioAtual);
+        contentStream.endText();
+        yPosition -= 30;
+
+        // Informações do relatório
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 10);
+        contentStream.newLineAtOffset(margin, yPosition);
+        String dataGeracao = "Data de geração: " + LocalDate.now().format(dateFormatter);
+        contentStream.showText(dataGeracao);
+        contentStream.endText();
+        yPosition -= 20;
+
+        if (dpDataInicial.getValue() != null || dpDataFinal.getValue() != null) {
+            contentStream.beginText();
+            contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 10);
+            contentStream.newLineAtOffset(margin, yPosition);
+            String periodo = "Período: ";
+            if (dpDataInicial.getValue() != null) {
+                periodo += dpDataInicial.getValue().format(dateFormatter);
+            }
+            periodo += " até ";
+            if (dpDataFinal.getValue() != null) {
+                periodo += dpDataFinal.getValue().format(dateFormatter);
+            }
+            contentStream.showText(periodo);
+            contentStream.endText();
+            yPosition -= 20;
+        }
+
+        yPosition -= 20;
+        
+        // Agrupar dados por veterinário e depois por paciente
+        java.util.Map<Veterinario, java.util.Map<Paciente, java.util.List<Object>>> dadosAgrupados = new java.util.LinkedHashMap<>();
+        
+        for (Object item : dadosRelatorio) {
+            Veterinario vet = null;
+            Paciente pac = null;
+            
+            if (item instanceof Consulta) {
+                Consulta c = (Consulta) item;
+                vet = c.getVeterinario();
+                pac = c.getPaciente();
+            } else if (item instanceof Tratamento) {
+                Tratamento t = (Tratamento) item;
+                if (t.getConsulta() != null) {
+                    vet = t.getConsulta().getVeterinario();
+                    pac = t.getConsulta().getPaciente();
+                }
+            }
+            
+            if (vet != null && pac != null) {
+                dadosAgrupados.computeIfAbsent(vet, k -> new java.util.LinkedHashMap<>())
+                    .computeIfAbsent(pac, k -> new java.util.ArrayList<>())
+                    .add(item);
+            }
+        }
+        
+        // Escrever dados agrupados
+        for (java.util.Map.Entry<Veterinario, java.util.Map<Paciente, java.util.List<Object>>> entryVet : dadosAgrupados.entrySet()) {
+            Veterinario veterinario = entryVet.getKey();
+            
+            // Verificar se precisa de nova página (deixar espaço para cabeçalho do veterinário)
+            if (yPosition < 180) {
+                contentStream.close();
+                page = new org.apache.pdfbox.pdmodel.PDPage();
+                document.addPage(page);
+                contentStream = new org.apache.pdfbox.pdmodel.PDPageContentStream(document, page);
+                yPosition = 750;
+            }
+            
+            // Título do Veterinário - Desenhar fundo azul primeiro
+            float alturaCabecalho = 28;
+            float yBaseRetangulo = yPosition - alturaCabecalho;
+            
+            // Desenhar retângulo azul
+            contentStream.setNonStrokingColor(0.2f, 0.4f, 0.8f);
+            contentStream.addRect(margin, yBaseRetangulo, pageWidth, alturaCabecalho);
+            contentStream.fill();
+            
+            // Escrever texto em branco sobre o fundo azul (centralizado verticalmente)
+            contentStream.setNonStrokingColor(1f, 1f, 1f);
+            contentStream.beginText();
+            contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 14);
+            // Centralizar verticalmente: yBase + (altura/2) - ajuste para alinhamento do texto
+            float yTexto = yBaseRetangulo + (alturaCabecalho / 2) - 5;
+            contentStream.newLineAtOffset(margin + 5, yTexto);
+            String nomeVet = veterinario.getNome() != null ? veterinario.getNome() : "Veterinário Desconhecido";
+            if (veterinario.getCRMV() != null) {
+                nomeVet += " - CRMV: " + veterinario.getCRMV();
+            }
+            // Truncar se muito longo para caber na página
+            if (nomeVet.length() > 75) {
+                nomeVet = nomeVet.substring(0, 72) + "...";
+            }
+            contentStream.showText(nomeVet);
+            contentStream.endText();
+            
+            // Restaurar cor preta para o resto do conteúdo
+            contentStream.setNonStrokingColor(0f, 0f, 0f);
+            yPosition = yBaseRetangulo - 15; // Espaço após o cabeçalho
+            
+            // Para cada paciente deste veterinário
+            for (java.util.Map.Entry<Paciente, java.util.List<Object>> entryPac : entryVet.getValue().entrySet()) {
+                Paciente paciente = entryPac.getKey();
+                java.util.List<Object> itens = entryPac.getValue();
+                
+                // Verificar se precisa de nova página
+                if (yPosition < 200) {
+                    contentStream.close();
+                    page = new org.apache.pdfbox.pdmodel.PDPage();
+                    document.addPage(page);
+                    contentStream = new org.apache.pdfbox.pdmodel.PDPageContentStream(document, page);
+                    yPosition = 750;
+                }
+                
+                // Subtítulo do Paciente - com linha separadora
+                contentStream.beginText();
+                contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 12);
+                contentStream.newLineAtOffset(margin + 10, yPosition);
+                String nomePac = paciente.getNome() != null ? paciente.getNome() : "Paciente Desconhecido";
+                if (paciente.getEspecie() != null) {
+                    nomePac += " (" + paciente.getEspecie();
+                    if (paciente.getRaca() != null) {
+                        nomePac += " - " + paciente.getRaca();
+                    }
+                    nomePac += ")";
+                }
+                contentStream.showText(nomePac);
+                contentStream.endText();
+                yPosition -= 18;
+                
+                // Linha separadora abaixo do nome do paciente
+                contentStream.setLineWidth(0.5f);
+                contentStream.setStrokingColor(0.7f, 0.7f, 0.7f);
+                contentStream.moveTo(margin + 10, yPosition);
+                contentStream.lineTo(margin + pageWidth - 10, yPosition);
+                contentStream.stroke();
+                contentStream.setStrokingColor(0f, 0f, 0f);
+                yPosition -= 10;
+                
+                // Listar consultas/tratamentos deste paciente
+                for (Object item : itens) {
+                    if (yPosition < 100) {
+                        contentStream.close();
+                        page = new org.apache.pdfbox.pdmodel.PDPage();
+                        document.addPage(page);
+                        contentStream = new org.apache.pdfbox.pdmodel.PDPageContentStream(document, page);
+                        yPosition = 750;
+                    }
+                    
+                    if (item instanceof Consulta) {
+                        Consulta c = (Consulta) item;
+                        float alturaUsada = escreverConsultaNoPDF(contentStream, c, margin + 20, yPosition, pageWidth - 40);
+                        yPosition -= alturaUsada;
+                    } else if (item instanceof Tratamento) {
+                        Tratamento t = (Tratamento) item;
+                        float alturaUsada = escreverTratamentoNoPDF(contentStream, t, margin + 20, yPosition, pageWidth - 40);
+                        yPosition -= alturaUsada;
+                    }
+                }
+                
+                yPosition -= sectionSpacing;
+            }
+            
+            yPosition -= sectionSpacing;
+        }
+
+        // Rodapé
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 8);
+        contentStream.newLineAtOffset(margin, 50);
+        contentStream.showText("Total de registros: " + dadosRelatorio.size());
+        contentStream.endText();
+
+        contentStream.close();
+        document.save(file);
+        document.close();
+    }
+    
+    private float escreverConsultaNoPDF(org.apache.pdfbox.pdmodel.PDPageContentStream contentStream, 
+                                       Consulta consulta, float x, float y, float width) throws Exception {
+        float currentY = y;
+        float yInicial = y;
+        
+        // Data/Hora
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 10);
+        contentStream.newLineAtOffset(x, currentY);
+        contentStream.showText("Data/Hora: ");
+        contentStream.endText();
+        
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 10);
+        contentStream.newLineAtOffset(x + 85, currentY);
+        String dataHora = consulta.getDataConsulta() != null ? 
+            consulta.getDataConsulta().format(dateTimeFormatter) : "Não informado";
+        contentStream.showText(dataHora);
+        contentStream.endText();
+        currentY -= 18;
+        
+        // Diagnóstico
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 10);
+        contentStream.newLineAtOffset(x, currentY);
+        contentStream.showText("Diagnóstico: ");
+        contentStream.endText();
+        currentY -= 18;
+        
+        String diagnostico = consulta.getDiagnostico() != null && !consulta.getDiagnostico().isEmpty() ? 
+            consulta.getDiagnostico() : "Nenhum diagnóstico registrado.";
+        
+        // Quebrar diagnóstico em múltiplas linhas se necessário
+        String[] linhas = quebrarTexto(diagnostico, 70);
+        for (String linha : linhas) {
+            contentStream.beginText();
+            contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 9);
+            contentStream.newLineAtOffset(x + 10, currentY);
+            contentStream.showText(linha);
+            contentStream.endText();
+            currentY -= 13;
+        }
+        
+        // Buscar tratamentos relacionados
+        try {
+            List<Tratamento> tratamentos = tratamentoDAO.listarPorConsulta(consulta.getId());
+            if (!tratamentos.isEmpty()) {
+                currentY -= 8;
+                contentStream.beginText();
+                contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 10);
+                contentStream.newLineAtOffset(x, currentY);
+                contentStream.showText("Tratamentos Prescritos: ");
+                contentStream.endText();
+                currentY -= 18;
+                
+                for (Tratamento t : tratamentos) {
+                    String descTratamento = t.getDescricao() != null ? t.getDescricao() : "Sem descrição";
+                    String[] linhasTrat = quebrarTexto(descTratamento, 70);
+                    for (String linha : linhasTrat) {
+                        contentStream.beginText();
+                        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 9);
+                        contentStream.newLineAtOffset(x + 10, currentY);
+                        contentStream.showText("• " + linha);
+                        contentStream.endText();
+                        currentY -= 13;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            // Ignorar erro ao buscar tratamentos
+        }
+        
+        float alturaUsada = yInicial - currentY + 15;
+        
+        // Desenhar fundo cinza claro para destacar a consulta (após calcular altura)
+        contentStream.setNonStrokingColor(0.95f, 0.95f, 0.95f);
+        contentStream.addRect(x - 5, currentY, width + 10, alturaUsada);
+        contentStream.fill();
+        contentStream.setNonStrokingColor(0f, 0f, 0f);
+        
+        // Redesenhar todo o conteúdo sobre o fundo
+        currentY = y;
+        // Data/Hora
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 10);
+        contentStream.newLineAtOffset(x, currentY);
+        contentStream.showText("Data/Hora: ");
+        contentStream.endText();
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 10);
+        contentStream.newLineAtOffset(x + 85, currentY);
+        contentStream.showText(dataHora);
+        contentStream.endText();
+        currentY -= 18;
+        
+        // Diagnóstico
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 10);
+        contentStream.newLineAtOffset(x, currentY);
+        contentStream.showText("Diagnóstico: ");
+        contentStream.endText();
+        currentY -= 18;
+        
+        for (String linha : linhas) {
+            contentStream.beginText();
+            contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 9);
+            contentStream.newLineAtOffset(x + 10, currentY);
+            contentStream.showText(linha);
+            contentStream.endText();
+            currentY -= 13;
+        }
+        
+        // Tratamentos
+        try {
+            List<Tratamento> tratamentos = tratamentoDAO.listarPorConsulta(consulta.getId());
+            if (!tratamentos.isEmpty()) {
+                currentY -= 8;
+                contentStream.beginText();
+                contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 10);
+                contentStream.newLineAtOffset(x, currentY);
+                contentStream.showText("Tratamentos Prescritos: ");
+                contentStream.endText();
+                currentY -= 18;
+                
+                for (Tratamento t : tratamentos) {
+                    String descTratamento = t.getDescricao() != null ? t.getDescricao() : "Sem descrição";
+                    String[] linhasTrat = quebrarTexto(descTratamento, 70);
+                    for (String linha : linhasTrat) {
+                        contentStream.beginText();
+                        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 9);
+                        contentStream.newLineAtOffset(x + 10, currentY);
+                        contentStream.showText("• " + linha);
+                        contentStream.endText();
+                        currentY -= 13;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            // Ignorar erro ao buscar tratamentos
+        }
+        
+        return alturaUsada; // Retornar altura usada
+    }
+    
+    private float escreverTratamentoNoPDF(org.apache.pdfbox.pdmodel.PDPageContentStream contentStream, 
+                                         Tratamento tratamento, float x, float y, float width) throws Exception {
+        float currentY = y;
+        float yInicial = y;
+        
+        if (tratamento.getConsulta() == null) {
+            return 20; // Altura mínima
+        }
+        
+        Consulta consulta = tratamento.getConsulta();
+        
+        // Data da Consulta
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 10);
+        contentStream.newLineAtOffset(x, currentY);
+        contentStream.showText("Data da Consulta: ");
+        contentStream.endText();
+        
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 10);
+        contentStream.newLineAtOffset(x + 120, currentY);
+        String data = consulta.getDataConsulta() != null ? 
+            consulta.getDataConsulta().format(dateFormatter) : "Não informado";
+        contentStream.showText(data);
+        contentStream.endText();
+        currentY -= 15;
+        
+        // Diagnóstico da Consulta
+        if (consulta.getDiagnostico() != null && !consulta.getDiagnostico().isEmpty()) {
+            contentStream.beginText();
+            contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 10);
+            contentStream.newLineAtOffset(x, currentY);
+            contentStream.showText("Diagnóstico da Consulta: ");
+            contentStream.endText();
+            currentY -= 15;
+            
+            String[] linhasDiag = quebrarTexto(consulta.getDiagnostico(), 70);
+            for (String linha : linhasDiag) {
+                contentStream.beginText();
+                contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 9);
+                contentStream.newLineAtOffset(x + 10, currentY);
+                contentStream.showText(linha);
+                contentStream.endText();
+                currentY -= 12;
+            }
+        }
+        
+        // Descrição do Tratamento
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD, 10);
+        contentStream.newLineAtOffset(x, currentY);
+        contentStream.showText("Tratamento: ");
+        contentStream.endText();
+        currentY -= 15;
+        
+        String descricao = tratamento.getDescricao() != null ? tratamento.getDescricao() : "Sem descrição";
+        String[] linhas = quebrarTexto(descricao, 70);
+        for (String linha : linhas) {
+            contentStream.beginText();
+            contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 9);
+            contentStream.newLineAtOffset(x + 10, currentY);
+            contentStream.showText(linha);
+            contentStream.endText();
+            currentY -= 12;
+        }
+        
+        return yInicial - currentY + 10; // Retornar altura usada
+    }
+    
+    private String[] quebrarTexto(String texto, int maxLength) {
+        if (texto == null || texto.isEmpty()) {
+            return new String[]{" "};
+        }
+        
+        java.util.List<String> linhas = new java.util.ArrayList<>();
+        String[] palavras = texto.split(" ");
+        StringBuilder linhaAtual = new StringBuilder();
+        
+        for (String palavra : palavras) {
+            if (linhaAtual.length() + palavra.length() + 1 <= maxLength) {
+                if (linhaAtual.length() > 0) {
+                    linhaAtual.append(" ");
+                }
+                linhaAtual.append(palavra);
+            } else {
+                if (linhaAtual.length() > 0) {
+                    linhas.add(linhaAtual.toString());
+                    linhaAtual = new StringBuilder();
+                }
+                // Se a palavra é muito longa, quebrar ela
+                if (palavra.length() > maxLength) {
+                    int inicio = 0;
+                    while (inicio < palavra.length()) {
+                        int fim = Math.min(inicio + maxLength, palavra.length());
+                        linhas.add(palavra.substring(inicio, fim));
+                        inicio = fim;
+                    }
+                } else {
+                    linhaAtual.append(palavra);
+                }
+            }
+        }
+        
+        if (linhaAtual.length() > 0) {
+            linhas.add(linhaAtual.toString());
+        }
+        
+        return linhas.toArray(new String[0]);
     }
 
     private String[] getHeaders() {

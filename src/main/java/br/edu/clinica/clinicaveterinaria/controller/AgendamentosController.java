@@ -2,6 +2,7 @@ package br.edu.clinica.clinicaveterinaria.controller;
 
 import br.edu.clinica.clinicaveterinaria.dao.ConsultaDAO;
 import br.edu.clinica.clinicaveterinaria.model.Consulta;
+import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,6 +23,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -40,6 +42,7 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class AgendamentosController implements Initializable {
 
@@ -102,6 +105,7 @@ public class AgendamentosController implements Initializable {
             modalStage.setScene(new Scene(root));
             modalStage.initModality(Modality.APPLICATION_MODAL);
             modalStage.initOwner((Stage) btnNovoAgendamento.getScene().getWindow());
+            MainApplication.setStageIcon(modalStage);
             modalStage.showAndWait();
             carregarConsultasDoBanco();
             gerarCalendario();
@@ -113,6 +117,11 @@ public class AgendamentosController implements Initializable {
 
     @FXML
     void onDiaSelecionado(MouseEvent event) {
+        // Só processa cliques com botão esquerdo
+        if (event.getButton() != MouseButton.PRIMARY) {
+            return;
+        }
+        
         if (selectedCell != null) {
             selectedCell.getStyleClass().remove("cell-selecionada");
         }
@@ -133,6 +142,7 @@ public class AgendamentosController implements Initializable {
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.initOwner((Stage) calendarioGrid.getScene().getWindow());
         modalStage.setTitle("Agendamentos para " + data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        MainApplication.setStageIcon(modalStage);
 
         TableView<Consulta> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -258,6 +268,9 @@ public class AgendamentosController implements Initializable {
         cell.setAlignment(Pos.CENTER);
         cell.setOnMouseClicked(this::onDiaSelecionado);
         cell.getProperties().put("date", date);
+        
+        // Configurar menu de contexto para botão direito
+        configurarContextMenuCelula(cell, date);
 
         Label diaNumero = new Label(String.valueOf(date.getDayOfMonth()));
         diaNumero.getStyleClass().add("dia-numero");
@@ -291,6 +304,7 @@ public class AgendamentosController implements Initializable {
             modalStage.setScene(new Scene(root));
             modalStage.initModality(Modality.APPLICATION_MODAL);
             modalStage.initOwner((Stage) calendarioGrid.getScene().getWindow());
+            MainApplication.setStageIcon(modalStage);
             modalStage.showAndWait();
             
             carregarConsultasDoBanco();
@@ -299,6 +313,93 @@ public class AgendamentosController implements Initializable {
             e.printStackTrace();
             mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de registro de tratamento.");
         }
+    }
+
+    private void configurarContextMenuCelula(VBox cell, LocalDate date) {
+        ContextMenu contextMenu = new ContextMenu();
+        
+        MenuItem novoAgendamentoItem = new MenuItem("Novo Agendamento");
+        novoAgendamentoItem.setOnAction(event -> abrirNovoAgendamentoComData(date));
+        
+        MenuItem desmarcarConsultasItem = new MenuItem("Desmarcar todas as consultas");
+        desmarcarConsultasItem.setOnAction(event -> desmarcarTodasConsultasDoDia(date));
+        
+        contextMenu.getItems().addAll(novoAgendamentoItem, desmarcarConsultasItem);
+        
+        cell.setOnContextMenuRequested(event -> {
+            contextMenu.show(cell, event.getScreenX(), event.getScreenY());
+        });
+    }
+    
+    private void abrirNovoAgendamentoComData(LocalDate data) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/clinica/clinicaveterinaria/agendamento-view.fxml"));
+            Parent root = loader.load();
+            
+            AgendamentoController controller = loader.getController();
+            controller.setDataPreSelecionada(data);
+            
+            Stage modalStage = new Stage();
+            modalStage.setTitle("Novo Agendamento");
+            modalStage.setScene(new Scene(root));
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.initOwner((Stage) calendarioGrid.getScene().getWindow());
+            MainApplication.setStageIcon(modalStage);
+            modalStage.showAndWait();
+            carregarConsultasDoBanco();
+            gerarCalendario();
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de agendamento.");
+        }
+    }
+    
+    private void desmarcarTodasConsultasDoDia(LocalDate data) {
+        List<Consulta> consultasDoDia = consultasList.stream()
+                .filter(c -> c.getDataConsulta() != null && c.getDataConsulta().toLocalDate().equals(data))
+                .collect(Collectors.toList());
+        
+        if (consultasDoDia.isEmpty()) {
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Informação", "Não há consultas agendadas para este dia.");
+            return;
+        }
+        
+        // Criar popup de confirmação listando as consultas
+        StringBuilder mensagem = new StringBuilder();
+        mensagem.append("Você tem certeza que deseja desmarcar todas as consultas do dia " + 
+                       data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "?\n\n");
+        mensagem.append("Consultas que serão desmarcadas:\n");
+        
+        for (Consulta consulta : consultasDoDia) {
+            String horario = consulta.getDataConsulta() != null ? 
+                consulta.getDataConsulta().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")) : "N/A";
+            String paciente = consulta.getPaciente() != null ? consulta.getPaciente().getNome() : "N/A";
+            String veterinario = consulta.getVeterinario() != null ? consulta.getVeterinario().getNome() : "N/A";
+            mensagem.append(String.format("• %s - %s (Vet: %s)\n", horario, paciente, veterinario));
+        }
+        
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmar Desmarcação");
+        alert.setHeaderText("Desmarcar todas as consultas?");
+        alert.setContentText(mensagem.toString());
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                try {
+                    for (Consulta consulta : consultasDoDia) {
+                        consultaDAO.deletarConsulta(consulta.getId());
+                    }
+                    carregarConsultasDoBanco();
+                    gerarCalendario();
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", 
+                        String.format("%d consulta(s) desmarcada(s) com sucesso!", consultasDoDia.size()));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao desmarcar consultas: " + e.getMessage());
+                }
+            }
+        });
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String msg) {

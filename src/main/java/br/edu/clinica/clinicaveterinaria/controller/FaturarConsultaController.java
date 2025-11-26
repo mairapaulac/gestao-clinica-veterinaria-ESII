@@ -41,6 +41,7 @@ public class FaturarConsultaController implements Initializable {
     private TratamentoDAO tratamentoDAO = new TratamentoDAO();
     private Consulta consulta;
     private boolean faturaGerada = false;
+    private boolean pagamentoRealizado = false;
     
     private static final float VALOR_BASE_CONSULTA = 100.00f;
     private static final float VALOR_BASE_TRATAMENTO = 50.00f;
@@ -75,7 +76,22 @@ public class FaturarConsultaController implements Initializable {
         btnGerarFatura.setOnAction(event -> gerarFatura());
         btnConfirmarPagamento.setOnAction(event -> confirmarPagamento());
         
-        txtValorConsulta.textProperty().addListener((observable, oldValue, newValue) -> calcularValorTotal());
+        // Validação em tempo real para impedir valores negativos
+        txtValorConsulta.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.isEmpty()) {
+                try {
+                    float valor = Float.parseFloat(newValue.replace(",", "."));
+                    if (valor < 0) {
+                        txtValorConsulta.setText(oldValue);
+                        MainApplication.showErrorAlert("Valor Inválido", "O valor da consulta não pode ser negativo.");
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignora enquanto está digitando
+                }
+            }
+            calcularValorTotal();
+        });
     }
 
     private void carregarDadosConsulta() {
@@ -132,6 +148,22 @@ public class FaturarConsultaController implements Initializable {
         }
     }
 
+    private float validarEConverterValor(String texto, String nomeCampo) {
+        if (texto == null || texto.trim().isEmpty()) {
+            throw new IllegalArgumentException("O campo " + nomeCampo + " não pode estar vazio.");
+        }
+        
+        try {
+            float valor = Float.parseFloat(texto.replace(",", "."));
+            if (valor < 0) {
+                throw new IllegalArgumentException("O valor de " + nomeCampo + " não pode ser negativo.");
+            }
+            return valor;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("O valor de " + nomeCampo + " é inválido. Use apenas números.");
+        }
+    }
+
     private void calcularValorTotal() {
         try {
             float valorConsulta = Float.parseFloat(txtValorConsulta.getText().replace(",", "."));
@@ -152,9 +184,12 @@ public class FaturarConsultaController implements Initializable {
         }
         
         try {
-            float valorTotal = Float.parseFloat(txtValorConsulta.getText().replace(",", ".")) +
-                              Float.parseFloat(txtValorTratamentos.getText().replace(",", ".")) +
-                              Float.parseFloat(txtValorMedicamentos.getText().replace(",", "."));
+            // Validar cada valor individualmente
+            float valorConsulta = validarEConverterValor(txtValorConsulta.getText(), "Consulta");
+            float valorTratamentos = validarEConverterValor(txtValorTratamentos.getText(), "Tratamentos");
+            float valorMedicamentos = validarEConverterValor(txtValorMedicamentos.getText(), "Medicamentos");
+            
+            float valorTotal = valorConsulta + valorTratamentos + valorMedicamentos;
             
             if (valorTotal <= 0) {
                 MainApplication.showErrorAlert("Erro", "O valor total deve ser maior que zero.");
@@ -169,8 +204,8 @@ public class FaturarConsultaController implements Initializable {
             
             MainApplication.showSuccessAlert("Fatura Gerada", 
                 "Fatura gerada com sucesso! Valor total: " + currencyFormat.format(valorTotal));
-        } catch (NumberFormatException e) {
-            MainApplication.showErrorAlert("Erro", "Valores inválidos. Verifique os campos.");
+        } catch (IllegalArgumentException e) {
+            MainApplication.showErrorAlert("Erro de Validação", e.getMessage());
         }
     }
 
@@ -192,9 +227,17 @@ public class FaturarConsultaController implements Initializable {
         }
         
         try {
-            float valorTotal = Float.parseFloat(txtValorConsulta.getText().replace(",", ".")) +
-                              Float.parseFloat(txtValorTratamentos.getText().replace(",", ".")) +
-                              Float.parseFloat(txtValorMedicamentos.getText().replace(",", "."));
+            // Validar cada valor individualmente
+            float valorConsulta = validarEConverterValor(txtValorConsulta.getText(), "Consulta");
+            float valorTratamentos = validarEConverterValor(txtValorTratamentos.getText(), "Tratamentos");
+            float valorMedicamentos = validarEConverterValor(txtValorMedicamentos.getText(), "Medicamentos");
+            
+            float valorTotal = valorConsulta + valorTratamentos + valorMedicamentos;
+            
+            if (valorTotal <= 0) {
+                MainApplication.showErrorAlert("Erro", "O valor total deve ser maior que zero.");
+                return;
+            }
             
             if (SessionManager.getFuncionarioLogado() == null) {
                 MainApplication.showErrorAlert("Erro", "Funcionário não logado.");
@@ -211,15 +254,28 @@ public class FaturarConsultaController implements Initializable {
             
             pagamentoDAO.inserirPagamento(pagamento);
             
+            // Verificar se o pagamento foi realmente inserido
+            List<Pagamento> pagamentosVerificacao = pagamentoDAO.listarPorConsulta(consulta.getId());
+            if (pagamentosVerificacao.isEmpty()) {
+                MainApplication.showErrorAlert("Erro", "O pagamento não foi registrado. Tente novamente.");
+                return;
+            }
+            
             MainApplication.showSuccessAlert("Sucesso", "Pagamento registrado com sucesso!");
             
+            // Marcar que o pagamento foi realizado para que a janela pai recarregue
+            pagamentoRealizado = true;
             fecharJanela();
-        } catch (NumberFormatException e) {
-            MainApplication.showErrorAlert("Erro", "Valores inválidos. Verifique os dados.");
+        } catch (IllegalArgumentException e) {
+            MainApplication.showErrorAlert("Erro de Validação", e.getMessage());
         } catch (SQLException e) {
-            MainApplication.showErrorAlert("Erro", "Erro ao registrar pagamento: " + e.getMessage());
+            MainApplication.showErrorAlert("Erro", "Erro ao registrar pagamento. Verifique os dados.");
             e.printStackTrace();
         }
+    }
+
+    public boolean foiPagamentoRealizado() {
+        return pagamentoRealizado;
     }
 
     private void fecharJanela() {

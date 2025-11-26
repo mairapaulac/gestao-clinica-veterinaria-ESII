@@ -1,6 +1,7 @@
 package br.edu.clinica.clinicaveterinaria.controller;
 
 import br.edu.clinica.clinicaveterinaria.model.Paciente;
+import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import br.edu.clinica.clinicaveterinaria.model.Proprietario;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -87,6 +88,7 @@ public class SelecionarPacienteController implements Initializable {
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.initOwner((Stage) btnNovoPaciente.getScene().getWindow());
             dialogStage.setScene(new Scene(root));
+            MainApplication.setStageIcon(dialogStage);
             
             dialogStage.showAndWait();
 

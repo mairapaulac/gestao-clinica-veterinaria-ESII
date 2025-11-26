@@ -6,6 +6,7 @@ import br.edu.clinica.clinicaveterinaria.dao.VeterinarioDAO;
 import br.edu.clinica.clinicaveterinaria.model.Consulta;
 import br.edu.clinica.clinicaveterinaria.model.Paciente;
 import br.edu.clinica.clinicaveterinaria.model.Veterinario;
+import br.edu.clinica.clinicaveterinaria.view.MainApplication;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -150,6 +151,7 @@ public class AgendamentoController implements Initializable {
                 dialogStage.initOwner((Stage) btnConfirmar.getScene().getWindow());
                 Scene scene = new Scene(root);
                 dialogStage.setScene(scene);
+                MainApplication.setStageIcon(dialogStage);
 
                 dialogStage.showAndWait();
 
@@ -158,6 +160,8 @@ public class AgendamentoController implements Initializable {
                     this.pacienteSelecionado = selecionado;
                     comboBuscarPaciente.setValue(selecionado);
                 }
+                // Garantir que o popup do ComboBox seja fechado
+                comboBuscarPaciente.hide();
                 event.consume();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -274,6 +278,12 @@ public class AgendamentoController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public void setDataPreSelecionada(LocalDate data) {
+        if (data != null) {
+            datePicker.setValue(data);
         }
     }
 

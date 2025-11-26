@@ -145,8 +145,13 @@ public class DatabaseErrorHandler {
             return "Não é possível excluir esta consulta pois existem tratamentos cadastrados para ela.";
         }
         
-        // Pagamento relacionado
+        // Pagamento relacionado a funcionário
         if (lowerMessage.contains("pagamento")) {
+            if (lowerMessage.contains("funcionario") || lowerMessage.contains("pagamento_id_funcionario")) {
+                return "Não é possível excluir este funcionário pois ele registrou pagamentos no sistema. " +
+                       "Isso é necessário para manter o histórico de quem processou cada pagamento. " +
+                       "Considere desativar o funcionário ao invés de excluí-lo.";
+            }
             return "Não é possível excluir este registro pois existem pagamentos relacionados.";
         }
         
@@ -198,4 +203,6 @@ public class DatabaseErrorHandler {
         return "Erro ao " + contexto;
     }
 }
+
+
 
