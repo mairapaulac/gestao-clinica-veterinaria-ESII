@@ -91,6 +91,9 @@ public class HistoricoPacienteController implements Initializable {
                     getStyleClass().clear();
                 } else {
                     setText(item);
+                    setAlignment(javafx.geometry.Pos.CENTER);
+                    // Garantir que a célula use todo o espaço e centralize o conteúdo
+                    setMaxWidth(Double.MAX_VALUE);
                     getStyleClass().clear();
                     getStyleClass().add("type-badge");
                     if ("CONSULTA".equals(item)) {

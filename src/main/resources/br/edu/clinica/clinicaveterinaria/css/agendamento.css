@@ -57,11 +57,20 @@
 
 .combo-box-popup .list-view .list-cell {
     -fx-background-color: white;
-    -fx-padding: 8px 12px;
+    -fx-padding: 10px 12px;
+    -fx-text-fill: #333;
+    -fx-font-size: 15px;
 }
 
 .combo-box-popup .list-view .list-cell:hover {
-    -fx-background-color: #f0f0f0;
+    -fx-background-color: #e6f2ff;
+    -fx-text-fill: #004085;
+    -fx-font-weight: 600;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #0066cc;
+    -fx-text-fill: white;
 }
 
 
